@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>KKK Timer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
+        
+        :root {
+            --bg-dark: #09090b;
+            --panel-bg: #18181b;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f4f4f5;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            overflow: hidden;
+            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height for mobile browsers */
+            width: 100vw;
+        }
+
+        .font-mono-timer {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .holding { color: var(--accent-red) !important; }
+        .ready { color: var(--accent-green) !important; }
+        .inspecting { color: var(--accent-yellow) !important; }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #18181b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 4px;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col justify-between bg-zinc-950 text-zinc-100 overflow-hidden select-none">
+
+    <!-- TOP HEADER BAR -->
+    <header class="w-full bg-zinc-900/90 border-b border-zinc-800/80 px-3 sm:px-6 py-2 flex items-center justify-between shrink-0 z-30 backdrop-blur-md">
+        <!-- Top Left: Name & Settings Button -->
+        <div class="flex items-center space-x-2">
+            <span class="font-extrabold text-sm sm:text-base text-emerald-400 tracking-wide whitespace-nowrap">K.Krithik</span>
+            <button id="settings-btn" title="Settings" class="p-1.5 sm:p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95 cursor-pointer border border-zinc-700/50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Top Center: Timer Title -->
+        <div class="text-center px-1">
+            <h1 class="text-xl sm:text-2xl font-black tracking-widest text-white uppercase drop-shadow">KKK</h1>
+        </div>
+
+        <!-- Top Right: Session Selection -->
+        <div class="flex items-center space-x-1.5">
+            <select id="session-select" class="bg-zinc-800 text-xs sm:text-sm text-zinc-200 border border-zinc-700/70 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-emerald-500 max-w-[100px] sm:max-w-[160px] truncate">
+                <!-- Dynamically populated -->
+            </select>
+            <button id="add-session-btn" title="Create New Session" class="p-1 sm:p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition active:scale-95 shadow">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+            </button>
+            <button id="delete-session-btn" title="Delete Current Session" class="p-1 sm:p-1.5 rounded-lg bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white transition active:scale-95">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN RESPONSIVE CONTAINER -->
+    <div class="flex-grow flex flex-col md:flex-row overflow-hidden relative w-full">
+
+        <!-- STATS & SOLVES SIDEBAR (Collapsible scrollable on Mobile, Sidebar on Desktop) -->
+        <aside class="w-full md:w-80 bg-zinc-900/60 border-b md:border-b-0 md:border-r border-zinc-800/80 p-2.5 sm:p-3 flex flex-col justify-between overflow-y-auto shrink-0 z-10 max-h-[38vh] md:max-h-none">
+            <div>
+                <!-- Statistics Header -->
+                <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-zinc-800">
+                    <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider">Statistics</h2>
+                    <span id="stat-count-badge" class="text-[10px] bg-emerald-950 text-emerald-400 font-bold px-2 py-0.5 rounded-full border border-emerald-800/50">0 Solves</span>
+                </div>
+
+                <!-- Stats Grid (Count, Best, Mo3, Ao3, Ao5, Ao12, Ao50, Ao100) -->
+                <div class="grid grid-cols-4 md:grid-cols-2 gap-1 text-xs mb-2.5">
+                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Best</span> <span id="stat-best" class="font-bold font-mono text-emerald-400 text-xs">-</span></div>
+                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Mo3</span> <span id="stat-mo3" class="font-bold font-mono text-xs">-</span></div>
+                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao3</span> <span id="stat-ao3" class="font-bold font-mono text-xs">-</span></div>
+                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao5</span> <span id="stat-ao5" class="font-bold font-mono text-xs">-</span></div>
+                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao12</span> <span id="stat-ao12" class="font-bold font-mono text-xs">-</span></div>
+                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao50</span> <span id="stat-ao50" class="font-bold font-mono text-xs">-</span></div>
+                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao100</span> <span id="stat-ao100" class="font-bold font-mono text-xs">-</span></div>
+                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Count</span> <span id="stat-count" class="font-bold font-mono text-xs">0</span></div>
+                </div>
+
+                <!-- STANDALONE BAR CHART CANVAS (NO EXTERNAL CHART LIBRARY BUGS) -->
+                <div class="mb-2">
+                    <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1 pb-1 border-b border-zinc-800">Solve Trend</h2>
+                    <div class="bg-zinc-900/80 p-2 rounded-lg border border-zinc-800/80 h-20 sm:h-28 w-full relative flex items-end">
+                        <canvas id="trendCanvas" class="w-full h-full block"></canvas>
+                    </div>
+                </div>
+
+                <!-- Solve History List -->
+                <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1 pb-1 border-b border-zinc-800">Session Solves</h2>
+                <div id="solves-list" class="space-y-1 max-h-20 md:max-h-48 overflow-y-auto pr-1">
+                    <!-- Dynamic Solve Rows -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN TIMER TOUCH-PAD WORKSPACE -->
+        <main id="main-timer" class="flex-grow flex flex-col justify-between items-center p-3 sm:p-6 text-center relative select-none cursor-pointer w-full bg-zinc-950/40">
+            
+            <!-- Scramble Display Area -->
+            <div class="w-full max-w-3xl my-auto pointer-events-none px-2">
+                <div id="scramble" class="text-sm sm:text-lg md:text-xl font-mono font-medium tracking-wide text-zinc-200 bg-zinc-900/90 p-3 sm:p-4 rounded-xl border border-zinc-800/80 shadow-2xl break-words min-h-[3.5rem] flex items-center justify-center leading-relaxed">
+                    Generating scramble...
+                </div>
+            </div>
+
+            <!-- Main Timer Display -->
+            <div class="my-auto pointer-events-none py-2">
+                <div id="timer-display" class="text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75">
+                    0.00
+                </div>
+                <div id="status-indicator" class="text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500">
+                    TAP & HOLD SCREEN OR SPACEBAR
+                </div>
+            </div>
+
+            <!-- Help Instructions -->
+            <div id="instructions" class="text-xs text-zinc-500 my-auto pointer-events-none">
+                <span class="hidden sm:inline">Hold <kbd class="px-2 py-0.5 bg-zinc-800 rounded border border-zinc-700 text-zinc-300 font-mono">SPACEBAR</kbd> for 0.5s until green, then release to start.</span>
+                <span class="inline sm:hidden">Touch & hold screen for 0.5s until green, then release to start.</span>
+            </div>
+        </main>
+    </div>
+
+    <!-- FIXED CUBE TYPES BOTTOM BAR -->
+    <footer class="w-full bg-zinc-900 border-t border-zinc-800/80 px-2 py-2 flex justify-center items-center z-20 shrink-0">
+        <div class="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto no-scrollbar max-w-full px-2" id="cube-selector">
+            <button data-cube="3*3" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-emerald-600 text-white transition active:scale-95 shadow">3*3</button>
+            <button data-cube="4*4" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">4*4</button>
+            <button data-cube="5*5" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">5*5</button>
+            <button data-cube="6*6" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">6*6</button>
+            <button data-cube="7*7" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">7*7</button>
+            <button data-cube="2*2" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">2*2</button>
+            <button data-cube="Skewb" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">Skewb</button>
+        </div>
+    </footer>
+
+    <!-- SETTINGS MODAL DIALOG -->
+    <div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 hidden">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden">
+            <!-- Modal Header -->
+            <div class="p-3.5 sm:p-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-950">
+                <h3 class="text-base sm:text-lg font-bold text-white">Settings</h3>
+                <button id="close-modal-btn" class="text-zinc-400 hover:text-white p-1 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Navigation Tabs -->
+            <div class="flex border-b border-zinc-800 bg-zinc-900 overflow-x-auto no-scrollbar">
+                <button data-tab="about" class="tab-btn px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-emerald-400 border-b-2 border-emerald-500 whitespace-nowrap focus:outline-none">ABOUT</button>
+                <button data-tab="shortcuts" class="tab-btn px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 whitespace-nowrap focus:outline-none">Keyboard Shortcuts</button>
+                <button data-tab="features" class="tab-btn px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 whitespace-nowrap focus:outline-none">Enable Features</button>
+            </div>
+
+            <!-- Modal Content Panels -->
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 text-zinc-300 text-xs sm:text-sm flex-grow">
+                
+                <!-- CATEGORY 1: ABOUT TAB (EXACT PARAGRAPHS REQUIRED) -->
+                <div id="tab-about" class="tab-content space-y-3 leading-relaxed text-zinc-200">
+                    <p>Hello everyone. Welcome to my KKK timer. This is completely made by me. This is a free web tool where you can improve and record your times. I am glad that this timer could help you.</p>
+                    <p>Take this timer as motivation. Please use this timer correctly and purposefully.</p>
+                    <p>Let's come to the point. I will explain how to use this timer. First choose your cube. You will see the scramble given above. Scramble your cube exactly and press the spacebar 0.5sec to start the timer. Press the spacebar again to stop the timer. You can delete the times if you want. You can also enable inspection time.</p>
+                    <p>I made this timer inspired by cs timer. although this timer is not complex as cs timer, you can use this for practices. I hope you will find this as one of the best timer.</p>
+                </div>
+
+                <!-- CATEGORY 2: SHORTCUTS TAB -->
+                <div id="tab-shortcuts" class="tab-content hidden space-y-3">
+                    <h4 class="font-bold text-emerald-400 border-b border-zinc-800 pb-1">PC Keyboard Controls</h4>
+                    <div class="flex justify-between items-center py-1">
+                        <span>Hold Spacebar (0.5s)</span>
+                        <kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-200 font-mono">Arm Timer</kbd>
+                    </div>
+                    <div class="flex justify-between items-center py-1">
+                        <span>Release Spacebar</span>
+                        <kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-200 font-mono">Start Solve / Inspection</kbd>
+                    </div>
+                    <div class="flex justify-between items-center py-1 border-b border-zinc-800 pb-2">
+                        <span>Press Any Key</span>
+                        <kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-200 font-mono">Stop Timer</kbd>
+                    </div>
+
+                    <h4 class="font-bold text-emerald-400 border-b border-zinc-800 pb-1 pt-2">Mobile Touch Controls</h4>
+                    <div class="flex justify-between items-center py-1">
+                        <span>Touch & Hold Screen (0.5s)</span>
+                        <span class="text-xs text-zinc-400">Arm Timer (Red -> Green)</span>
+                    </div>
+                    <div class="flex justify-between items-center py-1">
+                        <span>Release Finger</span>
+                        <span class="text-xs text-zinc-400">Start Solve / Inspection</span>
+                    </div>
+                    <div class="flex justify-between items-center py-1">
+                        <span>Tap Anywhere While Running</span>
+                        <span class="text-xs text-zinc-400">Stop Timer Instantly</span>
+                    </div>
+                </div>
+
+                <!-- CATEGORY 3: ENABLE FEATURES TAB -->
+                <div id="tab-features" class="tab-content hidden space-y-4">
+                    <div class="flex items-center justify-between p-3.5 bg-zinc-800/50 rounded-xl border border-zinc-700/50">
+                        <div>
+                            <div class="font-semibold text-white">15s Inspection Time</div>
+                            <div class="text-xs text-zinc-400 mt-0.5">Counts down 15 seconds before starting solve</div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-inspection" class="sr-only peer">
+                            <div class="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        // State Variables
+        let timerState = 'IDLE'; // IDLE, HOLDING, READY, INSPECTING, RUNNING
+        let startTime = 0;
+        let elapsedInterval = null;
+        let holdTimeout = null;
+        let inspectionInterval = null;
+        let inspectionTimeLeft = 15;
+        let inspectionEnabled = false;
+
+        let currentCube = '3*3';
+        let currentSessionId = 'default_3*3';
+        let sessions = {};
+
+        // DOM References
+        const timerDisplay = document.getElementById('timer-display');
+        const statusIndicator = document.getElementById('status-indicator');
+        const scrambleDisplay = document.getElementById('scramble');
+        const solvesList = document.getElementById('solves-list');
+        const sessionSelect = document.getElementById('session-select');
+        const toggleInspection = document.getElementById('toggle-inspection');
+        const mainTimerArea = document.getElementById('main-timer');
+        const trendCanvas = document.getElementById('trendCanvas');
+
+        // Stats DOM Elements
+        const statCount = document.getElementById('stat-count');
+        const statCountBadge = document.getElementById('stat-count-badge');
+        const statBest = document.getElementById('stat-best');
+        const statMo3 = document.getElementById('stat-mo3');
+        const statAo3 = document.getElementById('stat-ao3');
+        const statAo5 = document.getElementById('stat-ao5');
+        const statAo12 = document.getElementById('stat-ao12');
+        const statAo50 = document.getElementById('stat-ao50');
+        const statAo100 = document.getElementById('stat-ao100');
+
+        window.onload = function() {
+            loadStorage();
+            setupCubeSelectors();
+            setupUnifiedInputListeners();
+            generateScramble();
+            updateUI();
+            
+            // Handle window resizing for trend chart
+            window.addEventListener('resize', () => {
+                const currentSolves = sessions[currentSessionId] ? sessions[currentSessionId].solves : [];
+                drawTrendChart(currentSolves);
+            });
+        };
+
+        // Persistent Storage
+        function loadStorage() {
+            const stored = localStorage.getItem('kkk_timer_sessions_v4');
+            if (stored) {
+                try { sessions = JSON.parse(stored); } catch(e) { sessions = {}; }
+            }
+
+            if (Object.keys(sessions).length === 0) {
+                sessions['default_3*3'] = {
+                    id: 'default_3*3',
+                    name: '3*3 Main',
+                    cubeType: '3*3',
+                    solves: []
+                };
+            }
+
+            const storedSessionId = localStorage.getItem('kkk_current_session_id');
+            if (storedSessionId && sessions[storedSessionId]) {
+                currentSessionId = storedSessionId;
+                currentCube = sessions[currentSessionId].cubeType;
+            } else {
+                currentSessionId = Object.keys(sessions)[0];
+                currentCube = sessions[currentSessionId].cubeType;
+            }
+
+            const storedInsp = localStorage.getItem('kkk_inspection_enabled');
+            if (storedInsp !== null) {
+                inspectionEnabled = storedInsp === 'true';
+                toggleInspection.checked = inspectionEnabled;
+            }
+
+            populateSessionSelect();
+            updateCubeButtonsUI();
+        }
+
+        function saveStorage() {
+            localStorage.setItem('kkk_timer_sessions_v4', JSON.stringify(sessions));
+            localStorage.setItem('kkk_current_session_id', currentSessionId);
+            localStorage.setItem('kkk_inspection_enabled', inspectionEnabled);
+        }
+
+        function populateSessionSelect() {
+            sessionSelect.innerHTML = '';
+            for (const id in sessions) {
+                const opt = document.createElement('option');
+                opt.value = id;
+                opt.innerText = `${sessions[id].name} (${sessions[id].cubeType})`;
+                if (id === currentSessionId) opt.selected = true;
+                sessionSelect.appendChild(opt);
+            }
+        }
+
+        sessionSelect.addEventListener('change', (e) => {
+            currentSessionId = e.target.value;
+            currentCube = sessions[currentSessionId].cubeType;
+            updateCubeButtonsUI();
+            generateScramble();
+            saveStorage();
+            updateUI();
+        });
+
+        document.getElementById('add-session-btn').addEventListener('click', () => {
+            const name = prompt('Enter new Session Name:', `Session ${Object.keys(sessions).length + 1}`);
+            if (name && name.trim()) {
+                const newId = 'session_' + Date.now();
+                sessions[newId] = { id: newId, name: name.trim(), cubeType: currentCube, solves: [] };
+                currentSessionId = newId;
+                populateSessionSelect();
+                saveStorage();
+                updateUI();
+            }
+        });
+
+        document.getElementById('delete-session-btn').addEventListener('click', () => {
+            if (Object.keys(sessions).length <= 1) {
+                alert('You must keep at least one session active.');
+                return;
+            }
+            if (confirm(`Delete session "${sessions[currentSessionId].name}"?`)) {
+                delete sessions[currentSessionId];
+                currentSessionId = Object.keys(sessions)[0];
+                currentCube = sessions[currentSessionId].cubeType;
+                populateSessionSelect();
+                updateCubeButtonsUI();
+                generateScramble();
+                saveStorage();
+                updateUI();
+            }
+        });
+
+        // Bottom Cube Type Buttons
+        function setupCubeSelectors() {
+            document.querySelectorAll('.cube-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const selectedCube = e.target.getAttribute('data-cube');
+                    currentCube = selectedCube;
+                    
+                    let foundMatch = false;
+                    for (const id in sessions) {
+                        if (sessions[id].cubeType === currentCube) {
+                            currentSessionId = id;
+                            foundMatch = true;
+                            break;
+                        }
+                    }
+
+                    if (!foundMatch) {
+                        const newId = 'session_' + Date.now();
+                        sessions[newId] = { id: newId, name: `${currentCube} Session`, cubeType: currentCube, solves: [] };
+                        currentSessionId = newId;
+                    }
+
+                    populateSessionSelect();
+                    updateCubeButtonsUI();
+                    generateScramble();
+                    saveStorage();
+                    updateUI();
+                });
+            });
+        }
+
+        function updateCubeButtonsUI() {
+            document.querySelectorAll('.cube-btn').forEach(btn => {
+                if (btn.getAttribute('data-cube') === currentCube) {
+                    btn.className = 'cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-emerald-600 text-white transition shadow';
+                } else {
+                    btn.className = 'cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition';
+                }
+            });
+        }
+
+        // Full Puzzle Scramble Generator
+        function generateScramble() {
+            let scramble = [];
+            
+            if (currentCube === '2*2') {
+                const moves = ["R", "U", "F"];
+                const mods = ["", "'", "2"];
+                let lastMove = "";
+                while (scramble.length < 11) {
+                    let move = moves[Math.floor(Math.random() * moves.length)];
+                    if (move !== lastMove) {
+                        scramble.push(move + mods[Math.floor(Math.random() * mods.length)]);
+                        lastMove = move;
+                    }
+                }
+            } else if (currentCube === '3*3') {
+                const moves = ["R", "L", "U", "D", "F", "B"];
+                const mods = ["", "'", "2"];
+                let lastMove = "";
+                while (scramble.length < 21) {
+                    let move = moves[Math.floor(Math.random() * moves.length)];
+                    if (move !== lastMove) {
+                        scramble.push(move + mods[Math.floor(Math.random() * mods.length)]);
+                        lastMove = move;
+                    }
+                }
+            } else if (currentCube === '4*4' || currentCube === '5*5') {
+                const moves = ["R", "L", "U", "D", "F", "B", "Rw", "Lw", "Uw", "Dw", "Fw", "Bw"];
+                const mods = ["", "'", "2"];
+                let lastMove = "";
+                const len = currentCube === '4*4' ? 40 : 55;
+                while (scramble.length < len) {
+                    let move = moves[Math.floor(Math.random() * moves.length)];
+                    if (move !== lastMove) {
+                        scramble.push(move + mods[Math.floor(Math.random() * mods.length)]);
+                        lastMove = move;
+                    }
+                }
+            } else if (currentCube === '6*6' || currentCube === '7*7') {
+                const moves = ["R", "L", "U", "D", "F", "B", "3Rw", "3Lw", "3Uw", "3Dw", "3Fw", "3Bw"];
+                const mods = ["", "'", "2"];
+                let lastMove = "";
+                const len = currentCube === '6*6' ? 70 : 80;
+                while (scramble.length < len) {
+                    let move = moves[Math.floor(Math.random() * moves.length)];
+                    if (move !== lastMove) {
+                        scramble.push(move + mods[Math.floor(Math.random() * mods.length)]);
+                        lastMove = move;
+                    }
+                }
+            } else if (currentCube === 'Skewb') {
+                const moves = ["R", "U", "B", "L"];
+                const mods = ["", "'"];
+                let lastMove = "";
+                while (scramble.length < 11) {
+                    let move = moves[Math.floor(Math.random() * moves.length)];
+                    if (move !== lastMove) {
+                        scramble.push(move + mods[Math.floor(Math.random() * mods.length)]);
+                        lastMove = move;
+                    }
+                }
+            }
+
+            scrambleDisplay.innerText = scramble.join(" ");
+        }
+
+        // Time Utilities & Trimmed WCA Statistics Calculation
+        function formatTime(ms) {
+            if (isNaN(ms) || ms === null || ms === undefined) return "-";
+            let seconds = Math.floor(ms / 1000);
+            let centiseconds = Math.floor((ms % 1000) / 10);
+            if (seconds >= 60) {
+                let minutes = Math.floor(seconds / 60);
+                seconds = seconds % 60;
+                return `${minutes}:${seconds.toString().padStart(2, '0')}.${centiseconds.toString().padStart(2, '0')}`;
+            }
+            return `${seconds}.${centiseconds.toString().padStart(2, '0')}`;
+        }
+
+        function calculateMean(solvesArray, num) {
+            if (solvesArray.length < num) return "-";
+            let recent = solvesArray.slice(-num).map(s => s.time);
+            let sum = recent.reduce((a, b) => a + b, 0);
+            return formatTime(sum / num);
+        }
+
+        function calculateAverage(solvesArray, num) {
+            if (solvesArray.length < num) return "-";
+            let recent = solvesArray.slice(-num).map(s => s.time);
+            recent.sort((a, b) => a - b);
+            
+            // Trim top and bottom 5% (Minimum 1 drop on each end for WCA standard)
+            let dropCount = Math.max(1, Math.floor(num * 0.05));
+            for (let i = 0; i < dropCount; i++) {
+                recent.pop();
+                recent.shift();
+            }
+
+            let sum = recent.reduce((a, b) => a + b, 0);
+            return formatTime(sum / recent.length);
+        }
+
+        // Standalone Canvas Trend Chart Renderer
+        function drawTrendChart(solves) {
+            if (!trendCanvas) return;
+            const ctx = trendCanvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            
+            const rect = trendCanvas.parentElement.getBoundingClientRect();
+            trendCanvas.width = rect.width * dpr;
+            trendCanvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            ctx.clearRect(0, 0, rect.width, rect.height);
+
+            if (solves.length === 0) {
+                ctx.fillStyle = '#52525b';
+                ctx.font = '10px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No solves yet', rect.width / 2, rect.height / 2);
+                return;
+            }
+
+            const times = solves.map(s => s.time);
+            const maxTime = Math.max(...times);
+            const minTime = Math.min(...times);
+            const count = times.length;
+            
+            const padding = 8;
+            const barGap = 2;
+            const availableWidth = rect.width - (padding * 2);
+            const barWidth = Math.max(2, (availableWidth / count) - barGap);
+
+            times.forEach((t, i) => {
+                const x = padding + i * (barWidth + barGap);
+                const heightPercent = maxTime === minTime ? 0.5 : (t - minTime / 2) / (maxTime - minTime / 2);
+                const barHeight = Math.max(4, heightPercent * (rect.height - (padding * 2)));
+                const y = rect.height - padding - barHeight;
+
+                ctx.fillStyle = (t === minTime) ? '#10b981' : '#3f3f46';
+                ctx.beginPath();
+                ctx.roundRect(x, y, barWidth, barHeight, 2);
+                ctx.fill();
+            });
+        }
+
+        function updateUI() {
+            const currentSolves = sessions[currentSessionId] ? sessions[currentSessionId].solves : [];
+            
+            solvesList.innerHTML = '';
+            currentSolves.forEach((solve, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-zinc-800/40 px-2 py-1 rounded text-xs hover:bg-zinc-800/80 transition';
+                div.innerHTML = `
+                    <span class="text-zinc-500 font-mono">#${index + 1}</span>
+                    <span class="font-bold text-zinc-200 font-mono">${formatTime(solve.time)}</span>
+                    <button onclick="deleteSolve(${index})" class="text-red-400 hover:text-red-300 font-bold ml-2 p-0.5">✕</button>
+                `;
+                solvesList.prepend(div);
+            });
+
+            statCount.innerText = currentSolves.length;
+            statCountBadge.innerText = `${currentSolves.length} Solves`;
+            
+            if (currentSolves.length > 0) {
+                const bestTime = Math.min(...currentSolves.map(s => s.time));
+                statBest.innerText = formatTime(bestTime);
+            } else {
+                statBest.innerText = '-';
+            }
+
+            statMo3.innerText = calculateMean(currentSolves, 3);
+            statAo3.innerText = calculateAverage(currentSolves, 3);
+            statAo5.innerText = calculateAverage(currentSolves, 5);
+            statAo12.innerText = calculateAverage(currentSolves, 12);
+            statAo50.innerText = calculateAverage(currentSolves, 50);
+            statAo100.innerText = calculateAverage(currentSolves, 100);
+
+            drawTrendChart(currentSolves);
+        }
+
+        window.deleteSolve = function(index) {
+            if (sessions[currentSessionId]) {
+                sessions[currentSessionId].solves.splice(index, 1);
+                saveStorage();
+                updateUI();
+            }
+        };
+
+        // UNIFIED ROBUST TOUCH AND KEYBOARD CONTROLLER ENGINE
+        function setupUnifiedInputListeners() {
+            
+            function onHoldTrigger() {
+                if (timerState === 'RUNNING') {
+                    stopTimer();
+                    return;
+                }
+
+                if (timerState === 'INSPECTING') {
+                    stopInspection();
+                    startTimer();
+                    return;
+                }
+
+                if (timerState === 'IDLE') {
+                    timerState = 'HOLDING';
+                    timerDisplay.className = "text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight holding drop-shadow-2xl";
+                    statusIndicator.innerText = "HOLD...";
+                    
+                    holdTimeout = setTimeout(() => {
+                        timerState = 'READY';
+                        timerDisplay.className = "text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight ready drop-shadow-2xl";
+                        statusIndicator.innerText = "RELEASE TO START";
+                        timerDisplay.innerText = "0.00";
+                    }, 500);
+                }
+            }
+
+            function onReleaseTrigger() {
+                if (timerState === 'HOLDING') {
+                    clearTimeout(holdTimeout);
+                    timerState = 'IDLE';
+                    timerDisplay.className = "text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl";
+                    statusIndicator.innerText = "READY";
+                } else if (timerState === 'READY') {
+                    timerDisplay.className = "text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl";
+                    
+                    if (inspectionEnabled) {
+                        startInspection();
+                    } else {
+                        startTimer();
+                    }
+                }
+            }
+
+            // Keyboard Events (PC)
+            window.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    if (!e.repeat) onHoldTrigger();
+                } else if (timerState === 'RUNNING') {
+                    stopTimer();
+                }
+                
+                if (e.code === 'Escape') {
+                    closeModal();
+                    if (timerState === 'INSPECTING') stopInspection();
+                }
+            });
+
+            window.addEventListener('keyup', (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    onReleaseTrigger();
+                }
+            });
+
+            // Touch Screen Events (Mobile Touch Target)
+            mainTimerArea.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                onHoldTrigger();
+            }, { passive: false });
+
+            mainTimerArea.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                onReleaseTrigger();
+            }, { passive: false });
+
+            mainTimerArea.addEventListener('touchcancel', (e) => {
+                e.preventDefault();
+                if (timerState === 'HOLDING') {
+                    clearTimeout(holdTimeout);
+                    timerState = 'IDLE';
+                    timerDisplay.className = "text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl";
+                    statusIndicator.innerText = "READY";
+                }
+            }, { passive: false });
+        }
+
+        // 15-second WCA Inspection Logic
+        function startInspection() {
+            timerState = 'INSPECTING';
+            inspectionTimeLeft = 15;
+            timerDisplay.className = "text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight inspecting drop-shadow-2xl";
+            timerDisplay.innerText = inspectionTimeLeft;
+            statusIndicator.innerText = "INSPECTION";
+
+            inspectionInterval = setInterval(() => {
+                inspectionTimeLeft--;
+                if (inspectionTimeLeft > 0) {
+                    timerDisplay.innerText = inspectionTimeLeft;
+                } else {
+                    stopInspection();
+                    startTimer();
+                }
+            }, 1000);
+        }
+
+        function stopInspection() {
+            clearInterval(inspectionInterval);
+        }
+
+        // Timer Execution
+        function startTimer() {
+            timerState = 'RUNNING';
+            statusIndicator.innerText = "TIMING...";
+            startTime = performance.now();
+            elapsedInterval = setInterval(() => {
+                timerDisplay.innerText = formatTime(performance.now() - startTime);
+            }, 10);
+        }
+
+        function stopTimer() {
+            clearInterval(elapsedInterval);
+            let finalTime = performance.now() - startTime;
+            timerDisplay.innerText = formatTime(finalTime);
+            statusIndicator.innerText = "STOPPED";
+
+            if (sessions[currentSessionId]) {
+                sessions[currentSessionId].solves.push({
+                    time: finalTime,
+                    scramble: scrambleDisplay.innerText,
+                    timestamp: Date.now()
+                });
+                saveStorage();
+            }
+
+            timerState = 'IDLE';
+            generateScramble();
+            updateUI();
+        }
+
+        // Settings Modal Management
+        const settingsModal = document.getElementById('settings-modal');
+        document.getElementById('settings-btn').addEventListener('click', () => settingsModal.classList.remove('hidden'));
+        document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+
+        function closeModal() {
+            settingsModal.classList.add('hidden');
+        }
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetTab = e.target.getAttribute('data-tab');
+
+                document.querySelectorAll('.tab-btn').forEach(tb => {
+                    tb.className = "tab-btn px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 whitespace-nowrap focus:outline-none";
+                });
+                e.target.className = "tab-btn px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-emerald-400 border-b-2 border-emerald-500 whitespace-nowrap focus:outline-none";
+
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.add('hidden'));
+                document.getElementById(`tab-${targetTab}`).classList.remove('hidden');
+            });
+        });
+
+        toggleInspection.addEventListener('change', (e) => {
+            inspectionEnabled = e.target.checked;
+            saveStorage();
+        });
+    </script>
+</body>
+</html>
