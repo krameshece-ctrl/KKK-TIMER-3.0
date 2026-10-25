@@ -171,18 +171,30 @@
         </main>
     </div>
 
-    <!-- MUSICS BOX ABOVE CUBE SELECTION -->
+    <!-- MUSICS BOX WITH SIDE SCROLL CONTROLS -->
     <div class="w-full bg-zinc-900 border-t border-zinc-800/80 px-3 py-2 flex flex-col sm:flex-row items-center justify-between z-20 shrink-0 gap-2">
-        <div class="flex items-center space-x-2">
-            <span class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">Musics</span>
+        <div class="flex items-center space-x-2 shrink-0">
+            <span class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">Musics (50)</span>
             <button id="music-off-btn" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white transition active:scale-95 shadow">Turn Off</button>
         </div>
-        <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar max-w-full px-1" id="music-selector">
-            <button data-track="1" class="music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">1. Epic Motivation</button>
-            <button data-track="2" class="music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">2. Upbeat Focus</button>
-            <button data-track="3" class="music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">3. Energetic Synth</button>
-            <button data-track="4" class="music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">4. Ambient Drive</button>
-            <button data-track="5" class="music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">5. Victory Beat</button>
+        
+        <!-- Music Selector Container with Side Scroll Buttons -->
+        <div class="flex items-center space-x-1.5 w-full max-w-full overflow-hidden px-1">
+            <button id="scroll-left-btn" class="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95 shrink-0 border border-zinc-700/50" title="Scroll Left">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            
+            <div class="flex items-center space-x-1.5 overflow-x-auto scroll-smooth py-1 flex-grow no-scrollbar" id="music-selector">
+                <!-- Dynamically generated 50 music tracks -->
+            </div>
+
+            <button id="scroll-right-btn" class="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95 shrink-0 border border-zinc-700/50" title="Scroll Right">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
         </div>
     </div>
 
@@ -230,7 +242,7 @@
                     <p>I made this timer inspired by cs timer. although this timer is not complex as cs timer, you can use this for practices. I hope you will find this as one of the best timer.</p>
                     <p>I am boy who is curious about everything. If you want to know more about me please open or copy paste the link given below</p>
                     <p>https://krameshece-ctrl.github.io/About-me./</p>
-                    </div>
+                </div>
 
                 <!-- CATEGORY 2: SHORTCUTS TAB -->
                 <div id="tab-shortcuts" class="tab-content hidden space-y-3">
@@ -322,6 +334,7 @@
             setupCubeSelectors();
             setupMusicPlayer();
             setupUnifiedInputListeners();
+            setupSettingsModal();
             generateScramble();
             updateUI();
             
@@ -462,34 +475,130 @@
             });
         }
 
-        // Motivational Music Generator (Web Audio API Synthesizer)
+        // WCA Scramble Generator (Robust, non-easy scrambles for all WCA puzzles)
+        function generateScramble() {
+            let scramble = '';
+            if (currentCube === '3*3') {
+                scramble = generateWcaScramble(['R', 'L', 'U', 'D', 'F', 'B'], 20);
+            } else if (currentCube === '2*2') {
+                scramble = generateWcaScramble(['R', 'U', 'F'], 11);
+            } else if (currentCube === '4*4') {
+                scramble = generateWcaScramble(['R', 'L', 'U', 'D', 'F', 'B', 'Rw', 'Lw', 'Uw', 'Dw', 'Fw', 'Bw'], 40);
+            } else if (currentCube === '5*5') {
+                scramble = generateWcaScramble(['R', 'L', 'U', 'D', 'F', 'B', 'Rw', 'Lw', 'Uw', 'Dw', 'Fw', 'Bw'], 60);
+            } else if (currentCube === '6*6') {
+                scramble = generateWcaScramble(['3Rw', '3Lw', '3Uw', '3Dw', '3Fw', '3Bw', 'Rw', 'Lw', 'Uw', 'Dw', 'Fw', 'Bw', 'R', 'L', 'U', 'D', 'F', 'B'], 80);
+            } else if (currentCube === '7*7') {
+                scramble = generateWcaScramble(['3Rw', '3Lw', '3Uw', '3Dw', '3Fw', '3Bw', 'Rw', 'Lw', 'Uw', 'Dw', 'Fw', 'Bw', 'R', 'L', 'U', 'D', 'F', 'B'], 100);
+            } else if (currentCube === 'Skewb') {
+                scramble = generateSkewbScramble();
+            } else {
+                scramble = generateWcaScramble(['R', 'L', 'U', 'D', 'F', 'B'], 20);
+            }
+            scrambleDisplay.innerText = scramble;
+        }
+
+        function generateWcaScramble(movesList, length) {
+            const modifiers = ['', "'", '2'];
+            let result = [];
+            let lastAxis = -1;
+
+            const getAxis = (m) => {
+                const base = m.replace('w', '').replace('3', '');
+                if (base === 'R' || base === 'L') return 0;
+                if (base === 'U' || base === 'D') return 1;
+                if (base === 'F' || base === 'B') return 2;
+                return -1;
+            };
+
+            for (let i = 0; i < length; i++) {
+                let move, axis;
+                do {
+                    move = movesList[Math.floor(Math.random() * movesList.length)];
+                    axis = getAxis(move);
+                } while (axis === lastAxis);
+
+                lastAxis = axis;
+                const mod = modifiers[Math.floor(Math.random() * modifiers.length)];
+                result.push(move + mod);
+            }
+            return result.join(' ');
+        }
+
+        function generateSkewbScramble() {
+            const moves = ['R', 'L', 'U', 'B'];
+            const modifiers = ['', "'"];
+            let result = [];
+            let lastMove = '';
+            for (let i = 0; i < 10; i++) {
+                let move;
+                do {
+                    move = moves[Math.floor(Math.random() * moves.length)];
+                } while (move === lastMove);
+                lastMove = move;
+                const mod = modifiers[Math.floor(Math.random() * modifiers.length)];
+                result.push(move + mod);
+            }
+            return result.join(' ');
+        }
+
+        // 50 Motivational Music Tracks Generator (Web Audio API Synthesizer)
         let audioCtx = null;
         let musicInterval = null;
         let currentTrack = null;
 
-        function setupMusicPlayer() {
-            const musicButtons = document.querySelectorAll('.music-btn');
-            const offBtn = document.getElementById('music-off-btn');
+        const trackNames = [
+            "Epic Motivation", "Upbeat Focus", "Energetic Synth", "Ambient Drive", "Victory Beat",
+            "Speedrun Pulse", "Neon Rush", "Hyper Focus", "Cybernetic Core", "Titan Step",
+            "Aether Wave", "Quantum Loop", "Pulsar Beam", "Starlight Drive", "Solar Flare",
+            "Velocity Flow", "Infinite Grid", "Summit Climb", "Apex Predator", "Titanium Beat",
+            "Thunder Strike", "Lightning Fast", "Storm Chaser", "Blazing Trail", "Ignition Spark",
+            "Cosmic Voyage", "Supernova Groove", "Nebula Pulse", "Galaxy Drive", "Orbit Wave",
+            "Alpha State", "Beta Wave", "Gamma Burst", "Delta Force", "Omega Protocol",
+            "Iron Will", "Steel Focus", "Cobalt Pulse", "Titanium Drive", "Platinum Beat",
+            "Alpha Rhythm", "Zenith Peak", "Horizon Line", "Velocity Peak", "Dynamic Flow",
+            "Quantum State", "Kinetic Energy", "Prism Wave", "Sonic Boom", "Ultimate Victory"
+        ];
 
-            musicButtons.forEach(btn => {
+        function setupMusicPlayer() {
+            const musicSelector = document.getElementById('music-selector');
+            musicSelector.innerHTML = '';
+
+            trackNames.forEach((name, idx) => {
+                const trackNum = idx + 1;
+                const btn = document.createElement('button');
+                btn.setAttribute('data-track', trackNum);
+                btn.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95';
+                btn.innerText = `${trackNum}. ${name}`;
                 btn.addEventListener('click', (e) => {
-                    const trackNum = parseInt(e.target.getAttribute('data-track'));
                     playMusicTrack(trackNum);
-                    
-                    musicButtons.forEach(b => {
+                    document.querySelectorAll('.music-btn').forEach(b => {
                         b.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95';
                     });
-                    e.target.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white transition shadow';
-                    offBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95';
+                    btn.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white transition shadow';
+                    document.getElementById('music-off-btn').className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95';
                 });
+                musicSelector.appendChild(btn);
             });
 
-            offBtn.addEventListener('click', () => {
+            document.getElementById('music-off-btn').addEventListener('click', () => {
                 stopMusic();
-                musicButtons.forEach(b => {
+                document.querySelectorAll('.music-btn').forEach(b => {
                     b.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95';
                 });
-                offBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white transition active:scale-95 shadow';
+                document.getElementById('music-off-btn').className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white transition active:scale-95 shadow';
+            });
+
+            // Side Scroll Button Controls
+            const scrollLeftBtn = document.getElementById('scroll-left-btn');
+            const scrollRightBtn = document.getElementById('scroll-right-btn');
+
+            scrollLeftBtn.addEventListener('click', () => {
+                musicSelector.scrollBy({ left: -200, behavior: 'smooth' });
+            });
+
+            scrollRightBtn.addEventListener('click', () => {
+                musicSelector.scrollBy({ left: 200, behavior: 'smooth' });
             });
         }
 
@@ -503,15 +612,12 @@
             }
 
             currentTrack = trackNum;
-            const scales = {
-                1: [261.63, 329.63, 392.00, 523.25], // Epic Motivation (C Major arpeggio)
-                2: [220.00, 261.63, 329.63, 440.00], // Upbeat Focus (A minor)
-                3: [293.66, 349.23, 440.00, 587.33], // Energetic Synth (D minor)
-                4: [196.00, 246.94, 293.66, 392.00], // Ambient Drive (G Major)
-                5: [329.63, 392.00, 493.88, 659.25]  // Victory Beat (E Major)
-            };
+            const baseFreq = 130 + (trackNum * 12) % 350;
+            const waveTypes = ['sine', 'square', 'sawtooth', 'triangle'];
+            const waveType = waveTypes[(trackNum - 1) % waveTypes.length];
+            const intervalSpeed = 180 + (trackNum * 35) % 300;
 
-            const notes = scales[trackNum] || scales[1];
+            const scaleMultipliers = [1, 1.125, 1.25, 1.334, 1.5, 1.667, 1.875, 2];
             let step = 0;
 
             musicInterval = setInterval(() => {
@@ -519,20 +625,20 @@
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 
-                osc.type = trackNum === 3 ? 'sawtooth' : (trackNum === 4 ? 'sine' : 'triangle');
-                osc.frequency.setValueAtTime(notes[step % notes.length], audioCtx.currentTime);
+                osc.type = waveType;
+                const freq = baseFreq * scaleMultipliers[step % scaleMultipliers.length];
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
-                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
+                gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
 
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
 
                 osc.start();
-                osc.stop(audioCtx.currentTime + 0.45);
-
+                osc.stop(audioCtx.currentTime + 0.35);
                 step++;
-            }, 300);
+            }, intervalSpeed);
         }
 
         function stopMusic() {
@@ -543,289 +649,115 @@
             currentTrack = null;
         }
 
-        // Full Puzzle Scramble Generator
-        function generateScramble() {
-            let scramble = [];
-            
-            if (currentCube === '2*2') {
-                const moves = ["R", "U", "F"];
-                const mods = ["", "'", "2"];
-                let lastMove = "";
-                while (scramble.length < 11) {
-                    let move = moves[Math.floor(Math.random() * moves.length)];
-                    if (move !== lastMove) {
-                        scramble.push(move + mods[Math.floor(Math.random() * mods.length)]);
-                        lastMove = move;
-                    }
-                }
-            } else if (currentCube === '3*3') {
-                const moves = ["R", "L", "U", "D", "F", "B"];
-                const mods = ["", "'", "2"];
-                let lastMove = "";
-                while (scramble.length < 21) {
-                    let move = moves[Math.floor(Math.random() * moves.length)];
-                    if (move !== lastMove) {
-                        scramble.push(move + mods[Math.floor(Math.random() * mods.length)]);
-                        lastMove = move;
-                    }
-                }
-            } else if (currentCube === '4*4' || currentCube === '5*5') {
-                const moves = ["R", "L", "U", "D", "F", "B", "Rw", "Lw", "Uw", "Dw", "Fw", "Bw"];
-                const mods = ["", "'", "2"];
-                let lastMove = "";
-                const len = currentCube === '4*4' ? 40 : 55;
-                while (scramble.length < len) {
-                    let move = moves[Math.floor(Math.random() * moves.length)];
-                    if (move !== lastMove) {
-                        scramble.push(move + mods[Math.floor(Math.random() * mods.length)]);
-                        lastMove = move;
-                    }
-                }
-            } else if (currentCube === '6*6' || currentCube === '7*7') {
-                const moves = ["R", "L", "U", "D", "F", "B", "3Rw", "3Lw", "3Uw", "3Dw", "3Fw", "3Bw"];
-                const mods = ["", "'", "2"];
-                let lastMove = "";
-                const len = currentCube === '6*6' ? 70 : 80;
-                while (scramble.length < len) {
-                    let move = moves[Math.floor(Math.random() * moves.length)];
-                    if (move !== lastMove) {
-                        scramble.push(move + mods[Math.floor(Math.random() * mods.length)]);
-                        lastMove = move;
-                    }
-                }
-            } else if (currentCube === 'Skewb') {
-                const moves = ["R", "U", "B", "L"];
-                const mods = ["", "'"];
-                let lastMove = "";
-                while (scramble.length < 11) {
-                    let move = moves[Math.floor(Math.random() * moves.length)];
-                    if (move !== lastMove) {
-                        scramble.push(move + mods[Math.floor(Math.random() * mods.length)]);
-                        lastMove = move;
-                    }
-                }
-            }
+        // Settings Modal Management
+        function setupSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            const settingsBtn = document.getElementById('settings-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
 
-            scrambleDisplay.innerText = scramble.join(" ");
-        }
-
-        // Time Utilities & Trimmed WCA Statistics Calculation
-        function formatTime(ms) {
-            if (isNaN(ms) || ms === null || ms === undefined) return "-";
-            let seconds = Math.floor(ms / 1000);
-            let centiseconds = Math.floor((ms % 1000) / 10);
-            if (seconds >= 60) {
-                let minutes = Math.floor(seconds / 60);
-                seconds = seconds % 60;
-                return `${minutes}:${seconds.toString().padStart(2, '0')}.${centiseconds.toString().padStart(2, '0')}`;
-            }
-            return `${seconds}.${centiseconds.toString().padStart(2, '0')}`;
-        }
-
-        function calculateMean(solvesArray, num) {
-            if (solvesArray.length < num) return "-";
-            let recent = solvesArray.slice(-num).map(s => s.time);
-            let sum = recent.reduce((a, b) => a + b, 0);
-            return formatTime(sum / num);
-        }
-
-        function calculateAverage(solvesArray, num) {
-            if (solvesArray.length < num) return "-";
-            let recent = solvesArray.slice(-num).map(s => s.time);
-            recent.sort((a, b) => a - b);
-            
-            let dropCount = Math.max(1, Math.floor(num * 0.05));
-            for (let i = 0; i < dropCount; i++) {
-                recent.pop();
-                recent.shift();
-            }
-
-            let sum = recent.reduce((a, b) => a + b, 0);
-            return formatTime(sum / recent.length);
-        }
-
-        // Standalone Canvas Trend Chart Renderer
-        function drawTrendChart(solves) {
-            if (!trendCanvas) return;
-            const ctx = trendCanvas.getContext('2d');
-            const dpr = window.devicePixelRatio || 1;
-            
-            const rect = trendCanvas.parentElement.getBoundingClientRect();
-            trendCanvas.width = rect.width * dpr;
-            trendCanvas.height = rect.height * dpr;
-            ctx.scale(dpr, dpr);
-
-            ctx.clearRect(0, 0, rect.width, rect.height);
-
-            if (!solves || solves.length === 0) {
-                ctx.fillStyle = '#52525b';
-                ctx.font = '11px Inter, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('No solve data available', rect.width / 2, rect.height / 2);
-                return;
-            }
-
-            const times = solves.map(s => s.time);
-            const min = Math.min(...times);
-            const max = Math.max(...times);
-            const range = max - min || 1;
-            const paddingX = 20;
-            const paddingY = 15;
-            const w = rect.width - paddingX * 2;
-            const h = rect.height - paddingY * 2;
-
-            ctx.beginPath();
-            times.forEach((t, i) => {
-                const x = paddingX + (solves.length === 1 ? w / 2 : (i / (solves.length - 1)) * w);
-                const y = rect.height - paddingY - ((t - min) / range) * h;
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
-            ctx.strokeStyle = '#10b981';
-            ctx.lineWidth = 2;
-            ctx.lineJoin = 'round';
-            ctx.stroke();
-        }
-
-        // Update UI & Stats
-        function updateUI() {
-            const currentSolves = sessions[currentSessionId] ? sessions[currentSessionId].solves : [];
-            
-            statCount.innerText = currentSolves.length;
-            statCountBadge.innerText = `${currentSolves.length} Solves`;
-
-            if (currentSolves.length === 0) {
-                statBest.innerText = '-';
-                statMo3.innerText = '-';
-                statAo3.innerText = '-';
-                statAo5.innerText = '-';
-                statAo12.innerText = '-';
-                statAo50.innerText = '-';
-                statAo100.innerText = '-';
-            } else {
-                const times = currentSolves.map(s => s.time);
-                const best = Math.min(...times);
-                statBest.innerText = formatTime(best);
-
-                statMo3.innerText = calculateMean(currentSolves, 3);
-                statAo3.innerText = calculateAverage(currentSolves, 3);
-                statAo5.innerText = calculateAverage(currentSolves, 5);
-                statAo12.innerText = calculateAverage(currentSolves, 12);
-                statAo50.innerText = calculateAverage(currentSolves, 50);
-                statAo100.innerText = calculateAverage(currentSolves, 100);
-            }
-
-            solvesList.innerHTML = '';
-            const reversedSolves = [...(sessions[currentSessionId] ? sessions[currentSessionId].solves : [])].reverse();
-            reversedSolves.forEach((solve, index) => {
-                const actualIndex = currentSolves.length - 1 - index;
-                const div = document.createElement('div');
-                div.className = 'flex justify-between items-center bg-zinc-800/40 hover:bg-zinc-800/80 px-2.5 py-1.5 rounded-lg text-xs border border-zinc-800/60 transition group';
-                div.innerHTML = `
-                    <div class="flex items-center space-x-2">
-                        <span class="text-zinc-500 font-mono text-[10px] w-6">#${actualIndex + 1}</span>
-                        <span class="font-mono font-bold text-zinc-200">${formatTime(solve.time)}</span>
-                    </div>
-                    <button onclick="deleteSolve(${actualIndex})" class="text-zinc-500 hover:text-red-400 p-1 rounded opacity-60 group-hover:opacity-100 transition" title="Delete Solve">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                `;
-                solvesList.appendChild(div);
+            settingsBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+            closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.add('hidden');
             });
 
-            drawTrendChart(currentSolves);
-        }
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const targetTab = e.target.getAttribute('data-tab');
+                    tabBtns.forEach(b => {
+                        b.className = 'tab-btn px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 whitespace-nowrap focus:outline-none';
+                    });
+                    e.target.className = 'tab-btn px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-emerald-400 border-b-2 border-emerald-500 whitespace-nowrap focus:outline-none';
 
-        window.deleteSolve = function(index) {
-            if (sessions[currentSessionId]) {
-                sessions[currentSessionId].solves.splice(index, 1);
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(`tab-${targetTab}`).classList.remove('hidden');
+                });
+            });
+
+            toggleInspection.addEventListener('change', (e) => {
+                inspectionEnabled = e.target.checked;
                 saveStorage();
-                updateUI();
-            }
-        };
+            });
+        }
 
-        // Input Handlers (Spacebar & Touch)
+        // Unified Input Listeners (Spacebar and Touch Controls)
         function setupUnifiedInputListeners() {
             window.addEventListener('keydown', (e) => {
-                if (e.code === 'Space') {
-                    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT' || document.activeElement.tagName === 'TEXTAREA') return;
+                if (e.code === 'Space' && e.target === document.body) {
                     e.preventDefault();
-                    if (timerState === 'RUNNING') {
-                        stopTimer();
-                    } else if (timerState === 'IDLE' && !holdTimeout) {
-                        startHolding();
-                    }
-                } else {
-                    if (timerState === 'RUNNING') {
-                        stopTimer();
-                    }
+                }
+                if (e.code === 'Space') {
+                    handleTimerPress();
+                } else if (timerState === 'RUNNING') {
+                    stopTimer();
                 }
             });
 
             window.addEventListener('keyup', (e) => {
                 if (e.code === 'Space') {
-                    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT' || document.activeElement.tagName === 'TEXTAREA') return;
-                    e.preventDefault();
-                    handleRelease();
+                    handleTimerRelease();
+                }
+            });
+
+            mainTimerArea.addEventListener('mousedown', (e) => {
+                if (e.button === 0) handleTimerPress();
+            });
+            window.addEventListener('mouseup', (e) => {
+                if (timerState === 'HOLDING' || timerState === 'READY') {
+                    handleTimerRelease();
+                } else if (timerState === 'RUNNING') {
+                    stopTimer();
                 }
             });
 
             mainTimerArea.addEventListener('touchstart', (e) => {
-                if (timerState === 'RUNNING') {
-                    stopTimer();
-                    e.preventDefault();
-                    return;
-                }
-                if (timerState === 'IDLE' && !holdTimeout) {
-                    startHolding();
-                    e.preventDefault();
-                }
+                e.preventDefault();
+                handleTimerPress();
             }, { passive: false });
 
             mainTimerArea.addEventListener('touchend', (e) => {
-                handleRelease();
                 e.preventDefault();
+                if (timerState === 'HOLDING' || timerState === 'READY') {
+                    handleTimerRelease();
+                } else if (timerState === 'RUNNING') {
+                    stopTimer();
+                }
             }, { passive: false });
         }
 
-        function startHolding() {
-            if (timerState === 'RUNNING' || timerState === 'HOLDING' || timerState === 'READY') return;
-            
-            if (timerState === 'INSPECTING') {
-                clearInterval(inspectionInterval);
-                timerState = 'IDLE';
-                statusIndicator.innerText = "INSPECTION CANCELLED";
-                timerDisplay.classList.remove('inspecting');
-                return;
+        function handleTimerPress() {
+            if (timerState === 'IDLE') {
+                timerState = 'HOLDING';
+                timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight holding drop-shadow-2xl transition-colors duration-75';
+                statusIndicator.innerText = 'HOLD TO START';
+                statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 holding';
+                
+                holdTimeout = setTimeout(() => {
+                    if (timerState === 'HOLDING') {
+                        timerState = 'READY';
+                        timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight ready drop-shadow-2xl transition-colors duration-75';
+                        statusIndicator.innerText = 'READY';
+                        statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 ready';
+                    }
+                }, 500);
+            } else if (timerState === 'RUNNING') {
+                stopTimer();
             }
-
-            timerState = 'HOLDING';
-            timerDisplay.className = "text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight holding drop-shadow-2xl transition-colors duration-75";
-            statusIndicator.innerText = "HOLD...";
-            statusIndicator.className = "text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 holding";
-
-            holdTimeout = setTimeout(() => {
-                timerState = 'READY';
-                timerDisplay.className = "text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight ready drop-shadow-2xl transition-colors duration-75";
-                statusIndicator.innerText = "READY!";
-                statusIndicator.className = "text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 ready";
-            }, 500);
         }
 
-        function handleRelease() {
+        function handleTimerRelease() {
             if (timerState === 'HOLDING') {
                 clearTimeout(holdTimeout);
-                holdTimeout = null;
                 timerState = 'IDLE';
-                timerDisplay.className = "text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75";
-                statusIndicator.innerText = "TAP & HOLD SCREEN OR SPACEBAR";
-                statusIndicator.className = "text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500";
+                timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75';
+                statusIndicator.innerText = 'TAP & HOLD SCREEN OR SPACEBAR';
+                statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500';
             } else if (timerState === 'READY') {
                 clearTimeout(holdTimeout);
-                holdTimeout = null;
                 if (inspectionEnabled) {
                     startInspection();
                 } else {
@@ -838,18 +770,18 @@
             timerState = 'INSPECTING';
             inspectionTimeLeft = 15;
             timerDisplay.innerText = inspectionTimeLeft;
-            timerDisplay.className = "text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight inspecting drop-shadow-2xl transition-colors duration-75";
-            statusIndicator.innerText = "INSPECTION";
-            statusIndicator.className = "text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 inspecting";
+            timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight inspecting drop-shadow-2xl transition-colors duration-75';
+            statusIndicator.innerText = 'INSPECTION';
+            statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 inspecting';
 
             inspectionInterval = setInterval(() => {
                 inspectionTimeLeft--;
                 if (inspectionTimeLeft > 0) {
                     timerDisplay.innerText = inspectionTimeLeft;
                 } else if (inspectionTimeLeft === 0) {
-                    timerDisplay.innerText = "+2";
+                    timerDisplay.innerText = '+2';
                 } else {
-                    timerDisplay.innerText = "DNF";
+                    timerDisplay.innerText = 'DNF';
                     clearInterval(inspectionInterval);
                 }
             }, 1000);
@@ -858,86 +790,156 @@
         function startTimer() {
             if (inspectionInterval) clearInterval(inspectionInterval);
             timerState = 'RUNNING';
-            startTime = Date.now();
-            timerDisplay.className = "text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75";
-            statusIndicator.innerText = "SOLVING...";
-            statusIndicator.className = "text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-emerald-400";
+            startTime = performance.now();
+            timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75';
+            statusIndicator.innerText = 'SOLVING...';
+            statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-emerald-400';
 
             elapsedInterval = setInterval(() => {
-                const now = Date.now();
-                const diff = now - startTime;
-                timerDisplay.innerText = formatTime(diff);
+                const now = performance.now();
+                const elapsed = (now - startTime) / 1000;
+                timerDisplay.innerText = formatTime(elapsed);
             }, 10);
         }
 
         function stopTimer() {
             if (timerState !== 'RUNNING') return;
             clearInterval(elapsedInterval);
-            const finalTime = Date.now() - startTime;
+            const endTime = performance.now();
+            const finalTime = (endTime - startTime) / 1000;
             timerState = 'IDLE';
 
-            if (!sessions[currentSessionId]) {
-                sessions[currentSessionId] = { id: currentSessionId, name: 'Default', cubeType: currentCube, solves: [] };
-            }
-            sessions[currentSessionId].solves.push({
+            const currentScramble = scrambleDisplay.innerText;
+            const solveObj = {
                 time: finalTime,
-                timestamp: Date.now(),
-                scramble: scrambleDisplay.innerText
-            });
+                scramble: currentScramble,
+                date: Date.now()
+            };
 
+            if (!sessions[currentSessionId]) {
+                sessions[currentSessionId] = { id: currentSessionId, name: 'Session', cubeType: currentCube, solves: [] };
+            }
+            sessions[currentSessionId].solves.unshift(solveObj);
             saveStorage();
+
             generateScramble();
             updateUI();
-
-            timerDisplay.innerText = formatTime(finalTime);
-            statusIndicator.innerText = "TAP & HOLD SCREEN OR SPACEBAR";
-            statusIndicator.className = "text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500";
         }
 
-        // Settings Modal Logic
-        const settingsBtn = document.getElementById('settings-btn');
-        const settingsModal = document.getElementById('settings-modal');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-
-        settingsBtn.addEventListener('click', () => {
-            settingsModal.classList.remove('hidden');
-        });
-
-        closeModalBtn.addEventListener('click', () => {
-            settingsModal.classList.add('hidden');
-        });
-
-        settingsModal.addEventListener('click', (e) => {
-            if (e.target === settingsModal) {
-                settingsModal.classList.add('hidden');
+        function formatTime(seconds) {
+            if (isNaN(seconds) || seconds === null) return '-';
+            if (seconds >= 60) {
+                const mins = Math.floor(seconds / 60);
+                const secs = (seconds % 60).toFixed(2);
+                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
             }
-        });
+            return seconds.toFixed(2);
+        }
 
-        // Tabs Logic
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetTab = btn.getAttribute('data-tab');
-                
-                tabBtns.forEach(b => {
-                    b.className = 'tab-btn px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 whitespace-nowrap focus:outline-none';
-                });
-                btn.className = 'tab-btn px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-emerald-400 border-b-2 border-emerald-500 whitespace-nowrap focus:outline-none';
-
-                tabContents.forEach(c => {
-                    c.classList.add('hidden');
-                });
-                document.getElementById(`tab-${targetTab}`).classList.remove('hidden');
+        function updateUI() {
+            const currentSolves = sessions[currentSessionId] ? sessions[currentSessionId].solves : [];
+            
+            solvesList.innerHTML = '';
+            currentSolves.forEach((solve, index) => {
+                const solveNum = currentSolves.length - index;
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-zinc-800/40 hover:bg-zinc-800/80 p-1.5 rounded-lg border border-zinc-800/60 text-xs transition';
+                div.innerHTML = `
+                    <span class="text-zinc-400 font-mono">#${solveNum}</span>
+                    <span class="font-mono font-bold text-white">${formatTime(solve.time)}</span>
+                    <button onclick="deleteSolve(${index})" class="text-red-400 hover:text-red-300 px-1 font-bold">&times;</button>
+                `;
+                solvesList.appendChild(div);
             });
-        });
 
-        // Inspection Toggle
-        toggleInspection.addEventListener('change', (e) => {
-            inspectionEnabled = e.target.checked;
-            saveStorage();
-        });
+            statCount.innerText = currentSolves.length;
+            statCountBadge.innerText = `${currentSolves.length} Solves`;
+
+            if (currentSolves.length > 0) {
+                const times = currentSolves.map(s => s.time);
+                const best = Math.min(...times);
+                statBest.innerText = formatTime(best);
+
+                statMo3.innerText = currentSolves.length >= 3 ? formatTime(calculateMoN(times, 3)) : '-';
+                statAo3.innerText = currentSolves.length >= 3 ? formatTime(calculateAoN(times, 3)) : '-';
+                statAo5.innerText = currentSolves.length >= 5 ? formatTime(calculateAoN(times, 5)) : '-';
+                statAo12.innerText = currentSolves.length >= 12 ? formatTime(calculateAoN(times, 12)) : '-';
+                statAo50.innerText = currentSolves.length >= 50 ? formatTime(calculateAoN(times, 50)) : '-';
+                statAo100.innerText = currentSolves.length >= 100 ? formatTime(calculateAoN(times, 100)) : '-';
+            } else {
+                statBest.innerText = '-';
+                statMo3.innerText = '-';
+                statAo3.innerText = '-';
+                statAo5.innerText = '-';
+                statAo12.innerText = '-';
+                statAo50.innerText = '-';
+                statAo100.innerText = '-';
+            }
+
+            timerDisplay.innerText = '0.00';
+            statusIndicator.innerText = 'TAP & HOLD SCREEN OR SPACEBAR';
+            statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500';
+
+            drawTrendChart(currentSolves);
+        }
+
+        window.deleteSolve = function(index) {
+            if (sessions[currentSessionId] && sessions[currentSessionId].solves[index]) {
+                sessions[currentSessionId].solves.splice(index, 1);
+                saveStorage();
+                updateUI();
+            }
+        };
+
+        function calculateMoN(times, n) {
+            const subset = times.slice(0, n);
+            const sum = subset.reduce((a, b) => a + b, 0);
+            return sum / n;
+        }
+
+        function calculateAoN(times, n) {
+            const subset = times.slice(0, n).sort((a, b) => a - b);
+            const trimmed = subset.slice(1, n - 1);
+            const sum = trimmed.reduce((a, b) => a + b, 0);
+            return sum / trimmed.length;
+        }
+
+        function drawTrendChart(solves) {
+            const canvas = trendCanvas;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (!solves || solves.length === 0) return;
+
+            const recentSolves = solves.slice(0, 20).reverse();
+            if (recentSolves.length < 2) return;
+
+            const times = recentSolves.map(s => s.time);
+            const minTime = Math.min(...times);
+            const maxTime = Math.max(...times);
+            const range = maxTime - minTime || 1;
+
+            const padding = 15;
+            const w = canvas.width - padding * 2;
+            const h = canvas.height - padding * 2;
+
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            recentSolves.forEach((solve, i) => {
+                const x = padding + (i / (recentSolves.length - 1)) * w;
+                const y = canvas.height - padding - ((solve.time - minTime) / range) * h;
+
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+
+            ctx.stroke();
+        }
     </script>
 </body>
 </html>
