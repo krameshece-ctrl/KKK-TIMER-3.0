@@ -1,960 +1,1297 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>KKK Timer</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
-        
-        :root {
-            --bg-dark: #09090b;
-            --panel-bg: #18181b;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --accent-yellow: #f59e0b;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>KKK Timer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
 
-        * {
-            -webkit-tap-highlight-color: transparent;
-            box-sizing: border-box;
-        }
+:root {
+    --bg-dark: #09090b;
+    --panel-bg: #18181b;
+    --accent-green: #10b981;
+    --accent-red: #ef4444;
+    --accent-yellow: #f59e0b;
+    --text-main: #f4f4f5;
+    --text-muted: #a1a1aa;
+    --border-main: #27272a;
+    --card-bg: #18181b;
+}
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: #f4f4f5;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            overflow: hidden;
-            height: 100vh;
-            height: 100dvh; /* Dynamic viewport height for mobile browsers */
-            width: 100vw;
-        }
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
 
-        .font-mono-timer {
-            font-family: 'JetBrains Mono', monospace;
-        }
+body {
+    font-family:'Inter',sans-serif;
+    background:var(--bg-dark);
+    color:var(--text-main);
+    user-select:none; -webkit-user-select:none;
+    touch-action:manipulation;
+    overflow:hidden; height:100vh; height:100dvh; width:100vw;
+    transition: background-color .25s ease, color .25s ease;
+}
 
-        .holding { color: var(--accent-red) !important; }
-        .ready { color: var(--accent-green) !important; }
-        .inspecting { color: var(--accent-yellow) !important; }
+.font-mono-timer { font-family:'JetBrains Mono',monospace; }
+.holding { color:var(--accent-red)!important; }
+.ready { color:var(--accent-green)!important; }
+.inspecting { color:var(--accent-yellow)!important; }
 
-        /* Custom Scrollbars */
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #18181b;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #3f3f46;
-            border-radius: 4px;
-        }
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:var(--panel-bg); }
+::-webkit-scrollbar-thumb { background:#3f3f46; border-radius:4px; }
+.no-scrollbar::-webkit-scrollbar { display:none; }
+.no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
 
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-    </style>
+@keyframes slideUp { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+.slide-up { animation: slideUp .2s ease-out; }
+.stat-card-clickable { cursor:pointer; transition:all .15s ease; }
+.stat-card-clickable:hover { background:rgba(16,185,129,.15); border-color:rgba(16,185,129,.5); }
+.stat-card-clickable:active { transform:scale(.96); }
+.chat-bubble { max-width:88%; padding:8px 12px; border-radius:12px; font-size:12px; line-height:1.45; word-wrap:break-word; }
+.chat-user { background:var(--accent-green); color:#052e16; margin-left:auto; border-bottom-right-radius:2px; }
+.chat-bot { background:#27272a; color:#e4e4e7; margin-right:auto; border-bottom-left-radius:2px; }
+
+/* Theme-specific overrides applied via data attribute on body */
+body[data-theme] .bg-zinc-950,
+body[data-theme] .bg-zinc-900,
+body[data-theme] .bg-zinc-900\/60,
+body[data-theme] .bg-zinc-900\/80,
+body[data-theme] .bg-zinc-900\/90,
+body[data-theme] .bg-zinc-950\/40 {
+    background-color: var(--bg-dark) !important;
+}
+body[data-theme] .bg-zinc-800,
+body[data-theme] .bg-zinc-800\/40,
+body[data-theme] .bg-zinc-800\/50,
+body[data-theme] .bg-zinc-800\/60,
+body[data-theme] .bg-zinc-800\/80 {
+    background-color: var(--panel-bg) !important;
+}
+body[data-theme] .border-zinc-800,
+body[data-theme] .border-zinc-800\/60,
+body[data-theme] .border-zinc-800\/80,
+body[data-theme] .border-zinc-700\/50,
+body[data-theme] .border-zinc-700\/70,
+body[data-theme] .border-zinc-700 {
+    border-color: var(--border-main) !important;
+}
+body[data-theme] .text-emerald-400 { color: var(--accent-green) !important; }
+body[data-theme] .bg-emerald-600,
+body[data-theme] .bg-emerald-700,
+body[data-theme] .bg-emerald-800,
+body[data-theme] .bg-emerald-500 { background-color: var(--accent-green) !important; }
+body[data-theme] .hover\:bg-emerald-500:hover,
+body[data-theme] .hover\:bg-emerald-600:hover,
+body[data-theme] .hover\:bg-emerald-700:hover { background-color: var(--accent-green) !important; filter:brightness(1.1); }
+body[data-theme] .text-emerald-200,
+body[data-theme] .text-emerald-100,
+body[data-theme] .text-emerald-300 { color: #ffffff !important; }
+body[data-theme] .bg-blue-700 { background-color: var(--accent-yellow) !important; }
+body[data-theme] .hover\:bg-blue-600:hover { background-color: var(--accent-yellow) !important; filter:brightness(1.15); }
+body[data-theme] .bg-red-900\/60,
+body[data-theme] .bg-red-600 { background-color: var(--accent-red) !important; }
+body[data-theme] .hover\:bg-red-600:hover { background-color: var(--accent-red) !important; filter:brightness(1.15); }
+body[data-theme] .border-emerald-800\/50,
+body[data-theme] .border-emerald-500\/50,
+body[data-theme] .border-emerald-600\/50 { border-color: var(--accent-green) !important; }
+body[data-theme] .bg-emerald-950 { background-color: rgba(0,0,0,.35) !important; color: var(--accent-green) !important; }
+
+/* Settings tabs - FIXED visibility */
+.tab-btn {
+    color: #d4d4d8 !important;
+    background-color: #27272a;
+    transition: all .15s ease;
+}
+.tab-btn:hover {
+    color: #ffffff !important;
+    background-color: #3f3f46;
+}
+.tab-btn.active {
+    color: var(--accent-green) !important;
+    background-color: rgba(16,185,129,.15) !important;
+    border-bottom-color: var(--accent-green) !important;
+}
+
+/* Theme grid card */
+.theme-card {
+    cursor: pointer;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: all .15s ease;
+}
+.theme-card:hover { transform: scale(1.04); }
+.theme-card.active { border-color: var(--accent-green) !important; box-shadow: 0 0 0 2px rgba(16,185,129,.3); }
+</style>
 </head>
-<body class="flex flex-col justify-between bg-zinc-950 text-zinc-100 overflow-hidden select-none">
+<body data-theme="default" class="flex flex-col justify-between text-zinc-100 overflow-hidden select-none">
 
-    <!-- TOP HEADER BAR -->
-    <header class="w-full bg-zinc-900/90 border-b border-zinc-800/80 px-3 sm:px-6 py-2 flex items-center justify-between shrink-0 z-30 backdrop-blur-md">
-        <!-- Top Left: Name & Settings Button -->
-        <div class="flex items-center space-x-2">
-            <span class="font-extrabold text-sm sm:text-base text-emerald-400 tracking-wide whitespace-nowrap">K.Krithik</span>
-            <button id="settings-btn" title="Settings" class="p-1.5 sm:p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95 cursor-pointer border border-zinc-700/50">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-            </button>
-        </div>
-
-        <!-- Top Center: Timer Title -->
-        <div class="text-center px-1">
-            <h1 class="text-xl sm:text-2xl font-black tracking-widest text-white uppercase drop-shadow">KKK</h1>
-        </div>
-
-        <!-- Top Right: Session Selection -->
-        <div class="flex items-center space-x-1.5">
-            <select id="session-select" class="bg-zinc-800 text-xs sm:text-sm text-zinc-200 border border-zinc-700/70 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-emerald-500 max-w-[100px] sm:max-w-[160px] truncate">
-                <!-- Dynamically populated -->
-            </select>
-            <button id="add-session-btn" title="Create New Session" class="p-1 sm:p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition active:scale-95 shadow">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-            </button>
-            <button id="delete-session-btn" title="Delete Current Session" class="p-1 sm:p-1.5 rounded-lg bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white transition active:scale-95">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-            </button>
-        </div>
-    </header>
-
-    <!-- MAIN RESPONSIVE CONTAINER -->
-    <div class="flex-grow flex flex-col md:flex-row overflow-hidden relative w-full">
-
-        <!-- STATS & SOLVES SIDEBAR -->
-        <aside class="w-full md:w-80 bg-zinc-900/60 border-b md:border-b-0 md:border-r border-zinc-800/80 p-2.5 sm:p-3 flex flex-col justify-between overflow-y-auto shrink-0 z-10 max-h-[38vh] md:max-h-none">
-            <div>
-                <!-- Statistics Header -->
-                <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-zinc-800">
-                    <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider">Statistics</h2>
-                    <span id="stat-count-badge" class="text-[10px] bg-emerald-950 text-emerald-400 font-bold px-2 py-0.5 rounded-full border border-emerald-800/50">0 Solves</span>
-                </div>
-
-                <!-- Stats Grid -->
-                <div class="grid grid-cols-4 md:grid-cols-2 gap-1 text-xs mb-2.5">
-                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Best</span> <span id="stat-best" class="font-bold font-mono text-emerald-400 text-xs">-</span></div>
-                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Mo3</span> <span id="stat-mo3" class="font-bold font-mono text-xs">-</span></div>
-                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao3</span> <span id="stat-ao3" class="font-bold font-mono text-xs">-</span></div>
-                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao5</span> <span id="stat-ao5" class="font-bold font-mono text-xs">-</span></div>
-                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao12</span> <span id="stat-ao12" class="font-bold font-mono text-xs">-</span></div>
-                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao50</span> <span id="stat-ao50" class="font-bold font-mono text-xs">-</span></div>
-                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao100</span> <span id="stat-ao100" class="font-bold font-mono text-xs">-</span></div>
-                    <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Count</span> <span id="stat-count" class="font-bold font-mono text-xs">0</span></div>
-                </div>
-
-                <!-- SOLVE TREND CANVAS -->
-                <div class="mb-2">
-                    <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1 pb-1 border-b border-zinc-800">Solve Trend</h2>
-                    <div class="bg-zinc-900/80 p-2 rounded-lg border border-zinc-800/80 h-20 sm:h-28 w-full relative flex items-end">
-                        <canvas id="trendCanvas" class="w-full h-full block"></canvas>
-                    </div>
-                </div>
-
-                <!-- Solve History List -->
-                <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1 pb-1 border-b border-zinc-800">Session Solves</h2>
-                <div id="solves-list" class="space-y-1 max-h-20 md:max-h-48 overflow-y-auto pr-1">
-                    <!-- Dynamic Solve Rows -->
-                </div>
-            </div>
-        </aside>
-
-        <!-- MAIN TIMER TOUCH-PAD WORKSPACE -->
-        <main id="main-timer" class="flex-grow flex flex-col justify-between items-center p-3 sm:p-6 text-center relative select-none cursor-pointer w-full bg-zinc-950/40">
-            
-            <!-- Scramble Display Area -->
-            <div class="w-full max-w-3xl my-auto pointer-events-none px-2">
-                <div id="scramble" class="text-sm sm:text-lg md:text-xl font-mono font-medium tracking-wide text-zinc-200 bg-zinc-900/90 p-3 sm:p-4 rounded-xl border border-zinc-800/80 shadow-2xl break-words min-h-[3.5rem] flex items-center justify-center leading-relaxed">
-                    Generating scramble...
-                </div>
-            </div>
-
-            <!-- Main Timer Display -->
-            <div class="my-auto pointer-events-none py-2">
-                <div id="timer-display" class="text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75">
-                    0.00
-                </div>
-                <div id="status-indicator" class="text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500">
-                    TAP & HOLD SCREEN OR SPACEBAR
-                </div>
-            </div>
-
-            <!-- Help Instructions -->
-            <div id="instructions" class="text-xs text-zinc-500 my-auto pointer-events-none">
-                <span class="hidden sm:inline">Hold <kbd class="px-2 py-0.5 bg-zinc-800 rounded border border-zinc-700 text-zinc-300 font-mono">SPACEBAR</kbd> for 0.5s until green, then release to start.</span>
-                <span class="inline sm:hidden">Touch & hold screen for 0.5s until green, then release to start.</span>
-            </div>
-        </main>
+<!-- HEADER -->
+<header class="w-full bg-zinc-900/90 border-b border-zinc-800/80 px-3 sm:px-6 py-2 flex items-center justify-between shrink-0 z-30 backdrop-blur-md">
+    <div class="flex items-center space-x-1.5 sm:space-x-2">
+        <span class="font-extrabold text-sm sm:text-base text-emerald-400 tracking-wide whitespace-nowrap">K.Krithik</span>
+        <button id="settings-btn" title="Settings" class="p-1.5 sm:p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95 cursor-pointer border border-zinc-700/50">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </button>
+        <button id="assistant-btn" title="Assistant" class="p-1.5 sm:p-2 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-emerald-200 hover:text-white transition active:scale-95 border border-emerald-600/50">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+        </button>
     </div>
-
-    <!-- MUSICS BOX WITH SIDE SCROLL CONTROLS -->
-    <div class="w-full bg-zinc-900 border-t border-zinc-800/80 px-3 py-2 flex flex-col sm:flex-row items-center justify-between z-20 shrink-0 gap-2">
-        <div class="flex items-center space-x-2 shrink-0">
-            <span class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">Musics (50)</span>
-            <button id="music-off-btn" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white transition active:scale-95 shadow">Turn Off</button>
-        </div>
-        
-        <!-- Music Selector Container with Side Scroll Buttons -->
-        <div class="flex items-center space-x-1.5 w-full max-w-full overflow-hidden px-1">
-            <button id="scroll-left-btn" class="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95 shrink-0 border border-zinc-700/50" title="Scroll Left">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-            </button>
-            
-            <div class="flex items-center space-x-1.5 overflow-x-auto scroll-smooth py-1 flex-grow no-scrollbar" id="music-selector">
-                <!-- Dynamically generated 50 music tracks -->
-            </div>
-
-            <button id="scroll-right-btn" class="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95 shrink-0 border border-zinc-700/50" title="Scroll Right">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-            </button>
-        </div>
+    <div class="text-center px-1"><h1 class="text-xl sm:text-2xl font-black tracking-widest text-white uppercase drop-shadow">KKK</h1></div>
+    <div class="flex items-center space-x-1 sm:space-x-1.5">
+        <select id="session-select" class="bg-zinc-800 text-xs sm:text-sm text-zinc-200 border border-zinc-700/70 rounded-lg px-1.5 py-1 focus:outline-none focus:ring-1 focus:ring-emerald-500 max-w-[90px] sm:max-w-[160px] truncate"></select>
+        <button id="share-session-btn" title="Share Session" class="p-1 sm:p-1.5 rounded-lg bg-blue-700 hover:bg-blue-600 text-white transition active:scale-95 shadow">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+        </button>
+        <button id="add-session-btn" title="Create New Session" class="p-1 sm:p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition active:scale-95 shadow">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        </button>
+        <button id="delete-session-btn" title="Delete Current Session" class="p-1 sm:p-1.5 rounded-lg bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white transition active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>
     </div>
+</header>
 
-    <!-- FIXED CUBE TYPES BOTTOM BAR -->
-    <footer class="w-full bg-zinc-900 border-t border-zinc-800/80 px-2 py-2 flex justify-center items-center z-20 shrink-0">
-        <div class="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto no-scrollbar max-w-full px-2" id="cube-selector">
-            <button data-cube="3*3" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-emerald-600 text-white transition active:scale-95 shadow">3*3</button>
-            <button data-cube="4*4" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">4*4</button>
-            <button data-cube="5*5" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">5*5</button>
-            <button data-cube="6*6" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">6*6</button>
-            <button data-cube="7*7" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">7*7</button>
-            <button data-cube="2*2" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">2*2</button>
-            <button data-cube="Skewb" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">Skewb</button>
+<div class="flex-grow flex flex-col md:flex-row overflow-hidden relative w-full">
+    <aside class="w-full md:w-80 bg-zinc-900/60 border-b md:border-b-0 md:border-r border-zinc-800/80 p-2.5 sm:p-3 flex flex-col justify-between overflow-y-auto shrink-0 z-10 max-h-[38vh] md:max-h-none">
+        <div>
+            <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-zinc-800">
+                <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider">Statistics</h2>
+                <span id="stat-count-badge" class="text-[10px] bg-emerald-950 text-emerald-400 font-bold px-2 py-0.5 rounded-full border border-emerald-800/50">0 Solves</span>
+            </div>
+            <div class="grid grid-cols-4 md:grid-cols-2 gap-1 text-xs mb-2.5">
+                <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Best</span> <span id="stat-best" class="font-bold font-mono text-emerald-400 text-xs">-</span></div>
+                <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Mo3</span> <span id="stat-mo3" class="font-bold font-mono text-xs">-</span></div>
+                <div class="stat-card-clickable bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800" data-stat="ao3"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao3</span> <span id="stat-ao3" class="font-bold font-mono text-xs">-</span></div>
+                <div class="stat-card-clickable bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800" data-stat="ao5"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao5</span> <span id="stat-ao5" class="font-bold font-mono text-xs">-</span></div>
+                <div class="stat-card-clickable bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800" data-stat="ao12"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao12</span> <span id="stat-ao12" class="font-bold font-mono text-xs">-</span></div>
+                <div class="stat-card-clickable bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800" data-stat="ao50"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao50</span> <span id="stat-ao50" class="font-bold font-mono text-xs">-</span></div>
+                <div class="stat-card-clickable bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800" data-stat="ao100"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao100</span> <span id="stat-ao100" class="font-bold font-mono text-xs">-</span></div>
+                <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Count</span> <span id="stat-count" class="font-bold font-mono text-xs">0</span></div>
+            </div>
+            <div class="mb-2">
+                <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1 pb-1 border-b border-zinc-800">Solve Trend</h2>
+                <div class="bg-zinc-900/80 p-2 rounded-lg border border-zinc-800/80 h-20 sm:h-28 w-full relative flex items-end">
+                    <canvas id="trendCanvas" class="w-full h-full block"></canvas>
+                </div>
+            </div>
+            <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1 pb-1 border-b border-zinc-800">Session Solves</h2>
+            <div id="solves-list" class="space-y-1 max-h-20 md:max-h-48 overflow-y-auto pr-1"></div>
         </div>
-    </footer>
+    </aside>
 
-    <!-- SETTINGS MODAL DIALOG -->
-    <div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 hidden">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden">
-            <!-- Modal Header -->
-            <div class="p-3.5 sm:p-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-950">
-                <h3 class="text-base sm:text-lg font-bold text-white">Settings</h3>
-                <button id="close-modal-btn" class="text-zinc-400 hover:text-white p-1 rounded-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+    <main id="main-timer" class="flex-grow flex flex-col justify-between items-center p-3 sm:p-6 text-center relative select-none cursor-pointer w-full bg-zinc-950/40">
+        <div class="w-full max-w-3xl my-auto px-2">
+            <div class="flex items-center justify-center space-x-2 mb-2">
+                <button id="prev-scramble-btn" title="Previous Scramble" class="p-1.5 sm:p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95 border border-zinc-700/50">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <span id="scramble-index" class="text-[10px] sm:text-xs text-zinc-500 font-mono font-bold">1 / 1</span>
+                <button id="next-scramble-btn" title="Next Scramble" class="p-1.5 sm:p-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white transition active:scale-95 border border-emerald-500/50">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </button>
             </div>
+            <div id="scramble" class="text-sm sm:text-lg md:text-xl font-mono font-medium tracking-wide text-zinc-200 bg-zinc-900/90 p-3 sm:p-4 rounded-xl border border-zinc-800/80 shadow-2xl break-words min-h-[3.5rem] flex items-center justify-center leading-relaxed pointer-events-none">Generating scramble...</div>
+        </div>
+        <div class="my-auto pointer-events-none py-2">
+            <div id="timer-display" class="text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75">0.00</div>
+            <div id="status-indicator" class="text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500">TAP & HOLD SCREEN OR SPACEBAR</div>
+        </div>
+        <div id="instructions" class="text-xs text-zinc-500 my-auto pointer-events-none">
+            <span class="hidden sm:inline">Hold <kbd class="px-2 py-0.5 bg-zinc-800 rounded border border-zinc-700 text-zinc-300 font-mono">SPACEBAR</kbd> for 0.5s until green, then release.</span>
+            <span class="inline sm:hidden">Touch & hold for 0.5s until green, then release.</span>
+        </div>
+    </main>
+</div>
 
-            <!-- Modal Navigation Tabs -->
-            <div class="flex border-b border-zinc-800 bg-zinc-900 overflow-x-auto no-scrollbar">
-                <button data-tab="about" class="tab-btn px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-emerald-400 border-b-2 border-emerald-500 whitespace-nowrap focus:outline-none">ABOUT</button>
-                <button data-tab="shortcuts" class="tab-btn px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 whitespace-nowrap focus:outline-none">Keyboard Shortcuts</button>
-                <button data-tab="features" class="tab-btn px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 whitespace-nowrap focus:outline-none">Enable Features</button>
+<div class="w-full bg-zinc-900 border-t border-zinc-800/80 px-3 py-2 flex flex-col sm:flex-row items-center justify-between z-20 shrink-0 gap-2">
+    <div class="flex items-center space-x-2 shrink-0">
+        <span class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">Musics (50)</span>
+        <button id="music-off-btn" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white transition active:scale-95 shadow">Turn Off</button>
+    </div>
+    <div class="flex items-center space-x-1.5 w-full max-w-full overflow-hidden px-1">
+        <button id="scroll-left-btn" class="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95 shrink-0 border border-zinc-700/50" title="Scroll Left">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="flex items-center space-x-1.5 overflow-x-auto scroll-smooth py-1 flex-grow no-scrollbar" id="music-selector"></div>
+        <button id="scroll-right-btn" class="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95 shrink-0 border border-zinc-700/50" title="Scroll Right">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+    </div>
+</div>
+
+<footer class="w-full bg-zinc-900 border-t border-zinc-800/80 px-2 py-2 flex justify-center items-center z-20 shrink-0">
+    <div class="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto no-scrollbar max-w-full px-2" id="cube-selector">
+        <button data-cube="3*3" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-emerald-600 text-white transition active:scale-95 shadow">3*3</button>
+        <button data-cube="4*4" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">4*4</button>
+        <button data-cube="5*5" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">5*5</button>
+        <button data-cube="6*6" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">6*6</button>
+        <button data-cube="7*7" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">7*7</button>
+        <button data-cube="2*2" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">2*2</button>
+        <button data-cube="Skewb" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">Skewb</button>
+    </div>
+</footer>
+
+<!-- SETTINGS MODAL -->
+<div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 hidden">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden">
+        <div class="p-3.5 sm:p-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-950">
+            <h3 class="text-base sm:text-lg font-bold text-white">Settings</h3>
+            <button id="close-modal-btn" class="text-zinc-400 hover:text-white p-1 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="flex border-b border-zinc-800 bg-zinc-950 overflow-x-auto no-scrollbar">
+            <button data-tab="about" class="tab-btn active px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap focus:outline-none border-b-2 border-transparent">ABOUT</button>
+            <button data-tab="shortcuts" class="tab-btn px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap focus:outline-none border-b-2 border-transparent">Shortcuts</button>
+            <button data-tab="features" class="tab-btn px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap focus:outline-none border-b-2 border-transparent">Features</button>
+            <button data-tab="theme" class="tab-btn px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap focus:outline-none border-b-2 border-transparent">🎨 Theme</button>
+        </div>
+        <div class="p-4 sm:p-6 overflow-y-auto space-y-4 text-zinc-300 text-xs sm:text-sm flex-grow">
+            <div id="tab-about" class="tab-content space-y-3 leading-relaxed text-zinc-200">
+                <p style="color:red">Introduction</p>
+                <p>Hello everyone. Welcome to my KKK timer. This is completely made by me. This is a free web tool where you can improve and record your times. I am glad that this timer could help you.</p>
+                <p>Take this timer as motivation. Please use this timer correctly and purposefully.</p>
+                <p>I made this timer inspired by cs timer. although this timer is not complex as cs timer, you can use this for practices. I hope you will find this as one of the best timer.</p>
+                <p>I am boy who is curious about everything. If you want to know more about me please open or copy paste the link given below</p>
+                <p>https://krameshece-ctrl.github.io/About-me./</p>
+                <p style="color:red">Using instructions</p>
+                <p style="color:yellow">using the timer</p>
+                <p>mobile users</p>
+                <p>I am going to explain how to start and stop the timer for mobile users here. Scramble the cube exactly as per given above. hold the timer for 0.5sec. When you see green light, you can release and start solving your cube. After solving your cube press anywhere to stop the timer.</p>
+                <p>computer or laptop users</p>
+                <p>I am going to explain how to start ans stop the timer for computer or laptop users here. Scramble the cube exactly as per given above. Click your mouse in the timerto start the timer. You can release and solve the cube when you see grrn light. After solving the cube, click anywhere to stop the timer.</p>
+                <p style="color:yellow">music controls</p>
+                <p>You have 50 music to choose. You can choose the music and solve peacefully</p>
+                <p>This is for cubers who don't like music or need to solveconcentrated without music. Please click the off button and continue solving</p>
+                <p style="color:yellow">sessions instructions</p>
+                <p>You can name or change the name of the session. You can also go to the new session for differenciation. You can continue different cubes in different sesssions.</p>
+                <p style="color:yellow">different cubes</p>
+                <p>There are different cube types in this website. Choose the cube type you are going to practice</p>
+                <p style="color:yellow">inspection time</p>
+                <p> Please go to the settings. Please click enable features and click inpection time if you want inspection time. You can turn off if you really don't want.</p>
             </div>
-
-            <!-- Modal Content Panels -->
-            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 text-zinc-300 text-xs sm:text-sm flex-grow">
-                
-                <!-- CATEGORY 1: ABOUT TAB -->
-                <div id="tab-about" class="tab-content space-y-3 leading-relaxed text-zinc-200">
-                    <p style=color:red>Introduction</p>
-                    <p>Hello everyone. Welcome to my KKK timer. This is completely made by me. This is a free web tool where you can improve and record your times. I am glad that this timer could help you.</p>
-                    <p>Take this timer as motivation. Please use this timer correctly and purposefully.</p>
-                    <p>I made this timer inspired by cs timer. although this timer is not complex as cs timer, you can use this for practices. I hope you will find this as one of the best timer.</p>
-                    <p>I am boy who is curious about everything. If you want to know more about me please open or copy paste the link given below</p>
-                    <p>https://krameshece-ctrl.github.io/About-me./</p>
-                    <p style=color:red>Using instructions</p>
-                    <p style=color:yellow>using the timer</p>
-                    <p>mobile users</p>
-                    <p>I am going to explain how to start and stop the timer for mobile users here. Scramble the cube exactly as per given above. hold the timer for 0.5sec. When you see green light, you can release and start solving your cube. After solving your cube press anywhere to stop the timer.</p>
-                    <p>computer or laptop users</p>
-                    <p>I am going to explain how to start ans stop the timer for computer or laptop users here. Scramble the cube exactly as per given above. Click your mouse in the timerto start the timer. You can release and solve the cube when you see grrn light. After solving the cube, click anywhere to stop the timer.</p>
-                    <p style=color:yellow>music controls</p>
-                    <p>You have 50 music to choose. You can choose the music and solve peacefully</p>
-                    <p>This is for cubers who don't like music or need to solveconcentrated without music. Please click the off button and continue solving</p>
-                    <p style=color:yellow>sessions instructions</p>
-                    <p>You can name or change the name of the session. You can also go to the new session for differenciation. You can continue different cubes in different sesssions.</p>
-                    <p style=color:yellow>different cubes</p>
-                    <p>There are different cube types in this website. Choose the cube type you are going to practice</p>
-                    <p style=color:yellow>inspection time</p>
-                    <p> Please go to the settings. Please click enable features and click inpection time if you want inspection time. You can turn off if you really don't want.</p>
+            <div id="tab-shortcuts" class="tab-content hidden space-y-3">
+                <h4 class="font-bold text-emerald-400 border-b border-zinc-800 pb-1">PC Keyboard Controls</h4>
+                <div class="flex justify-between items-center py-1"><span>Hold Spacebar (0.5s)</span><kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-200 font-mono">Arm Timer</kbd></div>
+                <div class="flex justify-between items-center py-1"><span>Release Spacebar</span><kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-200 font-mono">Start Solve / Inspection</kbd></div>
+                <div class="flex justify-between items-center py-1 border-b border-zinc-800 pb-2"><span>Press Any Key</span><kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-200 font-mono">Stop Timer</kbd></div>
+                <h4 class="font-bold text-emerald-400 border-b border-zinc-800 pb-1 pt-2">Mobile Touch Controls</h4>
+                <div class="flex justify-between items-center py-1"><span>Touch & Hold Screen (0.5s)</span><span class="text-xs text-zinc-400">Arm Timer (Red -> Green)</span></div>
+                <div class="flex justify-between items-center py-1"><span>Release Finger</span><span class="text-xs text-zinc-400">Start Solve / Inspection</span></div>
+                <div class="flex justify-between items-center py-1"><span>Tap Anywhere While Running</span><span class="text-xs text-zinc-400">Stop Timer Instantly</span></div>
+            </div>
+            <div id="tab-features" class="tab-content hidden space-y-4">
+                <div class="flex items-center justify-between p-3.5 bg-zinc-800/50 rounded-xl border border-zinc-700/50">
+                    <div>
+                        <div class="font-semibold text-white">15s Inspection Time</div>
+                        <div class="text-xs text-zinc-400 mt-0.5">Counts down 15 seconds before starting solve</div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggle-inspection" class="sr-only peer">
+                        <div class="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                    </label>
                 </div>
-
-                <!-- CATEGORY 2: SHORTCUTS TAB -->
-                <div id="tab-shortcuts" class="tab-content hidden space-y-3">
-                    <h4 class="font-bold text-emerald-400 border-b border-zinc-800 pb-1">PC Keyboard Controls</h4>
-                    <div class="flex justify-between items-center py-1">
-                        <span>Hold Spacebar (0.5s)</span>
-                        <kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-200 font-mono">Arm Timer</kbd>
-                    </div>
-                    <div class="flex justify-between items-center py-1">
-                        <span>Release Spacebar</span>
-                        <kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-200 font-mono">Start Solve / Inspection</kbd>
-                    </div>
-                    <div class="flex justify-between items-center py-1 border-b border-zinc-800 pb-2">
-                        <span>Press Any Key</span>
-                        <kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-200 font-mono">Stop Timer</kbd>
-                    </div>
-
-                    <h4 class="font-bold text-emerald-400 border-b border-zinc-800 pb-1 pt-2">Mobile Touch Controls</h4>
-                    <div class="flex justify-between items-center py-1">
-                        <span>Touch & Hold Screen (0.5s)</span>
-                        <span class="text-xs text-zinc-400">Arm Timer (Red -> Green)</span>
-                    </div>
-                    <div class="flex justify-between items-center py-1">
-                        <span>Release Finger</span>
-                        <span class="text-xs text-zinc-400">Start Solve / Inspection</span>
-                    </div>
-                    <div class="flex justify-between items-center py-1">
-                        <span>Tap Anywhere While Running</span>
-                        <span class="text-xs text-zinc-400">Stop Timer Instantly</span>
-                    </div>
-                </div>
-
-                <!-- CATEGORY 3: ENABLE FEATURES TAB -->
-                <div id="tab-features" class="tab-content hidden space-y-4">
-                    <div class="flex items-center justify-between p-3.5 bg-zinc-800/50 rounded-xl border border-zinc-700/50">
-                        <div>
-                            <div class="font-semibold text-white">15s Inspection Time</div>
-                            <div class="text-xs text-zinc-400 mt-0.5">Counts down 15 seconds before starting solve</div>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="toggle-inspection" class="sr-only peer">
-                            <div class="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
-                        </label>
-                    </div>
-                </div>
-
+            </div>
+            <div id="tab-theme" class="tab-content hidden space-y-3">
+                <p class="text-xs text-zinc-400">Pick a color theme. Your choice is saved automatically.</p>
+                <div id="theme-grid" class="grid grid-cols-3 sm:grid-cols-5 gap-2"></div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- JAVASCRIPT APPLICATION LOGIC -->
-    <script>
-        // State Variables
-        let timerState = 'IDLE'; // IDLE, HOLDING, READY, INSPECTING, RUNNING
-        let startTime = 0;
-        let elapsedInterval = null;
-        let holdTimeout = null;
-        let inspectionInterval = null;
-        let inspectionTimeLeft = 15;
-        let inspectionEnabled = false;
+<!-- SHARE MODAL -->
+<div id="share-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 hidden">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden slide-up">
+        <div class="p-3.5 sm:p-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-950">
+            <h3 class="text-base sm:text-lg font-bold text-white">Share Session</h3>
+            <button id="close-share-btn" class="text-zinc-400 hover:text-white p-1 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="p-4 overflow-y-auto">
+            <p class="text-xs text-zinc-400 mb-3">Choose an app to share your session to:</p>
+            <div id="share-apps-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5"></div>
+            <button id="share-more-btn" class="mt-4 w-full py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-bold transition active:scale-95">More Options...</button>
+            <button id="share-copy-btn" class="mt-2 w-full py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-sm font-bold transition active:scale-95">Copy to Clipboard</button>
+        </div>
+    </div>
+</div>
 
-        let currentCube = '3*3';
-        let currentSessionId = 'default_3*3';
-        let sessions = {};
+<!-- ASSISTANT PANEL -->
+<div id="assistant-panel" class="fixed bottom-16 right-3 w-[320px] sm:w-[360px] bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl z-40 hidden flex-col overflow-hidden slide-up" style="max-height:70vh;">
+    <div class="bg-emerald-700 px-3 py-2 flex justify-between items-center shrink-0">
+        <div class="flex items-center space-x-2">
+            <div class="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center font-bold text-white text-sm">A</div>
+            <div>
+                <div class="text-white font-bold text-sm">Assistant</div>
+                <div class="text-[10px] text-white/80">Cube expert • Always online</div>
+            </div>
+        </div>
+        <button id="close-assistant-btn" class="text-white/80 hover:text-white p-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    </div>
+    <div id="chat-messages" class="flex-grow overflow-y-auto p-3 space-y-2 flex flex-col" style="min-height:200px;"></div>
+    <div class="p-2 border-t border-zinc-800 bg-zinc-950 flex items-center space-x-1.5 shrink-0">
+        <input id="chat-input" type="text" placeholder="Ask about the scramble or tips..." class="flex-grow bg-zinc-800 text-zinc-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 border border-zinc-700">
+        <button id="chat-send-btn" class="p-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition active:scale-95">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+        </button>
+    </div>
+</div>
 
-        // DOM References
-        const timerDisplay = document.getElementById('timer-display');
-        const statusIndicator = document.getElementById('status-indicator');
-        const scrambleDisplay = document.getElementById('scramble');
-        const solvesList = document.getElementById('solves-list');
-        const sessionSelect = document.getElementById('session-select');
-        const toggleInspection = document.getElementById('toggle-inspection');
-        const mainTimerArea = document.getElementById('main-timer');
-        const trendCanvas = document.getElementById('trendCanvas');
+<!-- AO DETAILS MODAL -->
+<div id="ao-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 hidden">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden slide-up">
+        <div class="p-3.5 sm:p-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-950">
+            <h3 id="ao-modal-title" class="text-base sm:text-lg font-bold text-white">Ao5 Details</h3>
+            <button id="close-ao-btn" class="text-zinc-400 hover:text-white p-1 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div id="ao-modal-content" class="p-4 overflow-y-auto space-y-2"></div>
+    </div>
+</div>
 
-        // Stats DOM Elements
-        const statCount = document.getElementById('stat-count');
-        const statCountBadge = document.getElementById('stat-count-badge');
-        const statBest = document.getElementById('stat-best');
-        const statMo3 = document.getElementById('stat-mo3');
-        const statAo3 = document.getElementById('stat-ao3');
-        const statAo5 = document.getElementById('stat-ao5');
-        const statAo12 = document.getElementById('stat-ao12');
-        const statAo50 = document.getElementById('stat-ao50');
-        const statAo100 = document.getElementById('stat-ao100');
+<script>
+/* ============ STATE ============ */
+let timerState = 'IDLE';
+let startTime = 0;
+let elapsedInterval = null;
+let holdTimeout = null;
+let inspectionInterval = null;
+let inspectionTimeLeft = 15;
+let inspectionEnabled = false;
 
-        window.onload = function() {
-            loadStorage();
-            setupCubeSelectors();
-            setupMusicPlayer();
-            setupUnifiedInputListeners();
-            setupSettingsModal();
-            generateScramble();
-            updateUI();
-            
-            window.addEventListener('resize', () => {
-                const currentSolves = sessions[currentSessionId] ? sessions[currentSessionId].solves : [];
-                drawTrendChart(currentSolves);
-            });
-        };
+let currentCube = '3*3';
+let currentSessionId = 'default_3*3';
+let sessions = {};
 
-        // Persistent Storage
-        function loadStorage() {
-            const stored = localStorage.getItem('kkk_timer_sessions_v4');
-            if (stored) {
-                try { sessions = JSON.parse(stored); } catch(e) { sessions = {}; }
+let scrambleHistory = [];
+let scrambleHistoryIndex = -1;
+let currentTheme = 'default';
+
+const timerDisplay = document.getElementById('timer-display');
+const statusIndicator = document.getElementById('status-indicator');
+const scrambleDisplay = document.getElementById('scramble');
+const scrambleIndexEl = document.getElementById('scramble-index');
+const solvesList = document.getElementById('solves-list');
+const sessionSelect = document.getElementById('session-select');
+const toggleInspection = document.getElementById('toggle-inspection');
+const mainTimerArea = document.getElementById('main-timer');
+const trendCanvas = document.getElementById('trendCanvas');
+
+const statCount = document.getElementById('stat-count');
+const statCountBadge = document.getElementById('stat-count-badge');
+const statBest = document.getElementById('stat-best');
+const statMo3 = document.getElementById('stat-mo3');
+const statAo3 = document.getElementById('stat-ao3');
+const statAo5 = document.getElementById('stat-ao5');
+const statAo12 = document.getElementById('stat-ao12');
+const statAo50 = document.getElementById('stat-ao50');
+const statAo100 = document.getElementById('stat-ao100');
+
+/* ============ THEMES ============ */
+const THEMES = [
+    { id:'default', name:'Default', bg:'#09090b', panel:'#18181b', accent:'#10b981', red:'#ef4444', yellow:'#f59e0b', border:'#27272a' },
+    { id:'midnight_blue', name:'Midnight Blue', bg:'#0a1428', panel:'#152340', accent:'#3b82f6', red:'#ef4444', yellow:'#f59e0b', border:'#1e3a5f' },
+    { id:'crimson', name:'Crimson', bg:'#1a0808', panel:'#2b0f0f', accent:'#ef4444', red:'#f87171', yellow:'#fbbf24', border:'#450a0a' },
+    { id:'sunset', name:'Sunset', bg:'#1a0f05', panel:'#2d1a0a', accent:'#f97316', red:'#ef4444', yellow:'#fbbf24', border:'#432010' },
+    { id:'forest', name:'Forest', bg:'#051a0f', panel:'#0f2b1a', accent:'#22c55e', red:'#ef4444', yellow:'#fbbf24', border:'#14532d' },
+    { id:'cyberpunk', name:'Cyberpunk', bg:'#0a0416', panel:'#1a0a2e', accent:'#f0abfc', red:'#f43f5e', yellow:'#facc15', border:'#3b0764' },
+    { id:'ocean', name:'Ocean', bg:'#04141a', panel:'#0a2633', accent:'#06b6d4', red:'#f43f5e', yellow:'#fbbf24', border:'#0e4f66' },
+    { id:'royal', name:'Royal Purple', bg:'#0d0520', panel:'#1a0d33', accent:'#a855f7', red:'#f43f5e', yellow:'#facc15', border:'#2e1065' },
+    { id:'rose_gold', name:'Rose Gold', bg:'#1a0a0a', panel:'#2b1414', accent:'#fb7185', red:'#ef4444', yellow:'#fbbf24', border:'#4c1d1d' },
+    { id:'monochrome', name:'Monochrome', bg:'#000000', panel:'#1a1a1a', accent:'#d4d4d4', red:'#a3a3a3', yellow:'#e5e5e5', border:'#333333' },
+    { id:'neon_green', name:'Neon Green', bg:'#000000', panel:'#0a1a0a', accent:'#39ff14', red:'#ff073a', yellow:'#ffea00', border:'#1a3319' },
+    { id:'hot_pink', name:'Hot Pink', bg:'#1a0514', panel:'#2e0a24', accent:'#ec4899', red:'#f43f5e', yellow:'#fbbf24', border:'#500724' },
+    { id:'golden', name:'Golden', bg:'#1a1405', panel:'#2e220a', accent:'#eab308', red:'#ef4444', yellow:'#fbbf24', border:'#4c3809' },
+    { id:'arctic', name:'Arctic', bg:'#0a1420', panel:'#152a3d', accent:'#67e8f9', red:'#f43f5e', yellow:'#fbbf24', border:'#1e4a66' },
+    { id:'emerald_dark', name:'Emerald Dark', bg:'#021a12', panel:'#063d29', accent:'#10b981', red:'#ef4444', yellow:'#fbbf24', border:'#064e3b' },
+    { id:'vampire', name:'Vampire', bg:'#0a0000', panel:'#1a0000', accent:'#dc2626', red:'#f87171', yellow:'#fbbf24', border:'#450a0a' },
+    { id:'steel', name:'Steel Blue', bg:'#0a0f14', panel:'#1a2028', accent:'#94a3b8', red:'#f87171', yellow:'#fbbf24', border:'#334155' },
+    { id:'matrix', name:'Matrix', bg:'#000a00', panel:'#0a1f0a', accent:'#00ff41', red:'#ff073a', yellow:'#ffea00', border:'#0a330a' },
+    { id:'lava', name:'Lava', bg:'#1a0500', panel:'#2e0f00', accent:'#f97316', red:'#dc2626', yellow:'#fbbf24', border:'#4c1d09' },
+    { id:'galaxy', name:'Galaxy', bg:'#0a001a', panel:'#1a0533', accent:'#8b5cf6', red:'#f43f5e', yellow:'#fbbf24', border:'#2e1065' },
+    { id:'coffee', name:'Coffee', bg:'#1a0f0a', panel:'#2e1a14', accent:'#d97706', red:'#ef4444', yellow:'#fbbf24', border:'#4c2518' },
+    { id:'ice', name:'Ice', bg:'#0a1a26', panel:'#14334d', accent:'#7dd3fc', red:'#f43f5e', yellow:'#fbbf24', border:'#1e4a66' },
+    { id:'lime_punch', name:'Lime Punch', bg:'#0a1a05', panel:'#1a3310', accent:'#a3e635', red:'#ef4444', yellow:'#fbbf24', border:'#1a4d0a' },
+    { id:'dusk', name:'Dusk', bg:'#14101a', panel:'#221a2e', accent:'#c084fc', red:'#f43f5e', yellow:'#fbbf24', border:'#2e2438' },
+    { id:'paper', name:'Paper White', bg:'#f4f4f5', panel:'#e4e4e7', accent:'#10b981', red:'#ef4444', yellow:'#f59e0b', border:'#d4d4d8' }
+];
+
+function applyTheme(themeId) {
+    const t = THEMES.find(x => x.id === themeId) || THEMES[0];
+    currentTheme = themeId;
+    document.body.setAttribute('data-theme', themeId);
+    document.documentElement.style.setProperty('--bg-dark', t.bg);
+    document.documentElement.style.setProperty('--panel-bg', t.panel);
+    document.documentElement.style.setProperty('--accent-green', t.accent);
+    document.documentElement.style.setProperty('--accent-red', t.red);
+    document.documentElement.style.setProperty('--accent-yellow', t.yellow);
+    document.documentElement.style.setProperty('--border-main', t.border);
+    // For light theme text handling
+    if (themeId === 'paper') {
+        document.body.style.color = '#18181b';
+    } else {
+        document.body.style.color = '#f4f4f5';
+    }
+    localStorage.setItem('kkk_theme', themeId);
+    // Update active marker in theme grid
+    document.querySelectorAll('.theme-card').forEach(c => {
+        c.classList.toggle('active', c.getAttribute('data-theme-id') === themeId);
+    });
+}
+
+function buildThemeGrid() {
+    const grid = document.getElementById('theme-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    THEMES.forEach(t => {
+        const card = document.createElement('div');
+        card.className = 'theme-card';
+        card.setAttribute('data-theme-id', t.id);
+        card.title = t.name;
+        card.innerHTML = `
+            <div style="background:${t.bg}; padding:6px; display:flex; flex-direction:column; gap:3px;">
+                <div style="display:flex; gap:3px;">
+                    <div style="flex:1; height:6px; border-radius:3px; background:${t.accent};"></div>
+                    <div style="width:6px; height:6px; border-radius:3px; background:${t.red};"></div>
+                    <div style="width:6px; height:6px; border-radius:3px; background:${t.yellow};"></div>
+                </div>
+                <div style="height:14px; border-radius:3px; background:${t.panel}; border:1px solid ${t.border};"></div>
+                <div style="height:10px; border-radius:3px; background:${t.border};"></div>
+                <div style="font-size:8px; text-align:center; color:${t.accent}; font-weight:700; margin-top:2px;">${t.name}</div>
+            </div>
+        `;
+        card.addEventListener('click', () => applyTheme(t.id));
+        grid.appendChild(card);
+    });
+    document.querySelectorAll('.theme-card').forEach(c => {
+        c.classList.toggle('active', c.getAttribute('data-theme-id') === currentTheme);
+    });
+}
+
+/* ============ STORAGE ============ */
+function loadStorage() {
+    const stored = localStorage.getItem('kkk_timer_sessions_v4');
+    if (stored) { try { sessions = JSON.parse(stored); } catch(e) { sessions = {}; } }
+    if (Object.keys(sessions).length === 0) {
+        sessions['default_3*3'] = { id:'default_3*3', name:'3*3 Main', cubeType:'3*3', solves:[] };
+    }
+    const storedSessionId = localStorage.getItem('kkk_current_session_id');
+    if (storedSessionId && sessions[storedSessionId]) {
+        currentSessionId = storedSessionId;
+        currentCube = sessions[currentSessionId].cubeType;
+    } else {
+        currentSessionId = Object.keys(sessions)[0];
+        currentCube = sessions[currentSessionId].cubeType;
+    }
+    const storedInsp = localStorage.getItem('kkk_inspection_enabled');
+    if (storedInsp !== null) { inspectionEnabled = storedInsp === 'true'; toggleInspection.checked = inspectionEnabled; }
+    const storedTheme = localStorage.getItem('kkk_theme');
+    currentTheme = storedTheme || 'default';
+    populateSessionSelect();
+    updateCubeButtonsUI();
+}
+
+function saveStorage() {
+    localStorage.setItem('kkk_timer_sessions_v4', JSON.stringify(sessions));
+    localStorage.setItem('kkk_current_session_id', currentSessionId);
+    localStorage.setItem('kkk_inspection_enabled', inspectionEnabled);
+}
+
+function populateSessionSelect() {
+    sessionSelect.innerHTML = '';
+    for (const id in sessions) {
+        const opt = document.createElement('option');
+        opt.value = id;
+        opt.innerText = `${sessions[id].name} (${sessions[id].cubeType})`;
+        if (id === currentSessionId) opt.selected = true;
+        sessionSelect.appendChild(opt);
+    }
+}
+
+/* ============ INIT ============ */
+window.addEventListener('load', () => {
+    loadStorage();
+    buildThemeGrid();
+    applyTheme(currentTheme);
+    setupCubeSelectors();
+    setupMusicPlayer();
+    setupUnifiedInputListeners();
+    setupSettingsModal();
+    setupShareFeature();
+    setupAssistant();
+    setupAoDetails();
+    setupScrambleNav();
+    generateScramble();
+    updateUI();
+    window.addEventListener('resize', () => {
+        const s = sessions[currentSessionId] ? sessions[currentSessionId].solves : [];
+        drawTrendChart(s);
+    });
+});
+
+/* ============ SESSIONS ============ */
+sessionSelect.addEventListener('change', (e) => {
+    currentSessionId = e.target.value;
+    currentCube = sessions[currentSessionId].cubeType;
+    updateCubeButtonsUI();
+    resetScrambleHistory();
+    generateScramble();
+    saveStorage();
+    updateUI();
+});
+
+document.getElementById('add-session-btn').addEventListener('click', () => {
+    const name = prompt('Enter new Session Name:', `Session ${Object.keys(sessions).length + 1}`);
+    if (name && name.trim()) {
+        const newId = 'session_' + Date.now();
+        sessions[newId] = { id:newId, name:name.trim(), cubeType:currentCube, solves:[] };
+        currentSessionId = newId;
+        populateSessionSelect();
+        saveStorage();
+        updateUI();
+    }
+});
+
+document.getElementById('delete-session-btn').addEventListener('click', () => {
+    if (Object.keys(sessions).length <= 1) { alert('You must keep at least one session active.'); return; }
+    if (confirm(`Delete session "${sessions[currentSessionId].name}"?`)) {
+        delete sessions[currentSessionId];
+        currentSessionId = Object.keys(sessions)[0];
+        currentCube = sessions[currentSessionId].cubeType;
+        populateSessionSelect();
+        updateCubeButtonsUI();
+        resetScrambleHistory();
+        generateScramble();
+        saveStorage();
+        updateUI();
+    }
+});
+
+function setupCubeSelectors() {
+    document.querySelectorAll('.cube-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const selectedCube = e.currentTarget.getAttribute('data-cube');
+            currentCube = selectedCube;
+            let foundMatch = false;
+            for (const id in sessions) {
+                if (sessions[id].cubeType === currentCube) { currentSessionId = id; foundMatch = true; break; }
             }
-
-            if (Object.keys(sessions).length === 0) {
-                sessions['default_3*3'] = {
-                    id: 'default_3*3',
-                    name: '3*3 Main',
-                    cubeType: '3*3',
-                    solves: []
-                };
+            if (!foundMatch) {
+                const newId = 'session_' + Date.now();
+                sessions[newId] = { id:newId, name:`${currentCube} Session`, cubeType:currentCube, solves:[] };
+                currentSessionId = newId;
             }
-
-            const storedSessionId = localStorage.getItem('kkk_current_session_id');
-            if (storedSessionId && sessions[storedSessionId]) {
-                currentSessionId = storedSessionId;
-                currentCube = sessions[currentSessionId].cubeType;
-            } else {
-                currentSessionId = Object.keys(sessions)[0];
-                currentCube = sessions[currentSessionId].cubeType;
-            }
-
-            const storedInsp = localStorage.getItem('kkk_inspection_enabled');
-            if (storedInsp !== null) {
-                inspectionEnabled = storedInsp === 'true';
-                toggleInspection.checked = inspectionEnabled;
-            }
-
             populateSessionSelect();
             updateCubeButtonsUI();
-        }
-
-        function saveStorage() {
-            localStorage.setItem('kkk_timer_sessions_v4', JSON.stringify(sessions));
-            localStorage.setItem('kkk_current_session_id', currentSessionId);
-            localStorage.setItem('kkk_inspection_enabled', inspectionEnabled);
-        }
-
-        function populateSessionSelect() {
-            sessionSelect.innerHTML = '';
-            for (const id in sessions) {
-                const opt = document.createElement('option');
-                opt.value = id;
-                opt.innerText = `${sessions[id].name} (${sessions[id].cubeType})`;
-                if (id === currentSessionId) opt.selected = true;
-                sessionSelect.appendChild(opt);
-            }
-        }
-
-        sessionSelect.addEventListener('change', (e) => {
-            currentSessionId = e.target.value;
-            currentCube = sessions[currentSessionId].cubeType;
-            updateCubeButtonsUI();
+            resetScrambleHistory();
             generateScramble();
             saveStorage();
             updateUI();
         });
+    });
+}
 
-        document.getElementById('add-session-btn').addEventListener('click', () => {
-            const name = prompt('Enter new Session Name:', `Session ${Object.keys(sessions).length + 1}`);
-            if (name && name.trim()) {
-                const newId = 'session_' + Date.now();
-                sessions[newId] = { id: newId, name: name.trim(), cubeType: currentCube, solves: [] };
-                currentSessionId = newId;
-                populateSessionSelect();
-                saveStorage();
-                updateUI();
-            }
-        });
-
-        document.getElementById('delete-session-btn').addEventListener('click', () => {
-            if (Object.keys(sessions).length <= 1) {
-                alert('You must keep at least one session active.');
-                return;
-            }
-            if (confirm(`Delete session "${sessions[currentSessionId].name}"?`)) {
-                delete sessions[currentSessionId];
-                currentSessionId = Object.keys(sessions)[0];
-                currentCube = sessions[currentSessionId].cubeType;
-                populateSessionSelect();
-                updateCubeButtonsUI();
-                generateScramble();
-                saveStorage();
-                updateUI();
-            }
-        });
-
-        // Bottom Cube Type Buttons
-        function setupCubeSelectors() {
-            document.querySelectorAll('.cube-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const selectedCube = e.target.getAttribute('data-cube');
-                    currentCube = selectedCube;
-                    
-                    let foundMatch = false;
-                    for (const id in sessions) {
-                        if (sessions[id].cubeType === currentCube) {
-                            currentSessionId = id;
-                            foundMatch = true;
-                            break;
-                        }
-                    }
-
-                    if (!foundMatch) {
-                        const newId = 'session_' + Date.now();
-                        sessions[newId] = { id: newId, name: `${currentCube} Session`, cubeType: currentCube, solves: [] };
-                        currentSessionId = newId;
-                    }
-
-                    populateSessionSelect();
-                    updateCubeButtonsUI();
-                    generateScramble();
-                    saveStorage();
-                    updateUI();
-                });
-            });
+function updateCubeButtonsUI() {
+    document.querySelectorAll('.cube-btn').forEach(btn => {
+        if (btn.getAttribute('data-cube') === currentCube) {
+            btn.className = 'cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-emerald-600 text-white transition active:scale-95 shadow';
+        } else {
+            btn.className = 'cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95';
         }
+    });
+}
 
-        function updateCubeButtonsUI() {
-            document.querySelectorAll('.cube-btn').forEach(btn => {
-                if (btn.getAttribute('data-cube') === currentCube) {
-                    btn.className = 'cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-emerald-600 text-white transition shadow';
-                } else {
-                    btn.className = 'cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition';
-                }
-            });
+/* ============ SCRAMBLE ============ */
+function resetScrambleHistory() { scrambleHistory = []; scrambleHistoryIndex = -1; }
+
+function makeScramble() {
+    let scr = '';
+    if (currentCube === '3*3') scr = wcaScramble(['R','L','U','D','F','B'], 20);
+    else if (currentCube === '2*2') scr = wcaScramble(['R','U','F'], 11);
+    else if (currentCube === '4*4') scr = wcaScramble(['R','L','U','D','F','B','Rw','Lw','Uw','Dw','Fw','Bw'], 40);
+    else if (currentCube === '5*5') scr = wcaScramble(['R','L','U','D','F','B','Rw','Lw','Uw','Dw','Fw','Bw'], 60);
+    else if (currentCube === '6*6') scr = wcaScramble(['3Rw','3Lw','3Uw','3Dw','3Fw','3Bw','Rw','Lw','Uw','Dw','Fw','Bw','R','L','U','D','F','B'], 80);
+    else if (currentCube === '7*7') scr = wcaScramble(['3Rw','3Lw','3Uw','3Dw','3Fw','3Bw','Rw','Lw','Uw','Dw','Fw','Bw','R','L','U','D','F','B'], 100);
+    else if (currentCube === 'Skewb') scr = skewbScramble();
+    else scr = wcaScramble(['R','L','U','D','F','B'], 20);
+    return scr;
+}
+
+function wcaScramble(movesList, length) {
+    const modifiers = ['', "'", '2'];
+    const result = [];
+    let lastAxis = -1;
+    let lastMove = '';
+    const axisOf = (m) => {
+        const b = m.replace(/3|w/g, '');
+        if (b === 'R' || b === 'L') return 0;
+        if (b === 'U' || b === 'D') return 1;
+        if (b === 'F' || b === 'B') return 2;
+        return -1;
+    };
+    for (let i = 0; i < length; i++) {
+        let move, axis;
+        let attempts = 0;
+        do {
+            move = movesList[Math.floor(Math.random() * movesList.length)];
+            axis = axisOf(move);
+            attempts++;
+        } while ((axis === lastAxis && attempts < 20) || move === lastMove);
+        lastAxis = axis;
+        lastMove = move;
+        result.push(move + modifiers[Math.floor(Math.random() * modifiers.length)]);
+    }
+    return result.join(' ');
+}
+
+function skewbScramble() {
+    const moves = ['R','L','U','B'];
+    const modifiers = ['', "'"];
+    const result = [];
+    let last = '';
+    for (let i = 0; i < 10; i++) {
+        let m;
+        do { m = moves[Math.floor(Math.random() * moves.length)]; } while (m === last);
+        last = m;
+        result.push(m + modifiers[Math.floor(Math.random() * modifiers.length)]);
+    }
+    return result.join(' ');
+}
+
+function generateScramble() {
+    const newScr = makeScramble();
+    scrambleHistory = scrambleHistory.slice(0, scrambleHistoryIndex + 1);
+    scrambleHistory.push(newScr);
+    scrambleHistoryIndex = scrambleHistory.length - 1;
+    renderScramble();
+    setTimeout(() => assistantObserveScramble(newScr), 400);
+}
+
+function renderScramble() {
+    if (scrambleHistory.length === 0) {
+        scrambleDisplay.innerText = 'Generating scramble...';
+        scrambleIndexEl.innerText = '0 / 0';
+        return;
+    }
+    scrambleDisplay.innerText = scrambleHistory[scrambleHistoryIndex] || '';
+    scrambleIndexEl.innerText = `${scrambleHistoryIndex + 1} / ${scrambleHistory.length}`;
+}
+
+function setupScrambleNav() {
+    document.getElementById('next-scramble-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (scrambleHistoryIndex < scrambleHistory.length - 1) {
+            scrambleHistoryIndex++;
+            renderScramble();
+            assistantObserveScramble(scrambleHistory[scrambleHistoryIndex]);
+        } else {
+            generateScramble();
         }
+    });
+    document.getElementById('prev-scramble-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (scrambleHistoryIndex > 0) {
+            scrambleHistoryIndex--;
+            renderScramble();
+            assistantObserveScramble(scrambleHistory[scrambleHistoryIndex]);
+        }
+    });
+}
 
-        // WCA Scramble Generator (Robust, non-easy scrambles for all WCA puzzles)
-        function generateScramble() {
-            let scramble = '';
-            if (currentCube === '3*3') {
-                scramble = generateWcaScramble(['R', 'L', 'U', 'D', 'F', 'B'], 20);
-            } else if (currentCube === '2*2') {
-                scramble = generateWcaScramble(['R', 'U', 'F'], 11);
-            } else if (currentCube === '4*4') {
-                scramble = generateWcaScramble(['R', 'L', 'U', 'D', 'F', 'B', 'Rw', 'Lw', 'Uw', 'Dw', 'Fw', 'Bw'], 40);
-            } else if (currentCube === '5*5') {
-                scramble = generateWcaScramble(['R', 'L', 'U', 'D', 'F', 'B', 'Rw', 'Lw', 'Uw', 'Dw', 'Fw', 'Bw'], 60);
-            } else if (currentCube === '6*6') {
-                scramble = generateWcaScramble(['3Rw', '3Lw', '3Uw', '3Dw', '3Fw', '3Bw', 'Rw', 'Lw', 'Uw', 'Dw', 'Fw', 'Bw', 'R', 'L', 'U', 'D', 'F', 'B'], 80);
-            } else if (currentCube === '7*7') {
-                scramble = generateWcaScramble(['3Rw', '3Lw', '3Uw', '3Dw', '3Fw', '3Bw', 'Rw', 'Lw', 'Uw', 'Dw', 'Fw', 'Bw', 'R', 'L', 'U', 'D', 'F', 'B'], 100);
-            } else if (currentCube === 'Skewb') {
-                scramble = generateSkewbScramble();
+/* ============ MUSIC ============ */
+let audioCtx = null;
+let musicInterval = null;
+let currentTrack = null;
+
+const trackNames = [
+"Epic Motivation","Upbeat Focus","Energetic Synth","Ambient Drive","Victory Beat",
+"Speedrun Pulse","Neon Rush","Hyper Focus","Cybernetic Core","Titan Step",
+"Aether Wave","Quantum Loop","Pulsar Beam","Starlight Drive","Solar Flare",
+"Velocity Flow","Infinite Grid","Summit Climb","Apex Predator","Titanium Beat",
+"Thunder Strike","Lightning Fast","Storm Chaser","Blazing Trail","Ignition Spark",
+"Cosmic Voyage","Supernova Groove","Nebula Pulse","Galaxy Drive","Orbit Wave",
+"Alpha State","Beta Wave","Gamma Burst","Delta Force","Omega Protocol",
+"Iron Will","Steel Focus","Cobalt Pulse","Titanium Drive","Platinum Beat",
+"Alpha Rhythm","Zenith Peak","Horizon Line","Velocity Peak","Dynamic Flow",
+"Quantum State","Kinetic Energy","Prism Wave","Sonic Boom","Ultimate Victory"
+];
+
+function getTrackConfig(n) {
+    const configs = [
+        { type:'sine', base:220, speed:280, scale:[1,1.125,1.25,1.5,1.667,1.875,2], wave2:false },
+        { type:'triangle', base:260, speed:240, scale:[1,1.2,1.333,1.5,1.6,1.8,2], wave2:false },
+        { type:'square', base:180, speed:200, scale:[1,1.125,1.25,1.334,1.5,1.667,1.875,2], wave2:true },
+        { type:'sawtooth', base:150, speed:320, scale:[1,1.125,1.2,1.5,1.8,2], wave2:false },
+        { type:'sine', base:300, speed:180, scale:[1,1.125,1.25,1.5,2], wave2:true },
+        { type:'triangle', base:200, speed:150, scale:[1,1.2,1.5,1.8,2,2.4], wave2:false },
+        { type:'square', base:240, speed:260, scale:[1,1.25,1.5,1.75,2], wave2:true },
+        { type:'sawtooth', base:170, speed:230, scale:[1,1.125,1.25,1.4,1.6,1.8,2], wave2:false },
+        { type:'sine', base:280, speed:210, scale:[1,1.2,1.5,1.667,2], wave2:true },
+        { type:'triangle', base:210, speed:290, scale:[1,1.125,1.334,1.5,1.667,2], wave2:false },
+    ];
+    const cfg = { ...configs[(n - 1) % configs.length] };
+    cfg.base = cfg.base * (1 + (((n % 7) - 3) * 0.02));
+    cfg.speed = Math.max(120, cfg.speed + ((n % 5) - 2) * 25);
+    return cfg;
+}
+
+function setupMusicPlayer() {
+    const musicSelector = document.getElementById('music-selector');
+    musicSelector.innerHTML = '';
+    trackNames.forEach((name, idx) => {
+        const trackNum = idx + 1;
+        const btn = document.createElement('button');
+        btn.setAttribute('data-track', trackNum);
+        btn.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95';
+        btn.innerText = `${trackNum}. ${name}`;
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playMusicTrack(trackNum);
+            document.querySelectorAll('.music-btn').forEach(b => {
+                b.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95';
+            });
+            btn.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white transition shadow';
+            document.getElementById('music-off-btn').className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95';
+        });
+        musicSelector.appendChild(btn);
+    });
+    document.getElementById('music-off-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        stopMusic();
+        document.querySelectorAll('.music-btn').forEach(b => {
+            b.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95';
+        });
+        document.getElementById('music-off-btn').className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white transition active:scale-95 shadow';
+    });
+    document.getElementById('scroll-left-btn').addEventListener('click', (e) => { e.stopPropagation(); musicSelector.scrollBy({ left: -200, behavior: 'smooth' }); });
+    document.getElementById('scroll-right-btn').addEventListener('click', (e) => { e.stopPropagation(); musicSelector.scrollBy({ left: 200, behavior: 'smooth' }); });
+}
+
+function playMusicTrack(trackNum) {
+    stopMusic();
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+    } catch(e) { return; }
+    currentTrack = trackNum;
+    const cfg = getTrackConfig(trackNum);
+    let step = 0;
+    musicInterval = setInterval(() => {
+        if (!audioCtx) return;
+        try {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = cfg.type;
+            const freq = cfg.base * cfg.scale[step % cfg.scale.length];
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.055, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.32);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.32);
+            if (cfg.wave2 && step % 3 === 0) {
+                const osc2 = audioCtx.createOscillator();
+                const gain2 = audioCtx.createGain();
+                osc2.type = cfg.type === 'sine' ? 'triangle' : 'sine';
+                osc2.frequency.setValueAtTime(freq * 2, audioCtx.currentTime);
+                gain2.gain.setValueAtTime(0.03, audioCtx.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.25);
+                osc2.connect(gain2); gain2.connect(audioCtx.destination);
+                osc2.start(); osc2.stop(audioCtx.currentTime + 0.25);
+            }
+            step++;
+        } catch(e) {}
+    }, cfg.speed);
+}
+function stopMusic() {
+    if (musicInterval) { clearInterval(musicInterval); musicInterval = null; }
+    currentTrack = null;
+}
+
+/* ============ SETTINGS MODAL ============ */
+function setupSettingsModal() {
+    const modal = document.getElementById('settings-modal');
+    document.getElementById('settings-btn').addEventListener('click', (e) => { e.stopPropagation(); modal.classList.remove('hidden'); });
+    document.getElementById('close-modal-btn').addEventListener('click', () => modal.classList.add('hidden'));
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const t = e.currentTarget.getAttribute('data-tab');
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('active');
+                b.classList.add('border-transparent');
+            });
+            e.currentTarget.classList.add('active');
+            e.currentTarget.classList.remove('border-transparent');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(`tab-${t}`).classList.remove('hidden');
+        });
+    });
+    toggleInspection.addEventListener('change', (e) => { inspectionEnabled = e.target.checked; saveStorage(); });
+}
+
+/* ============ SHARE ============ */
+function setupShareFeature() {
+    const modal = document.getElementById('share-modal');
+    document.getElementById('share-session-btn').addEventListener('click', (e) => { e.stopPropagation(); openShareModal(); });
+    document.getElementById('close-share-btn').addEventListener('click', () => modal.classList.add('hidden'));
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+    document.getElementById('share-more-btn').addEventListener('click', () => openNativeShare());
+    document.getElementById('share-copy-btn').addEventListener('click', () => copySessionToClipboard());
+}
+
+function buildShareText() {
+    const s = sessions[currentSessionId];
+    if (!s) return 'No session';
+    let txt = `=== KKK TIMER SESSION SHARE ===\nSession: ${s.name}\nCube: ${s.cubeType}\nSolves: ${s.solves.length}\n\n`;
+    s.solves.slice(0, 50).forEach((solve, i) => {
+        txt += `#${s.solves.length - i}: ${formatTime(solve.time)} — ${solve.scramble}\n`;
+    });
+    if (s.solves.length > 50) txt += `...and ${s.solves.length - 50} more\n`;
+    return txt;
+}
+
+function openShareModal() {
+    const grid = document.getElementById('share-apps-grid');
+    grid.innerHTML = '';
+    const apps = [
+        { name:'WhatsApp', emoji:'💬', url:'https://wa.me/?text=' },
+        { name:'Telegram', emoji:'✈️', url:'https://t.me/share/url?url=&text=' },
+        { name:'Facebook', emoji:'📘', url:'https://www.facebook.com/sharer/sharer.php?u=&quote=' },
+        { name:'Twitter/X', emoji:'🐦', url:'https://twitter.com/intent/tweet?text=' },
+        { name:'Email', emoji:'✉️', url:'mailto:?subject=KKK Session&body=' },
+        { name:'SMS', emoji:'📱', url:'sms:?body=' },
+        { name:'LinkedIn', emoji:'💼', url:'https://www.linkedin.com/sharing/share-offsite/?url=' },
+        { name:'Reddit', emoji:'🤖', url:'https://www.reddit.com/submit?title=KKK Session&text=' },
+        { name:'Pinterest', emoji:'📌', url:'https://pinterest.com/pin/create/button/?description=' },
+        { name:'Discord', emoji:'🎮', url:null },
+        { name:'Instagram', emoji:'📷', url:null },
+        { name:'More', emoji:'⋯', url:null }
+    ];
+    apps.forEach(app => {
+        const btn = document.createElement('button');
+        btn.className = 'flex flex-col items-center justify-center p-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 transition active:scale-95 border border-zinc-700/50';
+        btn.innerHTML = `<div class="text-xl mb-1">${app.emoji}</div><div class="text-[10px] font-semibold text-zinc-200">${app.name}</div>`;
+        btn.addEventListener('click', () => {
+            const text = buildShareText();
+            if (navigator.share && (app.name === 'More' || app.url === null)) {
+                navigator.share({ title: 'KKK Timer Session', text: text }).then(() => document.getElementById('share-modal').classList.add('hidden')).catch(() => {});
+            } else if (app.url) {
+                window.open(app.url + encodeURIComponent(text), '_blank');
+                document.getElementById('share-modal').classList.add('hidden');
+            } else if (navigator.share) {
+                navigator.share({ title: 'KKK Timer Session', text: text }).then(() => document.getElementById('share-modal').classList.add('hidden')).catch(() => {});
             } else {
-                scramble = generateWcaScramble(['R', 'L', 'U', 'D', 'F', 'B'], 20);
+                copySessionToClipboard();
             }
-            scrambleDisplay.innerText = scramble;
+        });
+        grid.appendChild(btn);
+    });
+    document.getElementById('share-modal').classList.remove('hidden');
+}
+
+function openNativeShare() {
+    const text = buildShareText();
+    if (navigator.share) {
+        navigator.share({ title: 'KKK Timer Session', text: text })
+            .then(() => document.getElementById('share-modal').classList.add('hidden'))
+            .catch(() => {});
+    } else {
+        copySessionToClipboard();
+    }
+}
+
+function copySessionToClipboard() {
+    const text = buildShareText();
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Session copied to clipboard!');
+        document.getElementById('share-modal').classList.add('hidden');
+    }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); alert('Session copied!'); } catch(e) { alert('Copy failed.'); }
+        document.body.removeChild(ta);
+        document.getElementById('share-modal').classList.add('hidden');
+    });
+}
+
+/* ============ ASSISTANT ============ */
+let chatHistory = [];
+function setupAssistant() {
+    const panel = document.getElementById('assistant-panel');
+    document.getElementById('assistant-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        panel.classList.remove('hidden');
+        panel.classList.add('flex');
+        if (chatHistory.length === 0) {
+            addChatMessage('bot', "Hey! I'm your cube assistant 🧩 I'll automatically react to every new scramble and give tips. Ask me anything — like 'How do I solve the first layer?' or 'tips for R U R prime'.");
         }
+    });
+    document.getElementById('close-assistant-btn').addEventListener('click', () => {
+        panel.classList.add('hidden');
+        panel.classList.remove('flex');
+    });
+    document.getElementById('chat-send-btn').addEventListener('click', sendChatFromInput);
+    document.getElementById('chat-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); sendChatFromInput(); }
+    });
+}
 
-        function generateWcaScramble(movesList, length) {
-            const modifiers = ['', "'", '2'];
-            let result = [];
-            let lastAxis = -1;
+function sendChatFromInput() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    addChatMessage('user', text);
+    respondToChat(text);
+}
 
-            const getAxis = (m) => {
-                const base = m.replace('w', '').replace('3', '');
-                if (base === 'R' || base === 'L') return 0;
-                if (base === 'U' || base === 'D') return 1;
-                if (base === 'F' || base === 'B') return 2;
-                return -1;
-            };
+function addChatMessage(who, text) {
+    chatHistory.push({ who, text });
+    const container = document.getElementById('chat-messages');
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble ' + (who === 'user' ? 'chat-user' : 'chat-bot');
+    bubble.innerText = text;
+    container.appendChild(bubble);
+    container.scrollTop = container.scrollHeight;
+}
 
-            for (let i = 0; i < length; i++) {
-                let move, axis;
-                do {
-                    move = movesList[Math.floor(Math.random() * movesList.length)];
-                    axis = getAxis(move);
-                } while (axis === lastAxis);
+function assistantObserveScramble(scr) {
+    if (!scr) return;
+    const reply = analyzeScramble(scr);
+    if (chatHistory.length > 0) {
+        addChatMessage('bot', reply);
+    } else {
+        chatHistory.push({ who: 'bot', text: reply, silent: true });
+    }
+}
 
-                lastAxis = axis;
-                const mod = modifiers[Math.floor(Math.random() * modifiers.length)];
-                result.push(move + mod);
-            }
-            return result.join(' ');
+function analyzeScramble(scr) {
+    const moves = scr.split(' ');
+    const first = moves[0] || 'R';
+    const tips = [];
+    const primeCount = moves.filter(m => m.includes("'")).length;
+    const doubleCount = moves.filter(m => m.includes('2')).length;
+    const wideCount = moves.filter(m => m.includes('w')).length;
+    if (first.startsWith('R')) tips.push('Opening with R — try to build the right-side block and watch the D-face edge.');
+    else if (first.startsWith('L')) tips.push('Opening with L — plan your left cross edge while keeping U-face free.');
+    else if (first.startsWith('U')) tips.push('Opening with U — great for setting up the cross in the back.');
+    else if (first.startsWith('F')) tips.push('Opening with F — be careful with F moves; inspect which pieces they bring to the U layer.');
+    else if (first.startsWith('D')) tips.push('Opening with D — plan your first-layer corners carefully.');
+    else if (first.startsWith('B')) tips.push("Opening with B — track your back edges so you don't lose them.");
+    if (primeCount > moves.length / 2) tips.push('Lots of prime moves (' + primeCount + ') — orient the cube to keep the rotations natural and flowy.');
+    if (doubleCount > 2) tips.push('Multiple double turns (' + doubleCount + ') — these are great chances to look ahead.');
+    if (wideCount > 0) tips.push('Wide moves present (' + wideCount + ') — prep your grip before the wide turns.');
+    if (moves.length >= 20) tips.push("This is a full WCA-length scramble — inspect for the cross and first pair, don't rush.");
+    return `New scramble received ✅\n"${scr}"\n\n${tips.slice(0, 3).map(t => '• ' + t).join('\n')}`;
+}
+
+function respondToChat(text) {
+    const t = text.toLowerCase();
+    let reply = '';
+    if (/cross|first layer|f2l/.test(t)) {
+        reply = 'For the cross, look for the 4 white edges. Try to align 2 at a time so you reduce cube rotations. For F2L, pair the corner and edge in the top layer, then insert. Practice slow — accuracy beats speed.';
+    } else if (/oll|pll|last layer/.test(t)) {
+        reply = 'For OLL: learn 2-look (edges first, then corners) to cut down on recognition time. For PLL: master Ua, Ub, H, Z first — they appear most. Then slowly add other algs.';
+    } else if (/scramble|scrambles/.test(t)) {
+        reply = `Current scramble is: "${scrambleHistory[scrambleHistoryIndex] || 'none'}"\nTry to plan the whole cross during inspection — that alone can save 1–2 seconds.`;
+    } else if (/time|speed|faster/.test(t)) {
+        reply = 'To get faster: (1) turn slowly and look ahead, (2) avoid cube rotations, (3) learn algs one at a time, (4) do 20-solve focused sessions on one weakness at a time.';
+    } else if (/music|track|song/.test(t)) {
+        reply = 'Tip: pick a track whose tempo matches your solving rhythm. Fast tempo helps with drilling algs, slower chill tracks help with look-ahead.';
+    } else if (/help|how|what/.test(t)) {
+        reply = 'I can help with: cross, F2L, OLL/PLL, scramble interpretation, tips to get faster, or explaining your session stats. Just ask!';
+    } else if (/hi|hello|hey/.test(t)) {
+        reply = 'Hey! Ready to break some PBs? Ask me about a specific scramble, a technique, or tell me what you want to improve.';
+    } else if (/stats|average|ao5|ao12|ao50/.test(t)) {
+        const s = sessions[currentSessionId];
+        if (s && s.solves.length > 0) {
+            const times = s.solves.map(x => x.time);
+            reply = `You've done ${s.solves.length} solves. Best: ${formatTime(Math.min(...times))}. Ao5: ${s.solves.length>=5 ? formatTime(calcAoN(times,5)) : 'need 5'}. Ao12: ${s.solves.length>=12 ? formatTime(calcAoN(times,12)) : 'need 12'}. Keep going!`;
+        } else {
+            reply = "No solves yet in this session. Do a few solves and I'll analyze your stats.";
         }
+    } else if (/theme|color|colour/.test(t)) {
+        reply = 'You can change the theme in Settings → 🎨 Theme. There are 25 different color themes — try a few and pick the one that feels best!';
+    } else {
+        reply = "Nice question! Try asking me about: cross planning, F2L tricks, OLL/PLL algs, scramble tips, or stats analysis. I'll give you a concrete tip.";
+    }
+    setTimeout(() => addChatMessage('bot', reply), 350);
+}
 
-        function generateSkewbScramble() {
-            const moves = ['R', 'L', 'U', 'B'];
-            const modifiers = ['', "'"];
-            let result = [];
-            let lastMove = '';
-            for (let i = 0; i < 10; i++) {
-                let move;
-                do {
-                    move = moves[Math.floor(Math.random() * moves.length)];
-                } while (move === lastMove);
-                lastMove = move;
-                const mod = modifiers[Math.floor(Math.random() * modifiers.length)];
-                result.push(move + mod);
-            }
-            return result.join(' ');
+/* ============ AO DETAILS ============ */
+function setupAoDetails() {
+    document.querySelectorAll('.stat-card-clickable').forEach(card => {
+        card.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const stat = card.getAttribute('data-stat');
+            openAoModal(stat);
+        });
+    });
+    const modal = document.getElementById('ao-modal');
+    document.getElementById('close-ao-btn').addEventListener('click', () => modal.classList.add('hidden'));
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+}
+
+function openAoModal(stat) {
+    const s = sessions[currentSessionId];
+    const content = document.getElementById('ao-modal-content');
+    const titleEl = document.getElementById('ao-modal-title');
+    const n = parseInt(stat.replace('ao',''));
+    titleEl.innerText = `Ao${n} Details — ${s.name}`;
+    content.innerHTML = '';
+    if (!s || s.solves.length === 0) {
+        content.innerHTML = '<p class="text-zinc-400 text-sm">No solves yet in this session.</p>';
+    } else {
+        const recent = s.solves.slice(0, n);
+        const sum = document.createElement('div');
+        sum.className = 'bg-zinc-800/60 rounded-lg p-3 mb-3 border border-zinc-700/50';
+        if (s.solves.length < n) {
+            sum.innerHTML = `<div class="text-xs text-zinc-400">Need ${n - s.solves.length} more solve(s) to compute Ao${n}. Showing latest ${recent.length}:</div>`;
+        } else {
+            const sorted = [...recent].sort((a,b)=>a.time-b.time);
+            const trimmed = sorted.slice(1, n-1);
+            const avg = trimmed.reduce((acc,x)=>acc+x.time,0) / trimmed.length;
+            sum.innerHTML = `<div class="flex justify-between"><span class="text-zinc-400 text-xs">Current Ao${n}</span><span class="text-emerald-400 font-mono font-bold">${formatTime(avg)}</span></div>
+                             <div class="text-[10px] text-zinc-500 mt-1">Fastest: ${formatTime(sorted[0].time)} • Slowest: ${formatTime(sorted[sorted.length-1].time)} (trimmed from average)</div>`;
         }
+        content.appendChild(sum);
+        recent.forEach((solve, idx) => {
+            const div = document.createElement('div');
+            div.className = 'bg-zinc-800/40 p-2.5 rounded-lg border border-zinc-800/60';
+            const isFast = idx === 0 && s.solves.length >= n;
+            div.innerHTML = `
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-zinc-400 text-[10px] font-mono">Solve #${s.solves.length - idx}</span>
+                    <span class="font-mono font-bold ${isFast ? 'text-emerald-400' : 'text-white'} text-sm">${formatTime(solve.time)}</span>
+                </div>
+                <div class="text-[10px] font-mono text-zinc-400 break-words leading-tight">${solve.scramble || ''}</div>
+            `;
+            content.appendChild(div);
+        });
+    }
+    document.getElementById('ao-modal').classList.remove('hidden');
+}
 
-        // 50 Motivational Music Tracks Generator (Web Audio API Synthesizer)
-        let audioCtx = null;
-        let musicInterval = null;
-        let currentTrack = null;
-
-        const trackNames = [
-            "Epic Motivation", "Upbeat Focus", "Energetic Synth", "Ambient Drive", "Victory Beat",
-            "Speedrun Pulse", "Neon Rush", "Hyper Focus", "Cybernetic Core", "Titan Step",
-            "Aether Wave", "Quantum Loop", "Pulsar Beam", "Starlight Drive", "Solar Flare",
-            "Velocity Flow", "Infinite Grid", "Summit Climb", "Apex Predator", "Titanium Beat",
-            "Thunder Strike", "Lightning Fast", "Storm Chaser", "Blazing Trail", "Ignition Spark",
-            "Cosmic Voyage", "Supernova Groove", "Nebula Pulse", "Galaxy Drive", "Orbit Wave",
-            "Alpha State", "Beta Wave", "Gamma Burst", "Delta Force", "Omega Protocol",
-            "Iron Will", "Steel Focus", "Cobalt Pulse", "Titanium Drive", "Platinum Beat",
-            "Alpha Rhythm", "Zenith Peak", "Horizon Line", "Velocity Peak", "Dynamic Flow",
-            "Quantum State", "Kinetic Energy", "Prism Wave", "Sonic Boom", "Ultimate Victory"
-        ];
-
-        function setupMusicPlayer() {
-            const musicSelector = document.getElementById('music-selector');
-            musicSelector.innerHTML = '';
-
-            trackNames.forEach((name, idx) => {
-                const trackNum = idx + 1;
-                const btn = document.createElement('button');
-                btn.setAttribute('data-track', trackNum);
-                btn.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95';
-                btn.innerText = `${trackNum}. ${name}`;
-                btn.addEventListener('click', (e) => {
-                    playMusicTrack(trackNum);
-                    document.querySelectorAll('.music-btn').forEach(b => {
-                        b.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95';
-                    });
-                    btn.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white transition shadow';
-                    document.getElementById('music-off-btn').className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95';
-                });
-                musicSelector.appendChild(btn);
-            });
-
-            document.getElementById('music-off-btn').addEventListener('click', () => {
-                stopMusic();
-                document.querySelectorAll('.music-btn').forEach(b => {
-                    b.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95';
-                });
-                document.getElementById('music-off-btn').className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white transition active:scale-95 shadow';
-            });
-
-            // Side Scroll Button Controls
-            const scrollLeftBtn = document.getElementById('scroll-left-btn');
-            const scrollRightBtn = document.getElementById('scroll-right-btn');
-
-            scrollLeftBtn.addEventListener('click', () => {
-                musicSelector.scrollBy({ left: -200, behavior: 'smooth' });
-            });
-
-            scrollRightBtn.addEventListener('click', () => {
-                musicSelector.scrollBy({ left: 200, behavior: 'smooth' });
-            });
+/* ============ TIMER LOGIC ============ */
+function setupUnifiedInputListeners() {
+    window.addEventListener('keydown', (e) => {
+        if (document.activeElement && ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+        if (!document.getElementById('settings-modal').classList.contains('hidden')) return;
+        if (!document.getElementById('share-modal').classList.contains('hidden')) return;
+        if (!document.getElementById('ao-modal').classList.contains('hidden')) return;
+        if (e.code === 'Space') {
+            e.preventDefault();
+            if (!e.repeat) handleTimerPress();
+        } else if (timerState === 'RUNNING') {
+            stopTimer();
         }
+    });
+    window.addEventListener('keyup', (e) => {
+        if (document.activeElement && ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+        if (e.code === 'Space') handleTimerRelease();
+    });
+    mainTimerArea.addEventListener('mousedown', (e) => { if (e.button === 0) handleTimerPress(); });
+    window.addEventListener('mouseup', () => {
+        if (timerState === 'HOLDING' || timerState === 'READY') handleTimerRelease();
+        else if (timerState === 'RUNNING') stopTimer();
+    });
+    mainTimerArea.addEventListener('touchstart', (e) => { e.preventDefault(); handleTimerPress(); }, { passive: false });
+    mainTimerArea.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        if (timerState === 'HOLDING' || timerState === 'READY') handleTimerRelease();
+        else if (timerState === 'RUNNING') stopTimer();
+    }, { passive: false });
+}
 
-        function playMusicTrack(trackNum) {
-            stopMusic();
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-
-            currentTrack = trackNum;
-            const baseFreq = 130 + (trackNum * 12) % 350;
-            const waveTypes = ['sine', 'square', 'sawtooth', 'triangle'];
-            const waveType = waveTypes[(trackNum - 1) % waveTypes.length];
-            const intervalSpeed = 180 + (trackNum * 35) % 300;
-
-            const scaleMultipliers = [1, 1.125, 1.25, 1.334, 1.5, 1.667, 1.875, 2];
-            let step = 0;
-
-            musicInterval = setInterval(() => {
-                if (!audioCtx) return;
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                
-                osc.type = waveType;
-                const freq = baseFreq * scaleMultipliers[step % scaleMultipliers.length];
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-                gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
-
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.35);
-                step++;
-            }, intervalSpeed);
-        }
-
-        function stopMusic() {
-            if (musicInterval) {
-                clearInterval(musicInterval);
-                musicInterval = null;
-            }
-            currentTrack = null;
-        }
-
-        // Settings Modal Management
-        function setupSettingsModal() {
-            const modal = document.getElementById('settings-modal');
-            const settingsBtn = document.getElementById('settings-btn');
-            const closeModalBtn = document.getElementById('close-modal-btn');
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
-
-            settingsBtn.addEventListener('click', () => modal.classList.remove('hidden'));
-            closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.classList.add('hidden');
-            });
-
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const targetTab = e.target.getAttribute('data-tab');
-                    tabBtns.forEach(b => {
-                        b.className = 'tab-btn px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-zinc-400 border-b-2 border-transparent hover:text-zinc-200 whitespace-nowrap focus:outline-none';
-                    });
-                    e.target.className = 'tab-btn px-4 sm:px-6 py-2.5 text-xs sm:text-sm font-bold text-emerald-400 border-b-2 border-emerald-500 whitespace-nowrap focus:outline-none';
-
-                    tabContents.forEach(content => {
-                        content.classList.add('hidden');
-                    });
-                    document.getElementById(`tab-${targetTab}`).classList.remove('hidden');
-                });
-            });
-
-            toggleInspection.addEventListener('change', (e) => {
-                inspectionEnabled = e.target.checked;
-                saveStorage();
-            });
-        }
-
-        // Unified Input Listeners (Spacebar and Touch Controls)
-        function setupUnifiedInputListeners() {
-            window.addEventListener('keydown', (e) => {
-                if (e.code === 'Space' && e.target === document.body) {
-                    e.preventDefault();
-                }
-                if (e.code === 'Space') {
-                    handleTimerPress();
-                } else if (timerState === 'RUNNING') {
-                    stopTimer();
-                }
-            });
-
-            window.addEventListener('keyup', (e) => {
-                if (e.code === 'Space') {
-                    handleTimerRelease();
-                }
-            });
-
-            mainTimerArea.addEventListener('mousedown', (e) => {
-                if (e.button === 0) handleTimerPress();
-            });
-            window.addEventListener('mouseup', (e) => {
-                if (timerState === 'HOLDING' || timerState === 'READY') {
-                    handleTimerRelease();
-                } else if (timerState === 'RUNNING') {
-                    stopTimer();
-                }
-            });
-
-            mainTimerArea.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                handleTimerPress();
-            }, { passive: false });
-
-            mainTimerArea.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                if (timerState === 'HOLDING' || timerState === 'READY') {
-                    handleTimerRelease();
-                } else if (timerState === 'RUNNING') {
-                    stopTimer();
-                }
-            }, { passive: false });
-        }
-
-        function handleTimerPress() {
-            if (timerState === 'IDLE') {
-                timerState = 'HOLDING';
-                timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight holding drop-shadow-2xl transition-colors duration-75';
-                statusIndicator.innerText = 'HOLD TO START';
-                statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 holding';
-                
-                holdTimeout = setTimeout(() => {
-                    if (timerState === 'HOLDING') {
-                        timerState = 'READY';
-                        timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight ready drop-shadow-2xl transition-colors duration-75';
-                        statusIndicator.innerText = 'READY';
-                        statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 ready';
-                    }
-                }, 500);
-            } else if (timerState === 'RUNNING') {
-                stopTimer();
-            }
-        }
-
-        function handleTimerRelease() {
+function handleTimerPress() {
+    if (timerState === 'IDLE') {
+        timerState = 'HOLDING';
+        timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight holding drop-shadow-2xl transition-colors duration-75';
+        statusIndicator.innerText = 'HOLD TO START';
+        statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 holding';
+        holdTimeout = setTimeout(() => {
             if (timerState === 'HOLDING') {
-                clearTimeout(holdTimeout);
-                timerState = 'IDLE';
-                timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75';
-                statusIndicator.innerText = 'TAP & HOLD SCREEN OR SPACEBAR';
-                statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500';
-            } else if (timerState === 'READY') {
-                clearTimeout(holdTimeout);
-                if (inspectionEnabled) {
-                    startInspection();
-                } else {
-                    startTimer();
-                }
+                timerState = 'READY';
+                timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight ready drop-shadow-2xl transition-colors duration-75';
+                statusIndicator.innerText = 'READY';
+                statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 ready';
             }
+        }, 500);
+    } else if (timerState === 'RUNNING') {
+        stopTimer();
+    }
+}
+
+function handleTimerRelease() {
+    if (timerState === 'HOLDING') {
+        clearTimeout(holdTimeout);
+        timerState = 'IDLE';
+        timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75';
+        statusIndicator.innerText = 'TAP & HOLD SCREEN OR SPACEBAR';
+        statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500';
+    } else if (timerState === 'READY') {
+        clearTimeout(holdTimeout);
+        if (inspectionEnabled) startInspection();
+        else startTimer();
+    }
+}
+
+function startInspection() {
+    timerState = 'INSPECTING';
+    inspectionTimeLeft = 15;
+    timerDisplay.innerText = inspectionTimeLeft;
+    timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight inspecting drop-shadow-2xl transition-colors duration-75';
+    statusIndicator.innerText = 'INSPECTION';
+    statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 inspecting';
+    inspectionInterval = setInterval(() => {
+        inspectionTimeLeft--;
+        if (inspectionTimeLeft > 0) timerDisplay.innerText = inspectionTimeLeft;
+        else if (inspectionTimeLeft === 0) timerDisplay.innerText = '+2';
+        else { timerDisplay.innerText = 'DNF'; clearInterval(inspectionInterval); }
+    }, 1000);
+}
+
+function startTimer() {
+    if (inspectionInterval) clearInterval(inspectionInterval);
+    timerState = 'RUNNING';
+    startTime = performance.now();
+    timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75';
+    statusIndicator.innerText = 'SOLVING...';
+    statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-emerald-400';
+    elapsedInterval = setInterval(() => {
+        const elapsed = (performance.now() - startTime) / 1000;
+        timerDisplay.innerText = formatTime(elapsed);
+    }, 10);
+}
+
+function stopTimer() {
+    if (timerState !== 'RUNNING') return;
+    clearInterval(elapsedInterval);
+    const finalTime = (performance.now() - startTime) / 1000;
+    timerState = 'IDLE';
+    const currentScramble = scrambleHistory[scrambleHistoryIndex] || scrambleDisplay.innerText;
+    const solveObj = { time: finalTime, scramble: currentScramble, date: Date.now() };
+    if (!sessions[currentSessionId]) {
+        sessions[currentSessionId] = { id:currentSessionId, name:'Session', cubeType:currentCube, solves:[] };
+    }
+    sessions[currentSessionId].solves.unshift(solveObj);
+    saveStorage();
+    generateScramble();
+    updateUI();
+    setTimeout(() => {
+        if (chatHistory.length > 0) {
+            addChatMessage('bot', `⏱️ ${formatTime(finalTime)} recorded! ${finalTime < 10 ? 'That was fast 🔥' : finalTime < 20 ? 'Solid solve.' : 'Good effort — keep pushing!'} Want a tip on what to improve next?`);
         }
+    }, 500);
+}
 
-        function startInspection() {
-            timerState = 'INSPECTING';
-            inspectionTimeLeft = 15;
-            timerDisplay.innerText = inspectionTimeLeft;
-            timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight inspecting drop-shadow-2xl transition-colors duration-75';
-            statusIndicator.innerText = 'INSPECTION';
-            statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 inspecting';
+function formatTime(seconds) {
+    if (isNaN(seconds) || seconds === null) return '-';
+    if (seconds >= 60) {
+        const mins = Math.floor(seconds / 60);
+        const secs = (seconds % 60).toFixed(2);
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+    return seconds.toFixed(2);
+}
 
-            inspectionInterval = setInterval(() => {
-                inspectionTimeLeft--;
-                if (inspectionTimeLeft > 0) {
-                    timerDisplay.innerText = inspectionTimeLeft;
-                } else if (inspectionTimeLeft === 0) {
-                    timerDisplay.innerText = '+2';
-                } else {
-                    timerDisplay.innerText = 'DNF';
-                    clearInterval(inspectionInterval);
-                }
-            }, 1000);
-        }
+function calcAoN(times, n) {
+    const subset = times.slice(0, n).sort((a,b)=>a-b);
+    const trimmed = subset.slice(1, n-1);
+    if (trimmed.length === 0) return 0;
+    return trimmed.reduce((a,b)=>a+b,0) / trimmed.length;
+}
+function calcMoN(times, n) {
+    const subset = times.slice(0, n);
+    return subset.reduce((a,b)=>a+b,0) / n;
+}
 
-        function startTimer() {
-            if (inspectionInterval) clearInterval(inspectionInterval);
-            timerState = 'RUNNING';
-            startTime = performance.now();
-            timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75';
-            statusIndicator.innerText = 'SOLVING...';
-            statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-emerald-400';
-
-            elapsedInterval = setInterval(() => {
-                const now = performance.now();
-                const elapsed = (now - startTime) / 1000;
-                timerDisplay.innerText = formatTime(elapsed);
-            }, 10);
-        }
-
-        function stopTimer() {
-            if (timerState !== 'RUNNING') return;
-            clearInterval(elapsedInterval);
-            const endTime = performance.now();
-            const finalTime = (endTime - startTime) / 1000;
-            timerState = 'IDLE';
-
-            const currentScramble = scrambleDisplay.innerText;
-            const solveObj = {
-                time: finalTime,
-                scramble: currentScramble,
-                date: Date.now()
-            };
-
-            if (!sessions[currentSessionId]) {
-                sessions[currentSessionId] = { id: currentSessionId, name: 'Session', cubeType: currentCube, solves: [] };
-            }
-            sessions[currentSessionId].solves.unshift(solveObj);
-            saveStorage();
-
-            generateScramble();
-            updateUI();
-        }
-
-        function formatTime(seconds) {
-            if (isNaN(seconds) || seconds === null) return '-';
-            if (seconds >= 60) {
-                const mins = Math.floor(seconds / 60);
-                const secs = (seconds % 60).toFixed(2);
-                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-            }
-            return seconds.toFixed(2);
-        }
-
-        function updateUI() {
-            const currentSolves = sessions[currentSessionId] ? sessions[currentSessionId].solves : [];
-            
-            solvesList.innerHTML = '';
-            currentSolves.forEach((solve, index) => {
-                const solveNum = currentSolves.length - index;
-                const div = document.createElement('div');
-                div.className = 'flex justify-between items-center bg-zinc-800/40 hover:bg-zinc-800/80 p-1.5 rounded-lg border border-zinc-800/60 text-xs transition';
-                div.innerHTML = `
-                    <span class="text-zinc-400 font-mono">#${solveNum}</span>
-                    <span class="font-mono font-bold text-white">${formatTime(solve.time)}</span>
-                    <button onclick="deleteSolve(${index})" class="text-red-400 hover:text-red-300 px-1 font-bold">&times;</button>
-                `;
-                solvesList.appendChild(div);
-            });
-
-            statCount.innerText = currentSolves.length;
-            statCountBadge.innerText = `${currentSolves.length} Solves`;
-
-            if (currentSolves.length > 0) {
-                const times = currentSolves.map(s => s.time);
-                const best = Math.min(...times);
-                statBest.innerText = formatTime(best);
-
-                statMo3.innerText = currentSolves.length >= 3 ? formatTime(calculateMoN(times, 3)) : '-';
-                statAo3.innerText = currentSolves.length >= 3 ? formatTime(calculateAoN(times, 3)) : '-';
-                statAo5.innerText = currentSolves.length >= 5 ? formatTime(calculateAoN(times, 5)) : '-';
-                statAo12.innerText = currentSolves.length >= 12 ? formatTime(calculateAoN(times, 12)) : '-';
-                statAo50.innerText = currentSolves.length >= 50 ? formatTime(calculateAoN(times, 50)) : '-';
-                statAo100.innerText = currentSolves.length >= 100 ? formatTime(calculateAoN(times, 100)) : '-';
-            } else {
-                statBest.innerText = '-';
-                statMo3.innerText = '-';
-                statAo3.innerText = '-';
-                statAo5.innerText = '-';
-                statAo12.innerText = '-';
-                statAo50.innerText = '-';
-                statAo100.innerText = '-';
-            }
-
-            timerDisplay.innerText = '0.00';
-            statusIndicator.innerText = 'TAP & HOLD SCREEN OR SPACEBAR';
-            statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500';
-
-            drawTrendChart(currentSolves);
-        }
-
-        window.deleteSolve = function(index) {
-            if (sessions[currentSessionId] && sessions[currentSessionId].solves[index]) {
-                sessions[currentSessionId].solves.splice(index, 1);
+/* ============ UI UPDATE ============ */
+function updateUI() {
+    const currentSolves = sessions[currentSessionId] ? sessions[currentSessionId].solves : [];
+    solvesList.innerHTML = '';
+    currentSolves.forEach((solve, index) => {
+        const solveNum = currentSolves.length - index;
+        const div = document.createElement('div');
+        div.className = 'flex justify-between items-center bg-zinc-800/40 hover:bg-zinc-800/80 p-1.5 rounded-lg border border-zinc-800/60 text-xs transition';
+        div.innerHTML = `
+            <span class="text-zinc-400 font-mono">#${solveNum}</span>
+            <span class="font-mono font-bold text-white">${formatTime(solve.time)}</span>
+            <button class="text-red-400 hover:text-red-300 px-1 font-bold delete-solve-btn" data-index="${index}">&times;</button>
+        `;
+        solvesList.appendChild(div);
+    });
+    solvesList.querySelectorAll('.delete-solve-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const idx = parseInt(btn.getAttribute('data-index'));
+            if (sessions[currentSessionId] && sessions[currentSessionId].solves[idx] !== undefined) {
+                sessions[currentSessionId].solves.splice(idx, 1);
                 saveStorage();
                 updateUI();
             }
-        };
+        });
+    });
 
-        function calculateMoN(times, n) {
-            const subset = times.slice(0, n);
-            const sum = subset.reduce((a, b) => a + b, 0);
-            return sum / n;
-        }
+    statCount.innerText = currentSolves.length;
+    statCountBadge.innerText = `${currentSolves.length} Solves`;
 
-        function calculateAoN(times, n) {
-            const subset = times.slice(0, n).sort((a, b) => a - b);
-            const trimmed = subset.slice(1, n - 1);
-            const sum = trimmed.reduce((a, b) => a + b, 0);
-            return sum / trimmed.length;
-        }
+    if (currentSolves.length > 0) {
+        const times = currentSolves.map(s => s.time);
+        statBest.innerText = formatTime(Math.min(...times));
+        statMo3.innerText = currentSolves.length >= 3 ? formatTime(calcMoN(times, 3)) : '-';
+        statAo3.innerText = currentSolves.length >= 3 ? formatTime(calcAoN(times, 3)) : '-';
+        statAo5.innerText = currentSolves.length >= 5 ? formatTime(calcAoN(times, 5)) : '-';
+        statAo12.innerText = currentSolves.length >= 12 ? formatTime(calcAoN(times, 12)) : '-';
+        statAo50.innerText = currentSolves.length >= 50 ? formatTime(calcAoN(times, 50)) : '-';
+        statAo100.innerText = currentSolves.length >= 100 ? formatTime(calcAoN(times, 100)) : '-';
+    } else {
+        ['statBest','statMo3','statAo3','statAo5','statAo12','statAo50','statAo100'].forEach(id => {
+            document.getElementById(id).innerText = '-';
+        });
+    }
 
-        function drawTrendChart(solves) {
-            const canvas = trendCanvas;
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight;
+    timerDisplay.innerText = '0.00';
+    timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75';
+    statusIndicator.innerText = 'TAP & HOLD SCREEN OR SPACEBAR';
+    statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500';
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawTrendChart(currentSolves);
+}
 
-            if (!solves || solves.length === 0) return;
-
-            const recentSolves = solves.slice(0, 20).reverse();
-            if (recentSolves.length < 2) return;
-
-            const times = recentSolves.map(s => s.time);
-            const minTime = Math.min(...times);
-            const maxTime = Math.max(...times);
-            const range = maxTime - minTime || 1;
-
-            const padding = 15;
-            const w = canvas.width - padding * 2;
-            const h = canvas.height - padding * 2;
-
-            ctx.strokeStyle = '#10b981';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-
-            recentSolves.forEach((solve, i) => {
-                const x = padding + (i / (recentSolves.length - 1)) * w;
-                const y = canvas.height - padding - ((solve.time - minTime) / range) * h;
-
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
-
-            ctx.stroke();
-        }
-    </script>
+function drawTrendChart(solves) {
+    const canvas = trendCanvas;
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!solves || solves.length === 0) return;
+    const recent = solves.slice(0, 20).reverse();
+    if (recent.length < 2) return;
+    const times = recent.map(s => s.time);
+    const minT = Math.min(...times), maxT = Math.max(...times);
+    const range = maxT - minT || 1;
+    const pad = 15, w = canvas.width - pad*2, h = canvas.height - pad*2;
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-green').trim() || '#10b981';
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    recent.forEach((s, i) => {
+        const x = pad + (i / (recent.length - 1)) * w;
+        const y = canvas.height - pad - ((s.time - minT) / range) * h;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+}
+</script>
 </body>
 </html>
