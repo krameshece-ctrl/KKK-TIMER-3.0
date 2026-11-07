@@ -3,299 +3,330 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>KKK Timer</title>
+<title>KKK Timer 3.0</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
 
-:root {
-    --bg-dark: #09090b;
-    --panel-bg: #18181b;
-    --accent-green: #10b981;
-    --accent-red: #ef4444;
-    --accent-yellow: #f59e0b;
-    --text-main: #f4f4f5;
-    --text-muted: #a1a1aa;
-    --border-main: #27272a;
-    --card-bg: #18181b;
-}
-
 * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
 
+:root {
+    --bg: #07070a;
+    --panel: #0f0f13;
+    --card: #1a1a1f;
+    --border: #1f1f23;
+    --accent: #10b981;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --text: #f4f4f5;
+}
+
 body {
-    font-family:'Inter',sans-serif;
-    background:var(--bg-dark);
-    color:var(--text-main);
-    user-select:none; -webkit-user-select:none;
-    touch-action:manipulation;
-    overflow:hidden; height:100vh; height:100dvh; width:100vw;
-    transition: background-color .25s ease, color .25s ease;
-}
-
-.font-mono-timer { font-family:'JetBrains Mono',monospace; }
-.holding { color:var(--accent-red)!important; }
-.ready { color:var(--accent-green)!important; }
-.inspecting { color:var(--accent-yellow)!important; }
-
-::-webkit-scrollbar { width:4px; height:4px; }
-::-webkit-scrollbar-track { background:var(--panel-bg); }
-::-webkit-scrollbar-thumb { background:#3f3f46; border-radius:4px; }
-.no-scrollbar::-webkit-scrollbar { display:none; }
-.no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
-
-@keyframes slideUp { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
-.slide-up { animation: slideUp .2s ease-out; }
-.stat-card-clickable { cursor:pointer; transition:all .15s ease; }
-.stat-card-clickable:hover { background:rgba(16,185,129,.15); border-color:rgba(16,185,129,.5); }
-.stat-card-clickable:active { transform:scale(.96); }
-.chat-bubble { max-width:88%; padding:8px 12px; border-radius:12px; font-size:12px; line-height:1.45; word-wrap:break-word; }
-.chat-user { background:var(--accent-green); color:#052e16; margin-left:auto; border-bottom-right-radius:2px; }
-.chat-bot { background:#27272a; color:#e4e4e7; margin-right:auto; border-bottom-left-radius:2px; }
-
-/* Theme-specific overrides applied via data attribute on body */
-body[data-theme] .bg-zinc-950,
-body[data-theme] .bg-zinc-900,
-body[data-theme] .bg-zinc-900\/60,
-body[data-theme] .bg-zinc-900\/80,
-body[data-theme] .bg-zinc-900\/90,
-body[data-theme] .bg-zinc-950\/40 {
-    background-color: var(--bg-dark) !important;
-}
-body[data-theme] .bg-zinc-800,
-body[data-theme] .bg-zinc-800\/40,
-body[data-theme] .bg-zinc-800\/50,
-body[data-theme] .bg-zinc-800\/60,
-body[data-theme] .bg-zinc-800\/80 {
-    background-color: var(--panel-bg) !important;
-}
-body[data-theme] .border-zinc-800,
-body[data-theme] .border-zinc-800\/60,
-body[data-theme] .border-zinc-800\/80,
-body[data-theme] .border-zinc-700\/50,
-body[data-theme] .border-zinc-700\/70,
-body[data-theme] .border-zinc-700 {
-    border-color: var(--border-main) !important;
-}
-body[data-theme] .text-emerald-400 { color: var(--accent-green) !important; }
-body[data-theme] .bg-emerald-600,
-body[data-theme] .bg-emerald-700,
-body[data-theme] .bg-emerald-800,
-body[data-theme] .bg-emerald-500 { background-color: var(--accent-green) !important; }
-body[data-theme] .hover\:bg-emerald-500:hover,
-body[data-theme] .hover\:bg-emerald-600:hover,
-body[data-theme] .hover\:bg-emerald-700:hover { background-color: var(--accent-green) !important; filter:brightness(1.1); }
-body[data-theme] .text-emerald-200,
-body[data-theme] .text-emerald-100,
-body[data-theme] .text-emerald-300 { color: #ffffff !important; }
-body[data-theme] .bg-blue-700 { background-color: var(--accent-yellow) !important; }
-body[data-theme] .hover\:bg-blue-600:hover { background-color: var(--accent-yellow) !important; filter:brightness(1.15); }
-body[data-theme] .bg-red-900\/60,
-body[data-theme] .bg-red-600 { background-color: var(--accent-red) !important; }
-body[data-theme] .hover\:bg-red-600:hover { background-color: var(--accent-red) !important; filter:brightness(1.15); }
-body[data-theme] .border-emerald-800\/50,
-body[data-theme] .border-emerald-500\/50,
-body[data-theme] .border-emerald-600\/50 { border-color: var(--accent-green) !important; }
-body[data-theme] .bg-emerald-950 { background-color: rgba(0,0,0,.35) !important; color: var(--accent-green) !important; }
-
-/* Settings tabs - FIXED visibility */
-.tab-btn {
-    color: #d4d4d8 !important;
-    background-color: #27272a;
-    transition: all .15s ease;
-}
-.tab-btn:hover {
-    color: #ffffff !important;
-    background-color: #3f3f46;
-}
-.tab-btn.active {
-    color: var(--accent-green) !important;
-    background-color: rgba(16,185,129,.15) !important;
-    border-bottom-color: var(--accent-green) !important;
-}
-
-/* Theme grid card */
-.theme-card {
-    cursor: pointer;
-    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
     overflow: hidden;
-    border: 2px solid transparent;
-    transition: all .15s ease;
+    height: 100vh;
+    height: 100dvh;
+    width: 100vw;
+    transition: background-color .35s ease, color .35s ease;
 }
-.theme-card:hover { transform: scale(1.04); }
-.theme-card.active { border-color: var(--accent-green) !important; box-shadow: 0 0 0 2px rgba(16,185,129,.3); }
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+        radial-gradient(ellipse at 20% 0%, rgba(16,185,129,.10) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 100%, rgba(59,130,246,.08) 0%, transparent 55%);
+    animation: ambientShift 20s ease-in-out infinite alternate;
+}
+
+@keyframes ambientShift {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.08); opacity: .8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.font-mono-timer { font-family: 'JetBrains Mono', monospace; }
+
+.holding  { color: var(--red) !important; text-shadow: 0 0 40px rgba(239,68,68,.5); animation: holdingPulse .35s ease-in-out infinite alternate; }
+.ready    { color: var(--accent) !important; text-shadow: 0 0 50px rgba(16,185,129,.7); animation: readyPulse .28s ease-in-out infinite alternate; }
+.inspecting { color: var(--yellow) !important; text-shadow: 0 0 40px rgba(245,158,11,.5); }
+
+@keyframes holdingPulse { from { transform: scale(1); } to { transform: scale(1.02); } }
+@keyframes readyPulse { from { transform: scale(1); filter: brightness(1); } to { transform: scale(1.03); filter: brightness(1.3); } }
+
+@keyframes timerBurst { 0% { transform: scale(1.08); } 100% { transform: scale(1); } }
+.timer-starting { animation: timerBurst .25s ease-out; }
+
+@keyframes scrambleIn { from { opacity: 0; transform: translateY(-8px); filter: blur(4px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+.scramble-new { animation: scrambleIn .3s ease-out; }
+
+button, .cube-btn, .stat-card-clickable, .music-btn, .tab-btn {
+    transition: transform .12s ease, background-color .2s ease, color .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+button:active { transform: scale(.94); }
+
+@keyframes solveIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+.solve-new { animation: solveIn .35s cubic-bezier(.34,1.4,.64,1); }
+
+@keyframes pbGlow { 0%, 100% { box-shadow: 0 0 0 rgba(16,185,129,0); } 50% { box-shadow: 0 0 24px rgba(16,185,129,.7), 0 0 48px rgba(16,185,129,.4); } }
+.pb-flash { animation: pbGlow 1.2s ease-in-out; }
+
+@keyframes modalIn { from { opacity: 0; transform: scale(.92) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.modal-in { animation: modalIn .28s cubic-bezier(.34,1.56,.64,1); }
+
+@keyframes bubbleIn { from { opacity: 0; transform: translateY(8px) scale(.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.chat-bubble { max-width: 88%; padding: 8px 12px; border-radius: 12px; font-size: 12px; line-height: 1.5; word-wrap: break-word; white-space: pre-line; animation: bubbleIn .25s cubic-bezier(.34,1.4,.64,1); }
+.chat-user { background: linear-gradient(135deg, var(--accent), #059669); color: #fff; margin-left: auto; border-bottom-right-radius: 3px; }
+.chat-bot { background: var(--card); color: #e4e4e7; margin-right: auto; border-bottom-left-radius: 3px; border: 1px solid var(--border); }
+
+@keyframes typingBounce { 0%, 60%, 100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-4px); opacity: 1; } }
+.typing-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); margin: 0 1px; animation: typingBounce 1.2s infinite; }
+.typing-dot:nth-child(2) { animation-delay: .15s; }
+.typing-dot:nth-child(3) { animation-delay: .3s; }
+
+.assistant-open { animation: assistantSlide .3s cubic-bezier(.34,1.4,.64,1); }
+@keyframes assistantSlide { from { opacity: 0; transform: translateY(30px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ===== SOLVES LIST SCROLLING FIX ===== */
+#solves-list {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: 10rem;
+    min-height: 3rem;
+    scrollbar-width: thin;
+    scrollbar-color: #52525b transparent;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y !important;
+    position: relative;
+    z-index: 5;
+    pointer-events: auto !important;
+}
+#solves-list::-webkit-scrollbar { width: 8px; }
+#solves-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 8px; }
+#solves-list::-webkit-scrollbar-thumb { background: #52525b; border-radius: 8px; }
+#solves-list::-webkit-scrollbar-thumb:hover { background: #71717a; }
+
+/* Make sure the sidebar doesn't swallow the list's scroll */
+aside {
+    overscroll-behavior: contain;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+@media (min-width: 768px) {
+    #solves-list { max-height: 13rem; }
+}
+/* ===== END SCROLLING FIX ===== */
+
+.stat-card-clickable { cursor: pointer; }
+.stat-card-clickable:hover { background: rgba(16,185,129,.12) !important; border-color: rgba(16,185,129,.4) !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.3); }
+
+.tab-btn { color: #a1a1aa; background: transparent; border-bottom: 2px solid transparent; cursor: pointer; }
+.tab-btn:hover { color: #e4e4e7; background: rgba(255,255,255,.03); }
+.tab-btn.active { color: var(--accent) !important; border-bottom-color: var(--accent) !important; background: rgba(16,185,129,.08) !important; }
+
+.theme-card { cursor: pointer; border-radius: 8px; overflow: hidden; border: 2px solid transparent; background: #18181b; transition: transform .15s cubic-bezier(.34,1.4,.64,1), border-color .15s ease, box-shadow .15s ease; }
+.theme-card:hover { transform: scale(1.08) translateY(-2px); border-color: #3f3f46; }
+.theme-card.active { border-color: var(--accent) !important; box-shadow: 0 0 0 2px rgba(16,185,129,.25); }
+
+@keyframes inspectionPulse { from { transform: scale(1); } to { transform: scale(1.05); } }
+.inspecting-tick { animation: inspectionPulse .6s ease-in-out; }
+
+@keyframes musicPulse { 0%, 100% { box-shadow: 0 0 0 rgba(16,185,129,0); } 50% { box-shadow: 0 0 12px rgba(16,185,129,.6); } }
+.music-active { animation: musicPulse 1.4s ease-in-out infinite; }
+
+@keyframes logoGlow { 0%, 100% { text-shadow: 0 0 8px rgba(16,185,129,.3); } 50% { text-shadow: 0 0 16px rgba(16,185,129,.6); } }
+.logo-glow { animation: logoGlow 4s ease-in-out infinite; }
+
+.cube-btn { transition: all .2s cubic-bezier(.34,1.4,.64,1); }
+.cube-btn:active { transform: scale(.92); }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.section-load { animation: fadeInUp .5s ease-out backwards; }
+.section-load:nth-child(1) { animation-delay: .05s; }
+.section-load:nth-child(2) { animation-delay: .1s; }
+.section-load:nth-child(3) { animation-delay: .15s; }
+.section-load:nth-child(4) { animation-delay: .2s; }
 </style>
 </head>
-<body data-theme="default" class="flex flex-col justify-between text-zinc-100 overflow-hidden select-none">
+<body class="flex flex-col justify-between overflow-hidden">
 
-<!-- HEADER -->
-<header class="w-full bg-zinc-900/90 border-b border-zinc-800/80 px-3 sm:px-6 py-2 flex items-center justify-between shrink-0 z-30 backdrop-blur-md">
+<header class="w-full px-3 sm:px-5 py-2 flex items-center justify-between shrink-0 z-30 relative border-b" style="background:var(--panel); border-color:var(--border);">
     <div class="flex items-center space-x-1.5 sm:space-x-2">
-        <span class="font-extrabold text-sm sm:text-base text-emerald-400 tracking-wide whitespace-nowrap">K.Krithik</span>
-        <button id="settings-btn" title="Settings" class="p-1.5 sm:p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95 cursor-pointer border border-zinc-700/50">
+        <span class="font-extrabold text-sm sm:text-base tracking-wide whitespace-nowrap logo-glow" style="color:var(--accent);">K.Krithik</span>
+        <button id="settings-btn" title="Settings" class="p-1.5 sm:p-2 rounded-lg text-zinc-300 hover:text-white border" style="background:var(--card); border-color:var(--border);">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         </button>
-        <button id="assistant-btn" title="Assistant" class="p-1.5 sm:p-2 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-emerald-200 hover:text-white transition active:scale-95 border border-emerald-600/50">
+        <button id="assistant-btn" title="Assistant" class="p-1.5 sm:p-2 rounded-lg text-emerald-100 hover:text-white border border-emerald-700/50" style="background:rgba(16,185,129,.15);">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
         </button>
     </div>
-    <div class="text-center px-1"><h1 class="text-xl sm:text-2xl font-black tracking-widest text-white uppercase drop-shadow">KKK</h1></div>
+    <div class="text-center px-1"><h1 class="text-xl sm:text-2xl font-black tracking-widest uppercase drop-shadow">KKK</h1></div>
     <div class="flex items-center space-x-1 sm:space-x-1.5">
-        <select id="session-select" class="bg-zinc-800 text-xs sm:text-sm text-zinc-200 border border-zinc-700/70 rounded-lg px-1.5 py-1 focus:outline-none focus:ring-1 focus:ring-emerald-500 max-w-[90px] sm:max-w-[160px] truncate"></select>
-        <button id="share-session-btn" title="Share Session" class="p-1 sm:p-1.5 rounded-lg bg-blue-700 hover:bg-blue-600 text-white transition active:scale-95 shadow">
+        <select id="session-select" class="text-xs sm:text-sm text-zinc-200 border rounded-lg px-1.5 py-1 focus:outline-none max-w-[90px] sm:max-w-[160px] truncate" style="background:var(--card); border-color:var(--border);"></select>
+        <button id="share-session-btn" title="Share Session" class="p-1 sm:p-1.5 rounded-lg bg-blue-700 hover:bg-blue-600 text-white">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
         </button>
-        <button id="add-session-btn" title="Create New Session" class="p-1 sm:p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition active:scale-95 shadow">
+        <button id="add-session-btn" title="New Session" class="p-1 sm:p-1.5 rounded-lg text-white" style="background:var(--accent);">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
         </button>
-        <button id="delete-session-btn" title="Delete Current Session" class="p-1 sm:p-1.5 rounded-lg bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white transition active:scale-95">
+        <button id="delete-session-btn" title="Delete Session" class="p-1 sm:p-1.5 rounded-lg bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
         </button>
     </div>
 </header>
 
-<div class="flex-grow flex flex-col md:flex-row overflow-hidden relative w-full">
-    <aside class="w-full md:w-80 bg-zinc-900/60 border-b md:border-b-0 md:border-r border-zinc-800/80 p-2.5 sm:p-3 flex flex-col justify-between overflow-y-auto shrink-0 z-10 max-h-[38vh] md:max-h-none">
-        <div>
-            <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-zinc-800">
-                <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider">Statistics</h2>
-                <span id="stat-count-badge" class="text-[10px] bg-emerald-950 text-emerald-400 font-bold px-2 py-0.5 rounded-full border border-emerald-800/50">0 Solves</span>
-            </div>
-            <div class="grid grid-cols-4 md:grid-cols-2 gap-1 text-xs mb-2.5">
-                <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Best</span> <span id="stat-best" class="font-bold font-mono text-emerald-400 text-xs">-</span></div>
-                <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Mo3</span> <span id="stat-mo3" class="font-bold font-mono text-xs">-</span></div>
-                <div class="stat-card-clickable bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800" data-stat="ao3"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao3</span> <span id="stat-ao3" class="font-bold font-mono text-xs">-</span></div>
-                <div class="stat-card-clickable bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800" data-stat="ao5"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao5</span> <span id="stat-ao5" class="font-bold font-mono text-xs">-</span></div>
-                <div class="stat-card-clickable bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800" data-stat="ao12"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao12</span> <span id="stat-ao12" class="font-bold font-mono text-xs">-</span></div>
-                <div class="stat-card-clickable bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800" data-stat="ao50"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao50</span> <span id="stat-ao50" class="font-bold font-mono text-xs">-</span></div>
-                <div class="stat-card-clickable bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800" data-stat="ao100"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao100</span> <span id="stat-ao100" class="font-bold font-mono text-xs">-</span></div>
-                <div class="bg-zinc-800/50 p-1.5 rounded-lg border border-zinc-800"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Count</span> <span id="stat-count" class="font-bold font-mono text-xs">0</span></div>
-            </div>
-            <div class="mb-2">
-                <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1 pb-1 border-b border-zinc-800">Solve Trend</h2>
-                <div class="bg-zinc-900/80 p-2 rounded-lg border border-zinc-800/80 h-20 sm:h-28 w-full relative flex items-end">
-                    <canvas id="trendCanvas" class="w-full h-full block"></canvas>
-                </div>
-            </div>
-            <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1 pb-1 border-b border-zinc-800">Session Solves</h2>
-            <div id="solves-list" class="space-y-1 max-h-20 md:max-h-48 overflow-y-auto pr-1"></div>
+<div class="flex-grow flex flex-col md:flex-row overflow-hidden relative w-full z-10">
+    <aside class="w-full md:w-80 p-2.5 sm:p-3 overflow-y-auto shrink-0 max-h-[38vh] md:max-h-none border-b md:border-b-0 md:border-r section-load" style="background:var(--panel); border-color:var(--border);">
+        <div class="flex justify-between items-center mb-1.5 pb-1 border-b" style="border-color:var(--border);">
+            <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider">Statistics</h2>
+            <span id="stat-count-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full border" style="color:var(--accent); background:rgba(16,185,129,.1); border-color:rgba(16,185,129,.3);">0 Solves</span>
         </div>
+        <div class="grid grid-cols-4 md:grid-cols-2 gap-1 text-xs mb-2.5">
+            <div class="p-1.5 rounded-lg border" style="background:var(--card); border-color:var(--border);"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Best</span> <span id="stat-best" class="font-bold font-mono text-xs" style="color:var(--accent);">-</span></div>
+            <div class="p-1.5 rounded-lg border" style="background:var(--card); border-color:var(--border);"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Mo3</span> <span id="stat-mo3" class="font-bold font-mono text-xs">-</span></div>
+            <div class="stat-card-clickable p-1.5 rounded-lg border" style="background:var(--card); border-color:var(--border);" data-stat="ao3"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao3</span> <span id="stat-ao3" class="font-bold font-mono text-xs">-</span></div>
+            <div class="stat-card-clickable p-1.5 rounded-lg border" style="background:var(--card); border-color:var(--border);" data-stat="ao5"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao5</span> <span id="stat-ao5" class="font-bold font-mono text-xs">-</span></div>
+            <div class="stat-card-clickable p-1.5 rounded-lg border" style="background:var(--card); border-color:var(--border);" data-stat="ao12"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao12</span> <span id="stat-ao12" class="font-bold font-mono text-xs">-</span></div>
+            <div class="stat-card-clickable p-1.5 rounded-lg border" style="background:var(--card); border-color:var(--border);" data-stat="ao50"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao50</span> <span id="stat-ao50" class="font-bold font-mono text-xs">-</span></div>
+            <div class="stat-card-clickable p-1.5 rounded-lg border" style="background:var(--card); border-color:var(--border);" data-stat="ao100"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Ao100</span> <span id="stat-ao100" class="font-bold font-mono text-xs">-</span></div>
+            <div class="p-1.5 rounded-lg border" style="background:var(--card); border-color:var(--border);"><span class="text-zinc-500 block text-[9px] uppercase font-semibold">Count</span> <span id="stat-count" class="font-bold font-mono text-xs">0</span></div>
+        </div>
+        <div class="mb-2">
+            <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1 pb-1 border-b" style="border-color:var(--border);">Solve Trend</h2>
+            <div class="p-2 rounded-lg border h-20 sm:h-28 w-full relative flex items-end" style="background:var(--panel); border-color:var(--border);">
+                <canvas id="trendCanvas" class="w-full h-full block"></canvas>
+            </div>
+        </div>
+        <h2 class="text-[11px] sm:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1 pb-1 border-b" style="border-color:var(--border);">Session Solves</h2>
+        <div id="solves-list" class="space-y-1 pr-1"></div>
     </aside>
 
-    <main id="main-timer" class="flex-grow flex flex-col justify-between items-center p-3 sm:p-6 text-center relative select-none cursor-pointer w-full bg-zinc-950/40">
+    <main id="main-timer" class="flex-grow flex flex-col justify-between items-center p-3 sm:p-6 text-center relative select-none cursor-pointer w-full section-load">
         <div class="w-full max-w-3xl my-auto px-2">
             <div class="flex items-center justify-center space-x-2 mb-2">
-                <button id="prev-scramble-btn" title="Previous Scramble" class="p-1.5 sm:p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95 border border-zinc-700/50">
+                <button id="prev-scramble-btn" title="Previous" class="p-1.5 sm:p-2 rounded-lg text-zinc-300 hover:text-white border" style="background:var(--card); border-color:var(--border);">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                 </button>
                 <span id="scramble-index" class="text-[10px] sm:text-xs text-zinc-500 font-mono font-bold">1 / 1</span>
-                <button id="next-scramble-btn" title="Next Scramble" class="p-1.5 sm:p-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white transition active:scale-95 border border-emerald-500/50">
+                <button id="next-scramble-btn" title="Next" class="p-1.5 sm:p-2 rounded-lg text-white" style="background:var(--accent);">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </button>
             </div>
-            <div id="scramble" class="text-sm sm:text-lg md:text-xl font-mono font-medium tracking-wide text-zinc-200 bg-zinc-900/90 p-3 sm:p-4 rounded-xl border border-zinc-800/80 shadow-2xl break-words min-h-[3.5rem] flex items-center justify-center leading-relaxed pointer-events-none">Generating scramble...</div>
+            <div id="scramble" class="text-sm sm:text-lg md:text-xl font-mono font-medium tracking-wide text-zinc-200 p-3 sm:p-4 rounded-xl border break-words min-h-[3.5rem] flex items-center justify-center leading-relaxed pointer-events-none" style="background:var(--panel); border-color:var(--border); box-shadow:0 8px 24px rgba(0,0,0,.4);">
+                Generating scramble...
+            </div>
         </div>
         <div class="my-auto pointer-events-none py-2">
-            <div id="timer-display" class="text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75">0.00</div>
+            <div id="timer-display" class="text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tracking-tight text-white drop-shadow-2xl">0.00</div>
             <div id="status-indicator" class="text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500">TAP & HOLD SCREEN OR SPACEBAR</div>
         </div>
-        <div id="instructions" class="text-xs text-zinc-500 my-auto pointer-events-none">
-            <span class="hidden sm:inline">Hold <kbd class="px-2 py-0.5 bg-zinc-800 rounded border border-zinc-700 text-zinc-300 font-mono">SPACEBAR</kbd> for 0.5s until green, then release.</span>
+        <div class="text-xs text-zinc-500 my-auto pointer-events-none">
+            <span class="hidden sm:inline">Hold <kbd class="px-2 py-0.5 rounded border text-zinc-300 font-mono" style="background:var(--card); border-color:var(--border);">SPACEBAR</kbd> for 0.5s until green, then release.</span>
             <span class="inline sm:hidden">Touch & hold for 0.5s until green, then release.</span>
         </div>
     </main>
 </div>
 
-<div class="w-full bg-zinc-900 border-t border-zinc-800/80 px-3 py-2 flex flex-col sm:flex-row items-center justify-between z-20 shrink-0 gap-2">
+<div class="w-full px-3 py-2 flex flex-col sm:flex-row items-center justify-between z-20 shrink-0 gap-2 border-t section-load" style="background:var(--panel); border-color:var(--border);">
     <div class="flex items-center space-x-2 shrink-0">
-        <span class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">Musics (50)</span>
-        <button id="music-off-btn" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white transition active:scale-95 shadow">Turn Off</button>
+        <span class="text-xs font-extrabold uppercase tracking-wider" style="color:var(--accent);">Musics (50)</span>
+        <button id="music-off-btn" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white">Turn Off</button>
     </div>
     <div class="flex items-center space-x-1.5 w-full max-w-full overflow-hidden px-1">
-        <button id="scroll-left-btn" class="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95 shrink-0 border border-zinc-700/50" title="Scroll Left">
+        <button id="scroll-left-btn" class="p-1.5 rounded-lg text-zinc-300 hover:text-white border shrink-0" style="background:var(--card); border-color:var(--border);">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         </button>
-        <div class="flex items-center space-x-1.5 overflow-x-auto scroll-smooth py-1 flex-grow no-scrollbar" id="music-selector"></div>
-        <button id="scroll-right-btn" class="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95 shrink-0 border border-zinc-700/50" title="Scroll Right">
+        <div class="flex items-center space-x-1.5 overflow-x-auto py-1 flex-grow no-scrollbar" id="music-selector"></div>
+        <button id="scroll-right-btn" class="p-1.5 rounded-lg text-zinc-300 hover:text-white border shrink-0" style="background:var(--card); border-color:var(--border);">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </button>
     </div>
 </div>
 
-<footer class="w-full bg-zinc-900 border-t border-zinc-800/80 px-2 py-2 flex justify-center items-center z-20 shrink-0">
+<footer class="w-full px-2 py-2 flex justify-center items-center z-20 shrink-0 border-t section-load" style="background:var(--panel); border-color:var(--border);">
     <div class="flex items-center space-x-1.5 sm:space-x-2 overflow-x-auto no-scrollbar max-w-full px-2" id="cube-selector">
-        <button data-cube="3*3" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-emerald-600 text-white transition active:scale-95 shadow">3*3</button>
-        <button data-cube="4*4" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">4*4</button>
-        <button data-cube="5*5" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">5*5</button>
-        <button data-cube="6*6" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">6*6</button>
-        <button data-cube="7*7" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">7*7</button>
-        <button data-cube="2*2" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">2*2</button>
-        <button data-cube="Skewb" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95">Skewb</button>
+        <button data-cube="3*3" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold">3*3</button>
+        <button data-cube="4*4" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold">4*4</button>
+        <button data-cube="5*5" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold">5*5</button>
+        <button data-cube="6*6" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold">6*6</button>
+        <button data-cube="7*7" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold">7*7</button>
+        <button data-cube="2*2" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold">2*2</button>
+        <button data-cube="Skewb" class="cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold">Skewb</button>
     </div>
 </footer>
 
 <!-- SETTINGS MODAL -->
-<div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 hidden">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden">
-        <div class="p-3.5 sm:p-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-950">
+<div id="settings-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 hidden">
+    <div class="border rounded-2xl max-w-lg w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden modal-in" style="background:var(--panel); border-color:var(--border);">
+        <div class="p-3.5 sm:p-4 border-b flex justify-between items-center" style="border-color:var(--border);">
             <h3 class="text-base sm:text-lg font-bold text-white">Settings</h3>
             <button id="close-modal-btn" class="text-zinc-400 hover:text-white p-1 rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <div class="flex border-b border-zinc-800 bg-zinc-950 overflow-x-auto no-scrollbar">
-            <button data-tab="about" class="tab-btn active px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap focus:outline-none border-b-2 border-transparent">ABOUT</button>
-            <button data-tab="shortcuts" class="tab-btn px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap focus:outline-none border-b-2 border-transparent">Shortcuts</button>
-            <button data-tab="features" class="tab-btn px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap focus:outline-none border-b-2 border-transparent">Features</button>
-            <button data-tab="theme" class="tab-btn px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap focus:outline-none border-b-2 border-transparent">🎨 Theme</button>
+        <div class="flex border-b overflow-x-auto no-scrollbar" style="border-color:var(--border);">
+            <button data-tab="about" class="tab-btn active px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap">ABOUT</button>
+            <button data-tab="shortcuts" class="tab-btn px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap">Shortcuts</button>
+            <button data-tab="features" class="tab-btn px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap">Features</button>
+            <button data-tab="theme" class="tab-btn px-3 sm:px-5 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap">🎨 Theme</button>
         </div>
         <div class="p-4 sm:p-6 overflow-y-auto space-y-4 text-zinc-300 text-xs sm:text-sm flex-grow">
             <div id="tab-about" class="tab-content space-y-3 leading-relaxed text-zinc-200">
-                <p style="color:red">Introduction</p>
-                <p>Hello everyone. Welcome to my KKK timer. This is completely made by me. This is a free web tool where you can improve and record your times. I am glad that this timer could help you.</p>
-                <p>Take this timer as motivation. Please use this timer correctly and purposefully.</p>
-                <p>I made this timer inspired by cs timer. although this timer is not complex as cs timer, you can use this for practices. I hope you will find this as one of the best timer.</p>
-                <p>I am boy who is curious about everything. If you want to know more about me please open or copy paste the link given below</p>
-                <p>https://krameshece-ctrl.github.io/About-me./</p>
-                <p style="color:red">Using instructions</p>
-                <p style="color:yellow">using the timer</p>
-                <p>mobile users</p>
-                <p>I am going to explain how to start and stop the timer for mobile users here. Scramble the cube exactly as per given above. hold the timer for 0.5sec. When you see green light, you can release and start solving your cube. After solving your cube press anywhere to stop the timer.</p>
-                <p>computer or laptop users</p>
-                <p>I am going to explain how to start ans stop the timer for computer or laptop users here. Scramble the cube exactly as per given above. Click your mouse in the timerto start the timer. You can release and solve the cube when you see grrn light. After solving the cube, click anywhere to stop the timer.</p>
-                <p style="color:yellow">music controls</p>
-                <p>You have 50 music to choose. You can choose the music and solve peacefully</p>
-                <p>This is for cubers who don't like music or need to solveconcentrated without music. Please click the off button and continue solving</p>
-                <p style="color:yellow">sessions instructions</p>
-                <p>You can name or change the name of the session. You can also go to the new session for differenciation. You can continue different cubes in different sesssions.</p>
-                <p style="color:yellow">different cubes</p>
-                <p>There are different cube types in this website. Choose the cube type you are going to practice</p>
-                <p style="color:yellow">inspection time</p>
-                <p> Please go to the settings. Please click enable features and click inpection time if you want inspection time. You can turn off if you really don't want.</p>
+                <p class="text-red-400 font-bold">Introduction</p>
+                <p>Welcome to the KKK Timer — a free web tool built to help you track and improve your solve times.</p>
+                <p class="text-red-400 font-bold">Instructions</p>
+                <p class="text-yellow-400">Timer</p>
+                <p>Mobile: hold screen 0.5s until green, release to start, tap to stop.</p>
+                <p>Desktop: hold SPACEBAR 0.5s until green, release to start, any key to stop.</p>
+                <p class="text-yellow-400">Music</p>
+                <p>50 unique tracks. Pick one or hit "Turn Off" for silence.</p>
+                <p class="text-yellow-400">Sessions</p>
+                <p>Create multiple sessions to separate cubes or practice styles.</p>
+                <p class="text-yellow-400">Inspection</p>
+                <p>Enable 15s inspection in Settings → Features. During inspection you can start the solve early by holding Spacebar — no penalty. If time runs out, +2 applies and timer starts automatically.</p>
+                <p class="text-yellow-400">Penalties</p>
+                <p>Click any solve in the session list to apply +2 or DNF.</p>
             </div>
             <div id="tab-shortcuts" class="tab-content hidden space-y-3">
-                <h4 class="font-bold text-emerald-400 border-b border-zinc-800 pb-1">PC Keyboard Controls</h4>
-                <div class="flex justify-between items-center py-1"><span>Hold Spacebar (0.5s)</span><kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-200 font-mono">Arm Timer</kbd></div>
-                <div class="flex justify-between items-center py-1"><span>Release Spacebar</span><kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-200 font-mono">Start Solve / Inspection</kbd></div>
-                <div class="flex justify-between items-center py-1 border-b border-zinc-800 pb-2"><span>Press Any Key</span><kbd class="px-2 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-200 font-mono">Stop Timer</kbd></div>
-                <h4 class="font-bold text-emerald-400 border-b border-zinc-800 pb-1 pt-2">Mobile Touch Controls</h4>
-                <div class="flex justify-between items-center py-1"><span>Touch & Hold Screen (0.5s)</span><span class="text-xs text-zinc-400">Arm Timer (Red -> Green)</span></div>
-                <div class="flex justify-between items-center py-1"><span>Release Finger</span><span class="text-xs text-zinc-400">Start Solve / Inspection</span></div>
-                <div class="flex justify-between items-center py-1"><span>Tap Anywhere While Running</span><span class="text-xs text-zinc-400">Stop Timer Instantly</span></div>
+                <h4 class="font-bold border-b pb-1" style="color:var(--accent); border-color:var(--border);">PC Keyboard</h4>
+                <div class="flex justify-between items-center py-1"><span>Hold Spacebar (0.5s)</span><kbd class="px-2 py-0.5 border rounded text-xs text-zinc-200 font-mono" style="background:var(--card); border-color:var(--border);">Arm</kbd></div>
+                <div class="flex justify-between items-center py-1"><span>Release Spacebar</span><kbd class="px-2 py-0.5 border rounded text-xs text-zinc-200 font-mono" style="background:var(--card); border-color:var(--border);">Start</kbd></div>
+                <div class="flex justify-between items-center py-1 border-b pb-2" style="border-color:var(--border);"><span>Any Key</span><kbd class="px-2 py-0.5 border rounded text-xs text-zinc-200 font-mono" style="background:var(--card); border-color:var(--border);">Stop</kbd></div>
+                <h4 class="font-bold border-b pb-1 pt-2" style="color:var(--accent); border-color:var(--border);">Mobile Touch</h4>
+                <div class="flex justify-between items-center py-1"><span>Touch & Hold</span><span class="text-xs text-zinc-400">Arm</span></div>
+                <div class="flex justify-between items-center py-1"><span>Release</span><span class="text-xs text-zinc-400">Start</span></div>
+                <div class="flex justify-between items-center py-1"><span>Tap While Running</span><span class="text-xs text-zinc-400">Stop</span></div>
             </div>
             <div id="tab-features" class="tab-content hidden space-y-4">
-                <div class="flex items-center justify-between p-3.5 bg-zinc-800/50 rounded-xl border border-zinc-700/50">
+                <div class="flex items-center justify-between p-3.5 rounded-xl border" style="background:var(--card); border-color:var(--border);">
                     <div>
                         <div class="font-semibold text-white">15s Inspection Time</div>
                         <div class="text-xs text-zinc-400 mt-0.5">Counts down 15 seconds before starting solve</div>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" id="toggle-inspection" class="sr-only peer">
-                        <div class="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                        <div class="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all" style="background:#3f3f46; transition: background-color .2s;" id="inspection-toggle-track"></div>
                     </label>
                 </div>
             </div>
             <div id="tab-theme" class="tab-content hidden space-y-3">
-                <p class="text-xs text-zinc-400">Pick a color theme. Your choice is saved automatically.</p>
+                <p class="text-xs text-zinc-400">Pick a color theme. Saved automatically.</p>
                 <div id="theme-grid" class="grid grid-cols-3 sm:grid-cols-5 gap-2"></div>
             </div>
         </div>
@@ -303,9 +334,9 @@ body[data-theme] .bg-emerald-950 { background-color: rgba(0,0,0,.35) !important;
 </div>
 
 <!-- SHARE MODAL -->
-<div id="share-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 hidden">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden slide-up">
-        <div class="p-3.5 sm:p-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-950">
+<div id="share-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 hidden">
+    <div class="border rounded-2xl max-w-md w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden modal-in" style="background:var(--panel); border-color:var(--border);">
+        <div class="p-3.5 sm:p-4 border-b flex justify-between items-center" style="border-color:var(--border);">
             <h3 class="text-base sm:text-lg font-bold text-white">Share Session</h3>
             <button id="close-share-btn" class="text-zinc-400 hover:text-white p-1 rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -314,17 +345,17 @@ body[data-theme] .bg-emerald-950 { background-color: rgba(0,0,0,.35) !important;
         <div class="p-4 overflow-y-auto">
             <p class="text-xs text-zinc-400 mb-3">Choose an app to share your session to:</p>
             <div id="share-apps-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5"></div>
-            <button id="share-more-btn" class="mt-4 w-full py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-bold transition active:scale-95">More Options...</button>
-            <button id="share-copy-btn" class="mt-2 w-full py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-sm font-bold transition active:scale-95">Copy to Clipboard</button>
+            <button id="share-more-btn" class="mt-4 w-full py-2 rounded-lg text-zinc-200 text-sm font-bold border" style="background:var(--card); border-color:var(--border);">More Options...</button>
+            <button id="share-copy-btn" class="mt-2 w-full py-2 rounded-lg text-white text-sm font-bold" style="background:var(--accent);">Copy to Clipboard</button>
         </div>
     </div>
 </div>
 
 <!-- ASSISTANT PANEL -->
-<div id="assistant-panel" class="fixed bottom-16 right-3 w-[320px] sm:w-[360px] bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl z-40 hidden flex-col overflow-hidden slide-up" style="max-height:70vh;">
-    <div class="bg-emerald-700 px-3 py-2 flex justify-between items-center shrink-0">
+<div id="assistant-panel" class="fixed bottom-16 right-3 w-[320px] sm:w-[360px] border rounded-2xl shadow-2xl z-40 hidden flex-col overflow-hidden" style="background:var(--panel); border-color:var(--border); max-height:72vh;">
+    <div class="px-3 py-2 flex justify-between items-center shrink-0" style="background:linear-gradient(to right, var(--accent), #059669);">
         <div class="flex items-center space-x-2">
-            <div class="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center font-bold text-white text-sm">A</div>
+            <div class="w-7 h-7 rounded-full bg-white/25 flex items-center justify-center font-bold text-white text-sm">A</div>
             <div>
                 <div class="text-white font-bold text-sm">Assistant</div>
                 <div class="text-[10px] text-white/80">Cube expert • Always online</div>
@@ -335,19 +366,19 @@ body[data-theme] .bg-emerald-950 { background-color: rgba(0,0,0,.35) !important;
         </button>
     </div>
     <div id="chat-messages" class="flex-grow overflow-y-auto p-3 space-y-2 flex flex-col" style="min-height:200px;"></div>
-    <div class="p-2 border-t border-zinc-800 bg-zinc-950 flex items-center space-x-1.5 shrink-0">
-        <input id="chat-input" type="text" placeholder="Ask about the scramble or tips..." class="flex-grow bg-zinc-800 text-zinc-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 border border-zinc-700">
-        <button id="chat-send-btn" class="p-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition active:scale-95">
+    <div class="p-2 border-t flex items-center space-x-1.5 shrink-0" style="border-color:var(--border);">
+        <input id="chat-input" type="text" placeholder="Ask about the scramble or tips..." class="flex-grow text-zinc-200 text-xs rounded-lg px-3 py-2 focus:outline-none border" style="background:var(--card); border-color:var(--border);">
+        <button id="chat-send-btn" class="p-2 rounded-lg text-white" style="background:var(--accent);">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
         </button>
     </div>
 </div>
 
-<!-- AO DETAILS MODAL -->
-<div id="ao-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 hidden">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden slide-up">
-        <div class="p-3.5 sm:p-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-950">
-            <h3 id="ao-modal-title" class="text-base sm:text-lg font-bold text-white">Ao5 Details</h3>
+<!-- AO MODAL -->
+<div id="ao-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 hidden">
+    <div class="border rounded-2xl max-w-lg w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden modal-in" style="background:var(--panel); border-color:var(--border);">
+        <div class="p-3.5 sm:p-4 border-b flex justify-between items-center" style="border-color:var(--border);">
+            <h3 id="ao-modal-title" class="text-base sm:text-lg font-bold text-white">Details</h3>
             <button id="close-ao-btn" class="text-zinc-400 hover:text-white p-1 rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
@@ -356,299 +387,238 @@ body[data-theme] .bg-emerald-950 { background-color: rgba(0,0,0,.35) !important;
     </div>
 </div>
 
+<!-- PENALTY MODAL -->
+<div id="penalty-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-[60] hidden">
+    <div class="border rounded-2xl max-w-sm w-full shadow-2xl overflow-hidden modal-in" style="background:var(--panel); border-color:var(--border);">
+        <div class="p-4 border-b" style="border-color:var(--border);">
+            <h3 id="penalty-title" class="text-base font-bold text-white">Apply Penalty</h3>
+            <p id="penalty-solve-info" class="text-xs text-zinc-400 mt-1"></p>
+        </div>
+        <div class="p-4 space-y-2">
+            <button id="penalty-ok-btn" class="w-full py-2.5 rounded-lg text-white text-sm font-bold" style="background:var(--accent);">OK (No Penalty)</button>
+            <button id="penalty-plus2-btn" class="w-full py-2.5 rounded-lg text-white text-sm font-bold bg-yellow-600 hover:bg-yellow-500">+2 Seconds</button>
+            <button id="penalty-dnf-btn" class="w-full py-2.5 rounded-lg text-white text-sm font-bold bg-red-700 hover:bg-red-600">DNF</button>
+            <button id="penalty-cancel-btn" class="w-full py-2 rounded-lg text-zinc-300 text-sm font-semibold border" style="background:var(--card); border-color:var(--border);">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <script>
-/* ============ STATE ============ */
-let timerState = 'IDLE';
-let startTime = 0;
-let elapsedInterval = null;
-let holdTimeout = null;
-let inspectionInterval = null;
-let inspectionTimeLeft = 15;
-let inspectionEnabled = false;
+/* ==========================================================
+   KKK TIMER 3.0 — FINAL BUILD (scroll fix applied)
+   ========================================================== */
 
-let currentCube = '3*3';
-let currentSessionId = 'default_3*3';
-let sessions = {};
+const state = {
+    timerState: 'IDLE',
+    startTime: 0,
+    elapsedInterval: null,
+    holdTimeout: null,
+    inspectionInterval: null,
+    inspectionTimeLeft: 15,
+    inspectionEnabled: false,
+    inspectionDNF: false,
+    currentCube: '3*3',
+    currentSessionId: 'default_3*3',
+    sessions: {},
+    scrambleHistory: [],
+    scrambleHistoryIndex: -1,
+    currentTheme: 'default',
+    chatHistory: [],
+    music: { audioCtx: null, interval: null, currentTrack: null },
+    ignoreNextMouseUp: false,
+    ignoreNextTouchEnd: false,
+    penaltySolveIndex: null,
+    currentPenalty2: false,
+    currentDNF: false
+};
 
-let scrambleHistory = [];
-let scrambleHistoryIndex = -1;
-let currentTheme = 'default';
-
-const timerDisplay = document.getElementById('timer-display');
-const statusIndicator = document.getElementById('status-indicator');
-const scrambleDisplay = document.getElementById('scramble');
-const scrambleIndexEl = document.getElementById('scramble-index');
-const solvesList = document.getElementById('solves-list');
-const sessionSelect = document.getElementById('session-select');
-const toggleInspection = document.getElementById('toggle-inspection');
-const mainTimerArea = document.getElementById('main-timer');
-const trendCanvas = document.getElementById('trendCanvas');
-
-const statCount = document.getElementById('stat-count');
-const statCountBadge = document.getElementById('stat-count-badge');
-const statBest = document.getElementById('stat-best');
-const statMo3 = document.getElementById('stat-mo3');
-const statAo3 = document.getElementById('stat-ao3');
-const statAo5 = document.getElementById('stat-ao5');
-const statAo12 = document.getElementById('stat-ao12');
-const statAo50 = document.getElementById('stat-ao50');
-const statAo100 = document.getElementById('stat-ao100');
+const $ = id => document.getElementById(id);
+const timerDisplay = $('timer-display');
+const statusIndicator = $('status-indicator');
+const scrambleDisplay = $('scramble');
+const scrambleIndexEl = $('scramble-index');
+const solvesList = $('solves-list');
+const sessionSelect = $('session-select');
+const toggleInspection = $('toggle-inspection');
+const mainTimerArea = $('main-timer');
+const trendCanvas = $('trendCanvas');
 
 /* ============ THEMES ============ */
 const THEMES = [
-    { id:'default', name:'Default', bg:'#09090b', panel:'#18181b', accent:'#10b981', red:'#ef4444', yellow:'#f59e0b', border:'#27272a' },
-    { id:'midnight_blue', name:'Midnight Blue', bg:'#0a1428', panel:'#152340', accent:'#3b82f6', red:'#ef4444', yellow:'#f59e0b', border:'#1e3a5f' },
-    { id:'crimson', name:'Crimson', bg:'#1a0808', panel:'#2b0f0f', accent:'#ef4444', red:'#f87171', yellow:'#fbbf24', border:'#450a0a' },
-    { id:'sunset', name:'Sunset', bg:'#1a0f05', panel:'#2d1a0a', accent:'#f97316', red:'#ef4444', yellow:'#fbbf24', border:'#432010' },
-    { id:'forest', name:'Forest', bg:'#051a0f', panel:'#0f2b1a', accent:'#22c55e', red:'#ef4444', yellow:'#fbbf24', border:'#14532d' },
-    { id:'cyberpunk', name:'Cyberpunk', bg:'#0a0416', panel:'#1a0a2e', accent:'#f0abfc', red:'#f43f5e', yellow:'#facc15', border:'#3b0764' },
-    { id:'ocean', name:'Ocean', bg:'#04141a', panel:'#0a2633', accent:'#06b6d4', red:'#f43f5e', yellow:'#fbbf24', border:'#0e4f66' },
-    { id:'royal', name:'Royal Purple', bg:'#0d0520', panel:'#1a0d33', accent:'#a855f7', red:'#f43f5e', yellow:'#facc15', border:'#2e1065' },
-    { id:'rose_gold', name:'Rose Gold', bg:'#1a0a0a', panel:'#2b1414', accent:'#fb7185', red:'#ef4444', yellow:'#fbbf24', border:'#4c1d1d' },
-    { id:'monochrome', name:'Monochrome', bg:'#000000', panel:'#1a1a1a', accent:'#d4d4d4', red:'#a3a3a3', yellow:'#e5e5e5', border:'#333333' },
-    { id:'neon_green', name:'Neon Green', bg:'#000000', panel:'#0a1a0a', accent:'#39ff14', red:'#ff073a', yellow:'#ffea00', border:'#1a3319' },
-    { id:'hot_pink', name:'Hot Pink', bg:'#1a0514', panel:'#2e0a24', accent:'#ec4899', red:'#f43f5e', yellow:'#fbbf24', border:'#500724' },
-    { id:'golden', name:'Golden', bg:'#1a1405', panel:'#2e220a', accent:'#eab308', red:'#ef4444', yellow:'#fbbf24', border:'#4c3809' },
-    { id:'arctic', name:'Arctic', bg:'#0a1420', panel:'#152a3d', accent:'#67e8f9', red:'#f43f5e', yellow:'#fbbf24', border:'#1e4a66' },
-    { id:'emerald_dark', name:'Emerald Dark', bg:'#021a12', panel:'#063d29', accent:'#10b981', red:'#ef4444', yellow:'#fbbf24', border:'#064e3b' },
-    { id:'vampire', name:'Vampire', bg:'#0a0000', panel:'#1a0000', accent:'#dc2626', red:'#f87171', yellow:'#fbbf24', border:'#450a0a' },
-    { id:'steel', name:'Steel Blue', bg:'#0a0f14', panel:'#1a2028', accent:'#94a3b8', red:'#f87171', yellow:'#fbbf24', border:'#334155' },
-    { id:'matrix', name:'Matrix', bg:'#000a00', panel:'#0a1f0a', accent:'#00ff41', red:'#ff073a', yellow:'#ffea00', border:'#0a330a' },
-    { id:'lava', name:'Lava', bg:'#1a0500', panel:'#2e0f00', accent:'#f97316', red:'#dc2626', yellow:'#fbbf24', border:'#4c1d09' },
-    { id:'galaxy', name:'Galaxy', bg:'#0a001a', panel:'#1a0533', accent:'#8b5cf6', red:'#f43f5e', yellow:'#fbbf24', border:'#2e1065' },
-    { id:'coffee', name:'Coffee', bg:'#1a0f0a', panel:'#2e1a14', accent:'#d97706', red:'#ef4444', yellow:'#fbbf24', border:'#4c2518' },
-    { id:'ice', name:'Ice', bg:'#0a1a26', panel:'#14334d', accent:'#7dd3fc', red:'#f43f5e', yellow:'#fbbf24', border:'#1e4a66' },
-    { id:'lime_punch', name:'Lime Punch', bg:'#0a1a05', panel:'#1a3310', accent:'#a3e635', red:'#ef4444', yellow:'#fbbf24', border:'#1a4d0a' },
-    { id:'dusk', name:'Dusk', bg:'#14101a', panel:'#221a2e', accent:'#c084fc', red:'#f43f5e', yellow:'#fbbf24', border:'#2e2438' },
-    { id:'paper', name:'Paper White', bg:'#f4f4f5', panel:'#e4e4e7', accent:'#10b981', red:'#ef4444', yellow:'#f59e0b', border:'#d4d4d8' }
+    { id:'default', name:'Default', bg:'#07070a', panel:'#0f0f13', card:'#1a1a1f', border:'#1f1f23', accent:'#10b981', text:'#f4f4f5' },
+    { id:'midnight', name:'Midnight', bg:'#070d1a', panel:'#0f1a2e', card:'#152340', border:'#1e3a5f', accent:'#3b82f6', text:'#f4f4f5' },
+    { id:'crimson', name:'Crimson', bg:'#0d0404', panel:'#1a0808', card:'#2b0f0f', border:'#450a0a', accent:'#ef4444', text:'#f4f4f5' },
+    { id:'sunset', name:'Sunset', bg:'#0d0705', panel:'#1a0f05', card:'#2d1a0a', border:'#432010', accent:'#f97316', text:'#f4f4f5' },
+    { id:'forest', name:'Forest', bg:'#030d07', panel:'#051a0f', card:'#0f2b1a', border:'#14532d', accent:'#22c55e', text:'#f4f4f5' },
+    { id:'cyberpunk', name:'Cyberpunk', bg:'#06020e', panel:'#0a0416', card:'#1a0a2e', border:'#3b0764', accent:'#f0abfc', text:'#f4f4f5' },
+    { id:'ocean', name:'Ocean', bg:'#020a0e', panel:'#04141a', card:'#0a2633', border:'#0e4f66', accent:'#06b6d4', text:'#f4f4f5' },
+    { id:'royal', name:'Royal', bg:'#060212', panel:'#0d0520', card:'#1a0d33', border:'#2e1065', accent:'#a855f7', text:'#f4f4f5' },
+    { id:'rose', name:'Rose Gold', bg:'#0d0505', panel:'#1a0a0a', card:'#2b1414', border:'#4c1d1d', accent:'#fb7185', text:'#f4f4f5' },
+    { id:'monochrome', name:'Mono', bg:'#000000', panel:'#0d0d0d', card:'#1a1a1a', border:'#333333', accent:'#d4d4d4', text:'#f4f4f5' },
+    { id:'neon', name:'Neon Green', bg:'#000000', panel:'#050d05', card:'#0a1a0a', border:'#1a3319', accent:'#39ff14', text:'#f4f4f5' },
+    { id:'pink', name:'Hot Pink', bg:'#0d020a', panel:'#1a0514', card:'#2e0a24', border:'#500724', accent:'#ec4899', text:'#f4f4f5' },
+    { id:'golden', name:'Golden', bg:'#0d0a02', panel:'#1a1405', card:'#2e220a', border:'#4c3809', accent:'#eab308', text:'#f4f4f5' },
+    { id:'arctic', name:'Arctic', bg:'#050a0f', panel:'#0a1420', card:'#152a3d', border:'#1e4a66', accent:'#67e8f9', text:'#f4f4f5' },
+    { id:'emerald_dark', name:'Emerald', bg:'#010d09', panel:'#021a12', card:'#063d29', border:'#064e3b', accent:'#10b981', text:'#f4f4f5' },
+    { id:'vampire', name:'Vampire', bg:'#050000', panel:'#0a0000', card:'#1a0000', border:'#450a0a', accent:'#dc2626', text:'#f4f4f5' },
+    { id:'steel', name:'Steel', bg:'#05080a', panel:'#0a0f14', card:'#1a2028', border:'#334155', accent:'#94a3b8', text:'#f4f4f5' },
+    { id:'matrix', name:'Matrix', bg:'#000500', panel:'#000a00', card:'#0a1f0a', border:'#0a330a', accent:'#00ff41', text:'#f4f4f5' },
+    { id:'lava', name:'Lava', bg:'#0d0300', panel:'#1a0500', card:'#2e0f00', border:'#4c1d09', accent:'#f97316', text:'#f4f4f5' },
+    { id:'galaxy', name:'Galaxy', bg:'#05000d', panel:'#0a001a', card:'#1a0533', border:'#2e1065', accent:'#8b5cf6', text:'#f4f4f5' },
+    { id:'coffee', name:'Coffee', bg:'#0d0705', panel:'#1a0f0a', card:'#2e1a14', border:'#4c2518', accent:'#d97706', text:'#f4f4f5' },
+    { id:'ice', name:'Ice', bg:'#050d12', panel:'#0a1a26', card:'#14334d', border:'#1e4a66', accent:'#7dd3fc', text:'#f4f4f5' },
+    { id:'lime', name:'Lime', bg:'#050a02', panel:'#0a1a05', card:'#1a3310', border:'#1a4d0a', accent:'#a3e635', text:'#f4f4f5' },
+    { id:'dusk', name:'Dusk', bg:'#0a0810', panel:'#14101a', card:'#221a2e', border:'#2e2438', accent:'#c084fc', text:'#f4f4f5' },
+    { id:'paper', name:'Paper', bg:'#f4f4f5', panel:'#e4e4e7', card:'#d4d4d8', border:'#c0c0c5', accent:'#059669', text:'#18181b' }
 ];
 
-function applyTheme(themeId) {
-    const t = THEMES.find(x => x.id === themeId) || THEMES[0];
-    currentTheme = themeId;
-    document.body.setAttribute('data-theme', themeId);
-    document.documentElement.style.setProperty('--bg-dark', t.bg);
-    document.documentElement.style.setProperty('--panel-bg', t.panel);
-    document.documentElement.style.setProperty('--accent-green', t.accent);
-    document.documentElement.style.setProperty('--accent-red', t.red);
-    document.documentElement.style.setProperty('--accent-yellow', t.yellow);
-    document.documentElement.style.setProperty('--border-main', t.border);
-    // For light theme text handling
-    if (themeId === 'paper') {
-        document.body.style.color = '#18181b';
-    } else {
-        document.body.style.color = '#f4f4f5';
-    }
-    localStorage.setItem('kkk_theme', themeId);
-    // Update active marker in theme grid
-    document.querySelectorAll('.theme-card').forEach(c => {
-        c.classList.toggle('active', c.getAttribute('data-theme-id') === themeId);
+function applyTheme(id) {
+    const t = THEMES.find(x => x.id === id) || THEMES[0];
+    state.currentTheme = t.id;
+    const r = document.documentElement;
+    r.style.setProperty('--bg', t.bg);
+    r.style.setProperty('--panel', t.panel);
+    r.style.setProperty('--card', t.card);
+    r.style.setProperty('--border', t.border);
+    r.style.setProperty('--accent', t.accent);
+    r.style.setProperty('--text', t.text);
+    document.body.style.backgroundColor = t.bg;
+    document.body.style.color = t.text;
+    document.querySelectorAll('.cube-btn').forEach(b => {
+        if (b.dataset.cube === state.currentCube) { b.style.background = t.accent; b.style.color = '#fff'; }
+        else { b.style.background = t.card; b.style.color = '#a1a1aa'; }
     });
+    const inspTrack = $('inspection-toggle-track');
+    if (inspTrack) inspTrack.style.backgroundColor = state.inspectionEnabled ? t.accent : '#3f3f46';
+    document.querySelectorAll('.theme-card').forEach(c => c.classList.toggle('active', c.dataset.themeId === t.id));
+    drawTrendChart(state.sessions[state.currentSessionId]?.solves || []);
+    localStorage.setItem('kkk_theme_v7', t.id);
 }
 
 function buildThemeGrid() {
-    const grid = document.getElementById('theme-grid');
-    if (!grid) return;
+    const grid = $('theme-grid');
     grid.innerHTML = '';
     THEMES.forEach(t => {
         const card = document.createElement('div');
         card.className = 'theme-card';
-        card.setAttribute('data-theme-id', t.id);
+        card.dataset.themeId = t.id;
         card.title = t.name;
         card.innerHTML = `
-            <div style="background:${t.bg}; padding:6px; display:flex; flex-direction:column; gap:3px;">
-                <div style="display:flex; gap:3px;">
-                    <div style="flex:1; height:6px; border-radius:3px; background:${t.accent};"></div>
-                    <div style="width:6px; height:6px; border-radius:3px; background:${t.red};"></div>
-                    <div style="width:6px; height:6px; border-radius:3px; background:${t.yellow};"></div>
+            <div style="background:${t.bg}; padding:5px;">
+                <div style="display:flex; gap:2px; margin-bottom:3px;">
+                    <div style="flex:1; height:5px; border-radius:2px; background:${t.accent};"></div>
                 </div>
-                <div style="height:14px; border-radius:3px; background:${t.panel}; border:1px solid ${t.border};"></div>
-                <div style="height:10px; border-radius:3px; background:${t.border};"></div>
-                <div style="font-size:8px; text-align:center; color:${t.accent}; font-weight:700; margin-top:2px;">${t.name}</div>
+                <div style="height:12px; border-radius:2px; background:${t.panel}; border:1px solid ${t.border}; margin-bottom:2px;"></div>
+                <div style="height:8px; border-radius:2px; background:${t.card};"></div>
+                <div style="font-size:8px; text-align:center; color:${t.accent}; font-weight:700; margin-top:3px;">${t.name}</div>
             </div>
         `;
         card.addEventListener('click', () => applyTheme(t.id));
         grid.appendChild(card);
     });
-    document.querySelectorAll('.theme-card').forEach(c => {
-        c.classList.toggle('active', c.getAttribute('data-theme-id') === currentTheme);
-    });
 }
 
 /* ============ STORAGE ============ */
 function loadStorage() {
-    const stored = localStorage.getItem('kkk_timer_sessions_v4');
-    if (stored) { try { sessions = JSON.parse(stored); } catch(e) { sessions = {}; } }
-    if (Object.keys(sessions).length === 0) {
-        sessions['default_3*3'] = { id:'default_3*3', name:'3*3 Main', cubeType:'3*3', solves:[] };
+    try {
+        const stored = localStorage.getItem('kkk_sessions_v7');
+        if (stored) state.sessions = JSON.parse(stored);
+    } catch(e) { state.sessions = {}; }
+    if (!state.sessions || Object.keys(state.sessions).length === 0) {
+        state.sessions = { 'default_3*3': { id:'default_3*3', name:'3*3 Main', cubeType:'3*3', solves:[] } };
     }
-    const storedSessionId = localStorage.getItem('kkk_current_session_id');
-    if (storedSessionId && sessions[storedSessionId]) {
-        currentSessionId = storedSessionId;
-        currentCube = sessions[currentSessionId].cubeType;
+    const sid = localStorage.getItem('kkk_current_session_v7');
+    if (sid && state.sessions[sid]) {
+        state.currentSessionId = sid;
+        state.currentCube = state.sessions[sid].cubeType;
     } else {
-        currentSessionId = Object.keys(sessions)[0];
-        currentCube = sessions[currentSessionId].cubeType;
+        state.currentSessionId = Object.keys(state.sessions)[0];
+        state.currentCube = state.sessions[state.currentSessionId].cubeType;
     }
-    const storedInsp = localStorage.getItem('kkk_inspection_enabled');
-    if (storedInsp !== null) { inspectionEnabled = storedInsp === 'true'; toggleInspection.checked = inspectionEnabled; }
-    const storedTheme = localStorage.getItem('kkk_theme');
-    currentTheme = storedTheme || 'default';
-    populateSessionSelect();
-    updateCubeButtonsUI();
+    state.inspectionEnabled = localStorage.getItem('kkk_inspection_v7') === 'true';
+    toggleInspection.checked = state.inspectionEnabled;
+    state.currentTheme = localStorage.getItem('kkk_theme_v7') || 'default';
 }
 
 function saveStorage() {
-    localStorage.setItem('kkk_timer_sessions_v4', JSON.stringify(sessions));
-    localStorage.setItem('kkk_current_session_id', currentSessionId);
-    localStorage.setItem('kkk_inspection_enabled', inspectionEnabled);
+    localStorage.setItem('kkk_sessions_v7', JSON.stringify(state.sessions));
+    localStorage.setItem('kkk_current_session_v7', state.currentSessionId);
+    localStorage.setItem('kkk_inspection_v7', state.inspectionEnabled);
 }
 
+/* ============ SESSIONS ============ */
 function populateSessionSelect() {
     sessionSelect.innerHTML = '';
-    for (const id in sessions) {
+    for (const id in state.sessions) {
         const opt = document.createElement('option');
         opt.value = id;
-        opt.innerText = `${sessions[id].name} (${sessions[id].cubeType})`;
-        if (id === currentSessionId) opt.selected = true;
+        opt.innerText = `${state.sessions[id].name} (${state.sessions[id].cubeType})`;
+        if (id === state.currentSessionId) opt.selected = true;
         sessionSelect.appendChild(opt);
     }
 }
 
-/* ============ INIT ============ */
-window.addEventListener('load', () => {
-    loadStorage();
-    buildThemeGrid();
-    applyTheme(currentTheme);
-    setupCubeSelectors();
-    setupMusicPlayer();
-    setupUnifiedInputListeners();
-    setupSettingsModal();
-    setupShareFeature();
-    setupAssistant();
-    setupAoDetails();
-    setupScrambleNav();
-    generateScramble();
-    updateUI();
-    window.addEventListener('resize', () => {
-        const s = sessions[currentSessionId] ? sessions[currentSessionId].solves : [];
-        drawTrendChart(s);
-    });
-});
-
-/* ============ SESSIONS ============ */
-sessionSelect.addEventListener('change', (e) => {
-    currentSessionId = e.target.value;
-    currentCube = sessions[currentSessionId].cubeType;
+function switchSession(sid) {
+    if (!state.sessions[sid]) return;
+    state.currentSessionId = sid;
+    state.currentCube = state.sessions[sid].cubeType;
     updateCubeButtonsUI();
     resetScrambleHistory();
     generateScramble();
     saveStorage();
     updateUI();
-});
-
-document.getElementById('add-session-btn').addEventListener('click', () => {
-    const name = prompt('Enter new Session Name:', `Session ${Object.keys(sessions).length + 1}`);
-    if (name && name.trim()) {
-        const newId = 'session_' + Date.now();
-        sessions[newId] = { id:newId, name:name.trim(), cubeType:currentCube, solves:[] };
-        currentSessionId = newId;
-        populateSessionSelect();
-        saveStorage();
-        updateUI();
-    }
-});
-
-document.getElementById('delete-session-btn').addEventListener('click', () => {
-    if (Object.keys(sessions).length <= 1) { alert('You must keep at least one session active.'); return; }
-    if (confirm(`Delete session "${sessions[currentSessionId].name}"?`)) {
-        delete sessions[currentSessionId];
-        currentSessionId = Object.keys(sessions)[0];
-        currentCube = sessions[currentSessionId].cubeType;
-        populateSessionSelect();
-        updateCubeButtonsUI();
-        resetScrambleHistory();
-        generateScramble();
-        saveStorage();
-        updateUI();
-    }
-});
-
-function setupCubeSelectors() {
-    document.querySelectorAll('.cube-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const selectedCube = e.currentTarget.getAttribute('data-cube');
-            currentCube = selectedCube;
-            let foundMatch = false;
-            for (const id in sessions) {
-                if (sessions[id].cubeType === currentCube) { currentSessionId = id; foundMatch = true; break; }
-            }
-            if (!foundMatch) {
-                const newId = 'session_' + Date.now();
-                sessions[newId] = { id:newId, name:`${currentCube} Session`, cubeType:currentCube, solves:[] };
-                currentSessionId = newId;
-            }
-            populateSessionSelect();
-            updateCubeButtonsUI();
-            resetScrambleHistory();
-            generateScramble();
-            saveStorage();
-            updateUI();
-        });
-    });
 }
 
-function updateCubeButtonsUI() {
-    document.querySelectorAll('.cube-btn').forEach(btn => {
-        if (btn.getAttribute('data-cube') === currentCube) {
-            btn.className = 'cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-emerald-600 text-white transition active:scale-95 shadow';
-        } else {
-            btn.className = 'cube-btn shrink-0 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95';
-        }
-    });
+function createSession(name) {
+    const newId = 'session_' + Date.now();
+    state.sessions[newId] = { id: newId, name: name.trim(), cubeType: state.currentCube, solves: [] };
+    state.currentSessionId = newId;
+    populateSessionSelect();
+    saveStorage();
+    updateUI();
 }
 
 /* ============ SCRAMBLE ============ */
-function resetScrambleHistory() { scrambleHistory = []; scrambleHistoryIndex = -1; }
-
-function makeScramble() {
-    let scr = '';
-    if (currentCube === '3*3') scr = wcaScramble(['R','L','U','D','F','B'], 20);
-    else if (currentCube === '2*2') scr = wcaScramble(['R','U','F'], 11);
-    else if (currentCube === '4*4') scr = wcaScramble(['R','L','U','D','F','B','Rw','Lw','Uw','Dw','Fw','Bw'], 40);
-    else if (currentCube === '5*5') scr = wcaScramble(['R','L','U','D','F','B','Rw','Lw','Uw','Dw','Fw','Bw'], 60);
-    else if (currentCube === '6*6') scr = wcaScramble(['3Rw','3Lw','3Uw','3Dw','3Fw','3Bw','Rw','Lw','Uw','Dw','Fw','Bw','R','L','U','D','F','B'], 80);
-    else if (currentCube === '7*7') scr = wcaScramble(['3Rw','3Lw','3Uw','3Dw','3Fw','3Bw','Rw','Lw','Uw','Dw','Fw','Bw','R','L','U','D','F','B'], 100);
-    else if (currentCube === 'Skewb') scr = skewbScramble();
-    else scr = wcaScramble(['R','L','U','D','F','B'], 20);
-    return scr;
+function resetScrambleHistory() {
+    state.scrambleHistory = [];
+    state.scrambleHistoryIndex = -1;
 }
 
 function wcaScramble(movesList, length) {
     const modifiers = ['', "'", '2'];
     const result = [];
-    let lastAxis = -1;
-    let lastMove = '';
+    let lastAxis = -1, lastMove = '';
     const axisOf = (m) => {
-        const b = m.replace(/3|w/g, '');
+        const b = m.replace(/[3w]/g, '');
         if (b === 'R' || b === 'L') return 0;
         if (b === 'U' || b === 'D') return 1;
         if (b === 'F' || b === 'B') return 2;
         return -1;
     };
     for (let i = 0; i < length; i++) {
-        let move, axis;
-        let attempts = 0;
+        let move, axis, attempts = 0;
         do {
             move = movesList[Math.floor(Math.random() * movesList.length)];
             axis = axisOf(move);
             attempts++;
-        } while ((axis === lastAxis && attempts < 20) || move === lastMove);
-        lastAxis = axis;
-        lastMove = move;
+        } while ((axis === lastAxis && attempts < 30) || move === lastMove);
+        lastAxis = axis; lastMove = move;
         result.push(move + modifiers[Math.floor(Math.random() * modifiers.length)]);
     }
     return result.join(' ');
+}
+
+function makeScramble() {
+    switch (state.currentCube) {
+        case '3*3': return wcaScramble(['R','L','U','D','F','B'], 20);
+        case '2*2': return wcaScramble(['R','U','F'], 11);
+        case '4*4': return wcaScramble(['R','L','U','D','F','B','Rw','Lw','Uw','Dw','Fw','Bw'], 40);
+        case '5*5': return wcaScramble(['R','L','U','D','F','B','Rw','Lw','Uw','Dw','Fw','Bw'], 60);
+        case '6*6': return wcaScramble(['3Rw','3Lw','3Uw','3Dw','3Fw','3Bw','Rw','Lw','Uw','Dw','Fw','Bw','R','L','U','D','F','B'], 80);
+        case '7*7': return wcaScramble(['3Rw','3Lw','3Uw','3Dw','3Fw','3Bw','Rw','Lw','Uw','Dw','Fw','Bw','R','L','U','D','F','B'], 100);
+        case 'Skewb': return skewbScramble();
+        default: return wcaScramble(['R','L','U','D','F','B'], 20);
+    }
 }
 
 function skewbScramble() {
@@ -666,199 +636,860 @@ function skewbScramble() {
 }
 
 function generateScramble() {
-    const newScr = makeScramble();
-    scrambleHistory = scrambleHistory.slice(0, scrambleHistoryIndex + 1);
-    scrambleHistory.push(newScr);
-    scrambleHistoryIndex = scrambleHistory.length - 1;
+    const scr = makeScramble();
+    state.scrambleHistory = state.scrambleHistory.slice(0, state.scrambleHistoryIndex + 1);
+    state.scrambleHistory.push(scr);
+    state.scrambleHistoryIndex = state.scrambleHistory.length - 1;
     renderScramble();
-    setTimeout(() => assistantObserveScramble(newScr), 400);
+    setTimeout(() => assistantReactToScramble(scr), 300);
 }
 
 function renderScramble() {
-    if (scrambleHistory.length === 0) {
+    if (state.scrambleHistory.length === 0) {
         scrambleDisplay.innerText = 'Generating scramble...';
         scrambleIndexEl.innerText = '0 / 0';
         return;
     }
-    scrambleDisplay.innerText = scrambleHistory[scrambleHistoryIndex] || '';
-    scrambleIndexEl.innerText = `${scrambleHistoryIndex + 1} / ${scrambleHistory.length}`;
-}
-
-function setupScrambleNav() {
-    document.getElementById('next-scramble-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (scrambleHistoryIndex < scrambleHistory.length - 1) {
-            scrambleHistoryIndex++;
-            renderScramble();
-            assistantObserveScramble(scrambleHistory[scrambleHistoryIndex]);
-        } else {
-            generateScramble();
-        }
-    });
-    document.getElementById('prev-scramble-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (scrambleHistoryIndex > 0) {
-            scrambleHistoryIndex--;
-            renderScramble();
-            assistantObserveScramble(scrambleHistory[scrambleHistoryIndex]);
-        }
-    });
+    scrambleDisplay.innerText = state.scrambleHistory[state.scrambleHistoryIndex] || '';
+    scrambleIndexEl.innerText = `${state.scrambleHistoryIndex + 1} / ${state.scrambleHistory.length}`;
+    scrambleDisplay.classList.remove('scramble-new');
+    void scrambleDisplay.offsetWidth;
+    scrambleDisplay.classList.add('scramble-new');
 }
 
 /* ============ MUSIC ============ */
-let audioCtx = null;
-let musicInterval = null;
-let currentTrack = null;
+const NOTE = {
+    C2:65.41, D2:73.42, E2:82.41, F2:87.31, G2:98.00, A2:110.00, B2:123.47,
+    C3:130.81, Cs3:138.59, D3:146.83, Ds3:155.56, E3:164.81, F3:174.61, Fs3:185.00, G3:196.00, Gs3:207.65, A3:220.00, As3:233.08, B3:246.94,
+    C4:261.63, Cs4:277.18, D4:293.66, Ds4:311.13, E4:329.63, F4:349.23, Fs4:369.99, G4:392.00, Gs4:415.30, A4:440.00, As4:466.16, B4:493.88,
+    C5:523.25, Cs5:554.37, D5:587.33, Ds5:622.25, E5:659.25, F5:698.46, Fs5:739.99, G5:783.99, Gs5:830.61, A5:880.00, As5:932.33, B5:987.77,
+    C6:1046.50, D6:1174.66, E6:1318.51, G6:1567.98, A6:1760.00
+};
 
-const trackNames = [
-"Epic Motivation","Upbeat Focus","Energetic Synth","Ambient Drive","Victory Beat",
-"Speedrun Pulse","Neon Rush","Hyper Focus","Cybernetic Core","Titan Step",
-"Aether Wave","Quantum Loop","Pulsar Beam","Starlight Drive","Solar Flare",
-"Velocity Flow","Infinite Grid","Summit Climb","Apex Predator","Titanium Beat",
-"Thunder Strike","Lightning Fast","Storm Chaser","Blazing Trail","Ignition Spark",
-"Cosmic Voyage","Supernova Groove","Nebula Pulse","Galaxy Drive","Orbit Wave",
-"Alpha State","Beta Wave","Gamma Burst","Delta Force","Omega Protocol",
-"Iron Will","Steel Focus","Cobalt Pulse","Titanium Drive","Platinum Beat",
-"Alpha Rhythm","Zenith Peak","Horizon Line","Velocity Peak","Dynamic Flow",
-"Quantum State","Kinetic Energy","Prism Wave","Sonic Boom","Ultimate Victory"
+const TRACKS = [
+    { name:'Epic Motivation', notes:[NOTE.C4,NOTE.E4,NOTE.G4,NOTE.C5,NOTE.G4,NOTE.E4], durations:[1,1,1,2,1,1], wave:'triangle', bpm:80, harmonics:[2] },
+    { name:'Upbeat Focus', notes:[NOTE.C5,NOTE.C5,NOTE.E5,NOTE.E5,NOTE.G5,NOTE.G5], durations:[0.5,0.5,0.5,0.5,0.5,1], wave:'square', bpm:140, harmonics:[] },
+    { name:'Energetic Synth', notes:[NOTE.A3,NOTE.C4,NOTE.E4,NOTE.A4,NOTE.G4,NOTE.E4,NOTE.C4,NOTE.A3], durations:[1,0.5,0.5,1,0.5,0.5,1,1], wave:'sawtooth', bpm:120, harmonics:[1.5] },
+    { name:'Ambient Drive', notes:[NOTE.F3,NOTE.A3,NOTE.C4,NOTE.F4], durations:[2,2,2,3], wave:'sine', bpm:60, harmonics:[3] },
+    { name:'Victory Beat', notes:[NOTE.C4,NOTE.E4,NOTE.G4,NOTE.C5,NOTE.G4,NOTE.C5,NOTE.E5], durations:[0.5,0.5,0.5,1,0.5,0.5,2], wave:'triangle', bpm:130, harmonics:[2,3] },
+    { name:'Speedrun Pulse', notes:[NOTE.C2,NOTE.C2,NOTE.G2,NOTE.C2,NOTE.C3,NOTE.G2,NOTE.C2,NOTE.G2], durations:[1,1,0.5,0.5,1,1,0.5,0.5], wave:'square', bpm:150, harmonics:[] },
+    { name:'Neon Rush', notes:[NOTE.C4,NOTE.Cs4,NOTE.D4,NOTE.Ds4,NOTE.E4,NOTE.F4,NOTE.Fs4,NOTE.G4], durations:[0.5,0.5,0.5,0.5,0.5,0.5,0.5,1], wave:'sawtooth', bpm:160, harmonics:[] },
+    { name:'Hyper Focus', notes:[NOTE.E4,NOTE.G4,NOTE.E4,NOTE.B4,NOTE.G4,NOTE.E4,NOTE.G4,NOTE.B4], durations:[0.5,1,0.5,1,0.5,0.5,0.5,1], wave:'triangle', bpm:170, harmonics:[2] },
+    { name:'Cybernetic Core', notes:[NOTE.C5,NOTE.B4,NOTE.A4,NOTE.G4,NOTE.F4,NOTE.E4,NOTE.D4,NOTE.C4], durations:[1,1,1,1,1,1,1,2], wave:'sine', bpm:90, harmonics:[] },
+    { name:'Titan Step', notes:[NOTE.C3,NOTE.E3,NOTE.G3,NOTE.C4,NOTE.E4,NOTE.G4,NOTE.C5], durations:[1,1,1,1,1,1,2], wave:'sawtooth', bpm:100, harmonics:[2] },
+    { name:'Aether Wave', notes:[NOTE.C4,NOTE.D4,NOTE.E4,NOTE.Fs4,NOTE.Gs4,NOTE.As4,NOTE.C5], durations:[1,1,1,1,1,1,2], wave:'sine', bpm:75, harmonics:[3] },
+    { name:'Quantum Loop', notes:[NOTE.C4,NOTE.Fs4,NOTE.C4,NOTE.Fs4,NOTE.E4,NOTE.As4,NOTE.E4,NOTE.As4], durations:[0.5,0.5,0.5,1,0.5,0.5,0.5,1], wave:'square', bpm:140, harmonics:[] },
+    { name:'Pulsar Beam', notes:[NOTE.C4,NOTE.D4,NOTE.E4,NOTE.G4,NOTE.A4,NOTE.G4,NOTE.E4,NOTE.D4,NOTE.C4], durations:[0.25,0.25,0.5,0.5,0.5,0.5,0.5,0.5,1], wave:'triangle', bpm:180, harmonics:[2] },
+    { name:'Starlight Drive', notes:[NOTE.A3,NOTE.C4,NOTE.E4,NOTE.A4,NOTE.G4,NOTE.E4], durations:[1,1,1,2,1,1], wave:'sine', bpm:70, harmonics:[3] },
+    { name:'Solar Flare', notes:[NOTE.G3,NOTE.B3,NOTE.D4,NOTE.G4,NOTE.B4,NOTE.D5], durations:[0.5,0.5,0.5,1,0.5,2], wave:'sawtooth', bpm:130, harmonics:[2] },
+    { name:'Velocity Flow', notes:[NOTE.E4,NOTE.E4,NOTE.G4,NOTE.B4,NOTE.E4,NOTE.G4,NOTE.B4,NOTE.E5], durations:[0.5,0.5,0.5,0.5,0.5,0.5,0.5,1], wave:'square', bpm:200, harmonics:[] },
+    { name:'Infinite Grid', notes:[NOTE.D3,NOTE.F3,NOTE.A3,NOTE.D4,NOTE.A3,NOTE.F3,NOTE.D3,NOTE.F3], durations:[1,1,1,2,1,1,1,1], wave:'triangle', bpm:80, harmonics:[2] },
+    { name:'Summit Climb', notes:[NOTE.C4,NOTE.D4,NOTE.E4,NOTE.F4,NOTE.G4,NOTE.A4,NOTE.B4,NOTE.C5], durations:[0.5,0.5,0.5,0.5,0.5,0.5,0.5,2], wave:'triangle', bpm:110, harmonics:[2] },
+    { name:'Apex Predator', notes:[NOTE.A3,NOTE.A3,NOTE.C4,NOTE.E4,NOTE.A3,NOTE.C4,NOTE.E4,NOTE.G4], durations:[0.5,0.5,0.5,0.5,0.5,0.5,0.5,1], wave:'sawtooth', bpm:160, harmonics:[] },
+    { name:'Titanium Beat', notes:[NOTE.E2,NOTE.E2,NOTE.E3,NOTE.E2,NOTE.E3,NOTE.E2,NOTE.B2,NOTE.E3], durations:[0.5,0.5,1,0.5,0.5,0.5,1,1], wave:'square', bpm:130, harmonics:[] },
+    { name:'Thunder Strike', notes:[NOTE.D2,NOTE.D2,NOTE.A2,NOTE.D3,NOTE.F3,NOTE.A3,NOTE.F3,NOTE.D3], durations:[0.25,0.25,0.5,0.5,0.5,1,0.5,1], wave:'sawtooth', bpm:150, harmonics:[] },
+    { name:'Lightning Fast', notes:[NOTE.B4,NOTE.E4,NOTE.B4,NOTE.E5,NOTE.B4,NOTE.E4,NOTE.B4,NOTE.E5], durations:[0.25,0.25,0.25,0.5,0.25,0.25,0.25,0.5], wave:'square', bpm:220, harmonics:[] },
+    { name:'Storm Chaser', notes:[NOTE.G3,NOTE.As3,NOTE.D4,NOTE.G4,NOTE.F4,NOTE.D4,NOTE.As3,NOTE.G3], durations:[0.5,0.5,0.5,1,0.5,0.5,0.5,1], wave:'sawtooth', bpm:140, harmonics:[] },
+    { name:'Blazing Trail', notes:[NOTE.Fs4,NOTE.A4,NOTE.Cs5,NOTE.Fs5,NOTE.E5,NOTE.Cs5,NOTE.A4,NOTE.Fs4], durations:[0.5,0.5,0.5,1,0.5,0.5,0.5,1], wave:'sawtooth', bpm:150, harmonics:[2] },
+    { name:'Ignition Spark', notes:[NOTE.C5,NOTE.C5,NOTE.G4,NOTE.C5,NOTE.E5,NOTE.C5,NOTE.G4,NOTE.C5], durations:[0.25,0.25,0.5,0.25,0.25,0.25,0.5,1], wave:'square', bpm:170, harmonics:[] },
+    { name:'Cosmic Voyage', notes:[NOTE.D4,NOTE.F4,NOTE.A4,NOTE.D5,NOTE.A4,NOTE.F4,NOTE.D4,NOTE.A3], durations:[1,1,1,2,1,1,1,1], wave:'sine', bpm:70, harmonics:[3] },
+    { name:'Supernova Groove', notes:[NOTE.E4,NOTE.G4,NOTE.B4,NOTE.E5,NOTE.D5,NOTE.B4,NOTE.G4,NOTE.E4], durations:[0.5,0.5,0.5,2,0.5,0.5,0.5,1], wave:'sawtooth', bpm:125, harmonics:[2] },
+    { name:'Nebula Pulse', notes:[NOTE.A3,NOTE.C4,NOTE.F4,NOTE.A4,NOTE.G4,NOTE.F4,NOTE.C4,NOTE.A3], durations:[1,1,1,2,1,1,1,1], wave:'triangle', bpm:85, harmonics:[3] },
+    { name:'Galaxy Drive', notes:[NOTE.B3,NOTE.D4,NOTE.Fs4,NOTE.B4,NOTE.A4,NOTE.Fs4,NOTE.D4,NOTE.B3], durations:[0.5,0.5,0.5,1,0.5,0.5,0.5,1], wave:'sine', bpm:100, harmonics:[2] },
+    { name:'Orbit Wave', notes:[NOTE.C4,NOTE.G4,NOTE.C5,NOTE.G4,NOTE.C4,NOTE.G4,NOTE.C5,NOTE.G5], durations:[0.5,0.5,0.5,1,0.5,0.5,0.5,1], wave:'triangle', bpm:110, harmonics:[] },
+    { name:'Alpha State', notes:[NOTE.C4,NOTE.E4,NOTE.G4,NOTE.C5,NOTE.G4,NOTE.E4,NOTE.C4,NOTE.G3], durations:[1,1,1,2,1,1,1,2], wave:'sine', bpm:65, harmonics:[3] },
+    { name:'Beta Wave', notes:[NOTE.D4,NOTE.F4,NOTE.A4,NOTE.D5,NOTE.C5,NOTE.A4,NOTE.F4,NOTE.D4], durations:[0.5,0.5,0.5,1,0.5,0.5,0.5,1], wave:'triangle', bpm:120, harmonics:[2] },
+    { name:'Gamma Burst', notes:[NOTE.E4,NOTE.G4,NOTE.B4,NOTE.E5,NOTE.B4,NOTE.G4,NOTE.E4,NOTE.B3], durations:[0.25,0.25,0.5,1,0.25,0.25,0.5,1], wave:'sawtooth', bpm:155, harmonics:[] },
+    { name:'Delta Force', notes:[NOTE.F2,NOTE.F2,NOTE.C3,NOTE.F3,NOTE.A3,NOTE.C4,NOTE.A3,NOTE.F3], durations:[1,1,0.5,1,1,2,1,1], wave:'square', bpm:90, harmonics:[] },
+    { name:'Omega Protocol', notes:[NOTE.G3,NOTE.B3,NOTE.D4,NOTE.G4,NOTE.D5,NOTE.B4,NOTE.G4,NOTE.D4], durations:[0.5,0.5,0.5,1,1,0.5,0.5,1], wave:'sine', bpm:115, harmonics:[2,3] },
+    { name:'Iron Will', notes:[NOTE.C4,NOTE.C4,NOTE.F4,NOTE.G4,NOTE.C4,NOTE.F4,NOTE.G4,NOTE.C5], durations:[0.5,0.5,0.5,0.5,0.5,0.5,0.5,2], wave:'square', bpm:100, harmonics:[] },
+    { name:'Steel Focus', notes:[NOTE.A3,NOTE.C4,NOTE.E4,NOTE.A4,NOTE.E4,NOTE.C4,NOTE.A3,NOTE.C4], durations:[1,0.5,0.5,1,0.5,0.5,1,1], wave:'sawtooth', bpm:105, harmonics:[2] },
+    { name:'Cobalt Pulse', notes:[NOTE.C4,NOTE.Ds4,NOTE.G4,NOTE.C5,NOTE.G4,NOTE.Ds4,NOTE.C4,NOTE.Ds4], durations:[0.5,0.5,0.5,1,0.5,0.5,0.5,1], wave:'triangle', bpm:125, harmonics:[] },
+    { name:'Titanium Drive', notes:[NOTE.E3,NOTE.E3,NOTE.B3,NOTE.E4,NOTE.G4,NOTE.B4,NOTE.G4,NOTE.E4], durations:[0.5,0.5,0.5,0.5,0.5,1,0.5,1], wave:'sawtooth', bpm:140, harmonics:[] },
+    { name:'Platinum Beat', notes:[NOTE.D4,NOTE.Fs4,NOTE.A4,NOTE.D5,NOTE.A4,NOTE.Fs4,NOTE.D4,NOTE.A3], durations:[0.75,0.75,0.75,1.5,0.75,0.75,0.75,1.5], wave:'sine', bpm:95, harmonics:[2,3] },
+    { name:'Alpha Rhythm', notes:[NOTE.C4,NOTE.E4,NOTE.C4,NOTE.G4,NOTE.C4,NOTE.E4,NOTE.C4,NOTE.G4], durations:[0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5], wave:'square', bpm:145, harmonics:[] },
+    { name:'Zenith Peak', notes:[NOTE.C4,NOTE.D4,NOTE.E4,NOTE.F4,NOTE.G4,NOTE.A4,NOTE.B4,NOTE.C5], durations:[0.5,0.5,0.5,0.5,0.5,0.5,0.5,1], wave:'triangle', bpm:130, harmonics:[2] },
+    { name:'Horizon Line', notes:[NOTE.G3,NOTE.A3,NOTE.B3,NOTE.C4,NOTE.D4,NOTE.E4,NOTE.F4,NOTE.G4], durations:[1,1,1,1,1,1,1,2], wave:'sine', bpm:75, harmonics:[3] },
+    { name:'Velocity Peak', notes:[NOTE.G4,NOTE.G4,NOTE.B4,NOTE.D5,NOTE.G5,NOTE.D5,NOTE.B4,NOTE.G4], durations:[0.25,0.25,0.25,0.5,0.5,0.25,0.25,0.5], wave:'square', bpm:200, harmonics:[] },
+    { name:'Dynamic Flow', notes:[NOTE.A3,NOTE.E4,NOTE.A4,NOTE.E4,NOTE.A3,NOTE.E4,NOTE.A4,NOTE.C5], durations:[0.5,0.5,0.5,0.5,0.5,0.5,0.5,1], wave:'sawtooth', bpm:135, harmonics:[2] },
+    { name:'Quantum State', notes:[NOTE.D4,NOTE.G4,NOTE.C5,NOTE.F5,NOTE.C5,NOTE.G4,NOTE.D4,NOTE.G4], durations:[0.5,0.5,0.5,1,0.5,0.5,0.5,1], wave:'triangle', bpm:115, harmonics:[] },
+    { name:'Kinetic Energy', notes:[NOTE.F3,NOTE.A3,NOTE.C4,NOTE.E4,NOTE.G4,NOTE.E4,NOTE.C4,NOTE.A3], durations:[0.5,0.5,0.5,0.5,0.5,0.5,0.5,1], wave:'square', bpm:150, harmonics:[] },
+    { name:'Prism Wave', notes:[NOTE.C4,NOTE.E4,NOTE.G4,NOTE.B4,NOTE.D5,NOTE.B4,NOTE.G4,NOTE.E4], durations:[0.5,0.5,0.5,0.5,1,0.5,0.5,1], wave:'sine', bpm:105, harmonics:[2,3] },
+    { name:'Sonic Boom', notes:[NOTE.C2,NOTE.C3,NOTE.C4,NOTE.C5,NOTE.C4,NOTE.C3,NOTE.C2,NOTE.C3], durations:[0.25,0.25,0.25,0.5,0.25,0.25,0.25,1], wave:'sawtooth', bpm:180, harmonics:[] },
+    { name:'Ultimate Victory', notes:[NOTE.C4,NOTE.C4,NOTE.E4,NOTE.G4,NOTE.C5,NOTE.G4,NOTE.C5,NOTE.E5], durations:[0.5,0.5,0.5,0.5,1,0.5,0.5,2], wave:'triangle', bpm:120, harmonics:[2,3] }
 ];
 
-function getTrackConfig(n) {
-    const configs = [
-        { type:'sine', base:220, speed:280, scale:[1,1.125,1.25,1.5,1.667,1.875,2], wave2:false },
-        { type:'triangle', base:260, speed:240, scale:[1,1.2,1.333,1.5,1.6,1.8,2], wave2:false },
-        { type:'square', base:180, speed:200, scale:[1,1.125,1.25,1.334,1.5,1.667,1.875,2], wave2:true },
-        { type:'sawtooth', base:150, speed:320, scale:[1,1.125,1.2,1.5,1.8,2], wave2:false },
-        { type:'sine', base:300, speed:180, scale:[1,1.125,1.25,1.5,2], wave2:true },
-        { type:'triangle', base:200, speed:150, scale:[1,1.2,1.5,1.8,2,2.4], wave2:false },
-        { type:'square', base:240, speed:260, scale:[1,1.25,1.5,1.75,2], wave2:true },
-        { type:'sawtooth', base:170, speed:230, scale:[1,1.125,1.25,1.4,1.6,1.8,2], wave2:false },
-        { type:'sine', base:280, speed:210, scale:[1,1.2,1.5,1.667,2], wave2:true },
-        { type:'triangle', base:210, speed:290, scale:[1,1.125,1.334,1.5,1.667,2], wave2:false },
-    ];
-    const cfg = { ...configs[(n - 1) % configs.length] };
-    cfg.base = cfg.base * (1 + (((n % 7) - 3) * 0.02));
-    cfg.speed = Math.max(120, cfg.speed + ((n % 5) - 2) * 25);
-    return cfg;
-}
-
 function setupMusicPlayer() {
-    const musicSelector = document.getElementById('music-selector');
-    musicSelector.innerHTML = '';
-    trackNames.forEach((name, idx) => {
-        const trackNum = idx + 1;
+    const selector = $('music-selector');
+    selector.innerHTML = '';
+    TRACKS.forEach((track, idx) => {
+        const num = idx + 1;
         const btn = document.createElement('button');
-        btn.setAttribute('data-track', trackNum);
-        btn.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95';
-        btn.innerText = `${trackNum}. ${name}`;
+        btn.dataset.track = num;
+        btn.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold';
+        btn.style.background = 'var(--card)';
+        btn.style.color = '#a1a1aa';
+        btn.style.border = '1px solid var(--border)';
+        btn.innerText = `${num}. ${track.name}`;
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            playMusicTrack(trackNum);
+            playMusicTrack(num);
             document.querySelectorAll('.music-btn').forEach(b => {
-                b.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95';
+                b.style.background = 'var(--card)';
+                b.style.color = '#a1a1aa';
+                b.classList.remove('music-active');
             });
-            btn.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white transition shadow';
-            document.getElementById('music-off-btn').className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition active:scale-95';
+            btn.style.background = 'var(--accent)';
+            btn.style.color = '#fff';
+            btn.classList.add('music-active');
         });
-        musicSelector.appendChild(btn);
+        selector.appendChild(btn);
     });
-    document.getElementById('music-off-btn').addEventListener('click', (e) => {
+
+    $('music-off-btn').addEventListener('click', (e) => {
         e.stopPropagation();
         stopMusic();
         document.querySelectorAll('.music-btn').forEach(b => {
-            b.className = 'music-btn shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition active:scale-95';
+            b.style.background = 'var(--card)';
+            b.style.color = '#a1a1aa';
+            b.classList.remove('music-active');
         });
-        document.getElementById('music-off-btn').className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white transition active:scale-95 shadow';
     });
-    document.getElementById('scroll-left-btn').addEventListener('click', (e) => { e.stopPropagation(); musicSelector.scrollBy({ left: -200, behavior: 'smooth' }); });
-    document.getElementById('scroll-right-btn').addEventListener('click', (e) => { e.stopPropagation(); musicSelector.scrollBy({ left: 200, behavior: 'smooth' }); });
+
+    $('scroll-left-btn').addEventListener('click', (e) => { e.stopPropagation(); selector.scrollBy({ left: -200, behavior: 'smooth' }); });
+    $('scroll-right-btn').addEventListener('click', (e) => { e.stopPropagation(); selector.scrollBy({ left: 200, behavior: 'smooth' }); });
 }
 
-function playMusicTrack(trackNum) {
+function playOneNote(ctx, freq, startTime, duration, volume, waveType) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = waveType;
+    osc.frequency.setValueAtTime(freq, startTime);
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(volume, startTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration * 0.95);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+}
+
+function playMusicTrack(num) {
     stopMusic();
     try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
+        if (!state.music.audioCtx) state.music.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (state.music.audioCtx.state === 'suspended') state.music.audioCtx.resume();
     } catch(e) { return; }
-    currentTrack = trackNum;
-    const cfg = getTrackConfig(trackNum);
+
+    state.music.currentTrack = num;
+    const track = TRACKS[num - 1];
+    const ctx = state.music.audioCtx;
+    const beatSec = 60 / track.bpm;
     let step = 0;
-    musicInterval = setInterval(() => {
-        if (!audioCtx) return;
-        try {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = cfg.type;
-            const freq = cfg.base * cfg.scale[step % cfg.scale.length];
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.055, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.32);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.32);
-            if (cfg.wave2 && step % 3 === 0) {
-                const osc2 = audioCtx.createOscillator();
-                const gain2 = audioCtx.createGain();
-                osc2.type = cfg.type === 'sine' ? 'triangle' : 'sine';
-                osc2.frequency.setValueAtTime(freq * 2, audioCtx.currentTime);
-                gain2.gain.setValueAtTime(0.03, audioCtx.currentTime);
-                gain2.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.25);
-                osc2.connect(gain2); gain2.connect(audioCtx.destination);
-                osc2.start(); osc2.stop(audioCtx.currentTime + 0.25);
+    let nextScheduledTime = ctx.currentTime + 0.05;
+    const totalBeats = track.notes.length;
+
+    function schedule() {
+        if (!state.music.audioCtx || state.music.currentTrack !== num) return;
+        const lookahead = 0.3;
+        while (nextScheduledTime < ctx.currentTime + lookahead) {
+            const i = step % totalBeats;
+            const dur = track.durations[i] * beatSec;
+            const freq = track.notes[i];
+            playOneNote(ctx, freq, nextScheduledTime, dur * 0.95, 0.07, track.wave);
+            if (track.harmonics) {
+                track.harmonics.forEach(h => {
+                    playOneNote(ctx, freq * h, nextScheduledTime, dur * 0.7, 0.025, 'sine');
+                });
             }
+            nextScheduledTime += dur;
             step++;
-        } catch(e) {}
-    }, cfg.speed);
-}
-function stopMusic() {
-    if (musicInterval) { clearInterval(musicInterval); musicInterval = null; }
-    currentTrack = null;
+        }
+    }
+
+    state.music.interval = setInterval(schedule, 100);
+    schedule();
 }
 
-/* ============ SETTINGS MODAL ============ */
-function setupSettingsModal() {
-    const modal = document.getElementById('settings-modal');
-    document.getElementById('settings-btn').addEventListener('click', (e) => { e.stopPropagation(); modal.classList.remove('hidden'); });
-    document.getElementById('close-modal-btn').addEventListener('click', () => modal.classList.add('hidden'));
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
-    document.querySelectorAll('.tab-btn').forEach(btn => {
+function stopMusic() {
+    if (state.music.interval) { clearInterval(state.music.interval); state.music.interval = null; }
+    state.music.currentTrack = null;
+}
+
+/* ============ TIMER ============ */
+function resetTimerDisplay() {
+    timerDisplay.innerText = '0.00';
+    timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tracking-tight text-white drop-shadow-2xl';
+    statusIndicator.innerText = 'TAP & HOLD SCREEN OR SPACEBAR';
+    statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500';
+    statusIndicator.style.color = '';
+}
+
+function onPress() {
+    if (state.timerState === 'IDLE') {
+        state.timerState = 'HOLDING';
+        timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tracking-tight holding drop-shadow-2xl';
+        statusIndicator.innerText = 'HOLD TO START';
+        statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 holding';
+        state.holdTimeout = setTimeout(() => {
+            if (state.timerState === 'HOLDING') {
+                state.timerState = 'READY';
+                timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tracking-tight ready drop-shadow-2xl';
+                statusIndicator.innerText = 'READY';
+                statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 ready';
+            }
+        }, 500);
+    } else if (state.timerState === 'INSPECTING') {
+        state.timerState = 'HOLDING';
+        timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tracking-tight holding drop-shadow-2xl';
+        statusIndicator.innerText = 'HOLD TO START SOLVE';
+        statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 holding';
+        state.holdTimeout = setTimeout(() => {
+            if (state.timerState === 'HOLDING') {
+                state.timerState = 'READY';
+                timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tracking-tight ready drop-shadow-2xl';
+                statusIndicator.innerText = 'READY';
+                statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 ready';
+            }
+        }, 500);
+    } else if (state.timerState === 'RUNNING') {
+        stopTimer();
+    }
+}
+
+function onRelease() {
+    if (state.timerState === 'HOLDING') {
+        clearTimeout(state.holdTimeout);
+        if (state.inspectionInterval) {
+            state.timerState = 'INSPECTING';
+            timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tracking-tight inspecting drop-shadow-2xl';
+            statusIndicator.innerText = 'INSPECTION';
+            statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 inspecting';
+        } else {
+            state.timerState = 'IDLE';
+            resetTimerDisplay();
+        }
+    } else if (state.timerState === 'READY') {
+        clearTimeout(state.holdTimeout);
+        if (state.inspectionInterval) {
+            clearInterval(state.inspectionInterval);
+            state.inspectionInterval = null;
+            startTimer(false);
+        } else if (state.inspectionEnabled) {
+            startInspection();
+        } else {
+            startTimer(false);
+        }
+    }
+}
+
+function startInspection() {
+    state.timerState = 'INSPECTING';
+    state.inspectionTimeLeft = 15;
+    state.inspectionDNF = false;
+    timerDisplay.innerText = '15';
+    timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tracking-tight inspecting drop-shadow-2xl';
+    statusIndicator.innerText = 'INSPECTION — HOLD TO START EARLY';
+    statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 inspecting';
+
+    state.inspectionInterval = setInterval(() => {
+        if (state.timerState === 'HOLDING' || state.timerState === 'READY') return;
+        if (state.timerState !== 'INSPECTING') return;
+
+        state.inspectionTimeLeft--;
+        timerDisplay.classList.remove('inspecting-tick');
+        void timerDisplay.offsetWidth;
+        timerDisplay.classList.add('inspecting-tick');
+
+        if (state.inspectionTimeLeft > 0) {
+            timerDisplay.innerText = state.inspectionTimeLeft;
+        } else if (state.inspectionTimeLeft === 0) {
+            timerDisplay.innerText = '+2';
+            timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tracking-tight holding drop-shadow-2xl';
+            statusIndicator.innerText = '+2 PENALTY — STARTING';
+            statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 holding';
+            setTimeout(() => {
+                if (state.timerState === 'INSPECTING') {
+                    clearInterval(state.inspectionInterval);
+                    state.inspectionInterval = null;
+                    startTimer(true);
+                }
+            }, 500);
+        } else if (state.inspectionTimeLeft === -1) {
+            timerDisplay.innerText = 'DNF';
+            statusIndicator.innerText = 'DNF — STARTING';
+            clearInterval(state.inspectionInterval);
+            state.inspectionInterval = null;
+            startTimer(true, true);
+        }
+    }, 1000);
+}
+
+function startTimer(penalty2, dnf) {
+    if (state.inspectionInterval) { clearInterval(state.inspectionInterval); state.inspectionInterval = null; }
+    state.timerState = 'RUNNING';
+    state.startTime = performance.now();
+    state.currentPenalty2 = !!penalty2;
+    state.currentDNF = !!dnf;
+    timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tracking-tight text-white drop-shadow-2xl timer-starting';
+    statusIndicator.innerText = 'SOLVING...';
+    statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2';
+    statusIndicator.style.color = 'var(--accent)';
+    state.elapsedInterval = setInterval(() => {
+        const elapsed = (performance.now() - state.startTime) / 1000;
+        timerDisplay.innerText = formatTime(elapsed);
+    }, 10);
+    state.ignoreNextMouseUp = true;
+    state.ignoreNextTouchEnd = true;
+    setTimeout(() => { state.ignoreNextMouseUp = false; state.ignoreNextTouchEnd = false; }, 150);
+    setTimeout(() => timerDisplay.classList.remove('timer-starting'), 300);
+}
+
+function stopTimer() {
+    if (state.timerState !== 'RUNNING') return;
+    clearInterval(state.elapsedInterval);
+    state.elapsedInterval = null;
+    const rawTime = (performance.now() - state.startTime) / 1000;
+    const finalTime = rawTime + (state.currentPenalty2 ? 2 : 0);
+    const isDNF = state.currentDNF;
+    state.timerState = 'IDLE';
+
+    const scr = state.scrambleHistory[state.scrambleHistoryIndex] || scrambleDisplay.innerText;
+    const solve = {
+        time: finalTime,
+        rawTime: rawTime,
+        penalty: state.currentPenalty2 ? '+2' : (isDNF ? 'DNF' : ''),
+        dnf: isDNF,
+        scramble: scr,
+        date: Date.now()
+    };
+    if (!state.sessions[state.currentSessionId]) {
+        state.sessions[state.currentSessionId] = { id: state.currentSessionId, name: 'Session', cubeType: state.currentCube, solves: [] };
+    }
+    const session = state.sessions[state.currentSessionId];
+    const prevBest = session.solves.length > 0 ? Math.min(...session.solves.filter(s => !s.dnf).map(s => s.time)) : Infinity;
+    session.solves.unshift(solve);
+    const isPB = !isDNF && finalTime < prevBest;
+    saveStorage();
+    generateScramble();
+    updateUI();
+
+    if (isPB && session.solves.length > 1) {
+        timerDisplay.classList.add('pb-flash');
+        setTimeout(() => timerDisplay.classList.remove('pb-flash'), 1300);
+    }
+
+    if (state.chatHistory.length > 0) {
+        setTimeout(() => {
+            let msg;
+            if (isDNF) msg = `😅 DNF recorded. Don't worry — review what went wrong and go again.`;
+            else if (isPB && finalTime < 15) msg = `🏆 NEW PB AND SUB-15! ${formatTime(finalTime)} — absolutely crushing it.`;
+            else if (isPB && finalTime < 30) msg = `🏆 NEW PB! ${formatTime(finalTime)} — momentum is real.`;
+            else if (isPB) msg = `🏆 PB: ${formatTime(finalTime)}. Nice work!`;
+            else if (finalTime < 10) msg = `⚡ ${formatTime(finalTime)} — speed demon mode!`;
+            else if (finalTime < 20) msg = `👍 ${formatTime(finalTime)} — solid. Identify one slow point for next solve.`;
+            else msg = `⏱️ ${formatTime(finalTime)} recorded. Focus on accuracy first, speed follows.`;
+            addChatMessage('bot', msg);
+        }, 400);
+    }
+    state.currentPenalty2 = false;
+    state.currentDNF = false;
+}
+
+function formatTime(seconds) {
+    if (isNaN(seconds) || seconds === null || seconds === undefined) return '-';
+    if (seconds >= 60) {
+        const m = Math.floor(seconds / 60);
+        const s = (seconds % 60).toFixed(2);
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+    return seconds.toFixed(2);
+}
+
+function formatSolveDisplay(solve) {
+    if (!solve) return '-';
+    if (solve.dnf) return 'DNF';
+    let s = formatTime(solve.time);
+    if (solve.penalty === '+2') s += '+';
+    return s;
+}
+
+function getTimeForAvg(solve) {
+    if (!solve) return Infinity;
+    if (solve.dnf) return Infinity;
+    return solve.time;
+}
+
+function calcAoN(solves, n) {
+    const subset = solves.slice(0, n);
+    if (subset.length < n) return null;
+    const sorted = [...subset].sort((a, b) => getTimeForAvg(a) - getTimeForAvg(b));
+    const trimmed = sorted.slice(1, n - 1);
+    if (trimmed.some(s => s.dnf)) return { dnf: true };
+    const sum = trimmed.reduce((acc, s) => acc + s.time, 0);
+    return { value: sum / trimmed.length };
+}
+
+function calcMoN(solves, n) {
+    const subset = solves.slice(0, n);
+    if (subset.length < n) return null;
+    if (subset.some(s => s.dnf)) return { dnf: true };
+    const sum = subset.reduce((acc, s) => acc + s.time, 0);
+    return { value: sum / subset.length };
+}
+
+/* ============ UI ============ */
+function updateUI() {
+    const solves = state.sessions[state.currentSessionId]?.solves || [];
+    solvesList.innerHTML = '';
+    solves.forEach((solve, idx) => {
+        const num = solves.length - idx;
+        const div = document.createElement('div');
+        div.className = 'flex justify-between items-center p-1.5 rounded-lg border text-xs cursor-pointer' + (idx === 0 ? ' solve-new' : '');
+        div.style.background = 'var(--card)';
+        div.style.borderColor = 'var(--border)';
+        const timeLabel = formatSolveDisplay(solve);
+        const colorStyle = solve.dnf ? 'color:#ef4444' : (solve.penalty === '+2' ? 'color:#f59e0b' : 'color:#fff');
+        div.innerHTML = `
+            <span class="text-zinc-400 font-mono">#${num}</span>
+            <span class="font-mono font-bold" style="${colorStyle}">${timeLabel}</span>
+            <button class="text-red-400 hover:text-red-300 px-1 font-bold delete-solve" data-index="${idx}">&times;</button>
+        `;
+        div.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-solve')) return;
+            openPenaltyModal(idx);
+        });
+        solvesList.appendChild(div);
+    });
+    solvesList.querySelectorAll('.delete-solve').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const t = e.currentTarget.getAttribute('data-tab');
-            document.querySelectorAll('.tab-btn').forEach(b => {
-                b.classList.remove('active');
-                b.classList.add('border-transparent');
-            });
-            e.currentTarget.classList.add('active');
-            e.currentTarget.classList.remove('border-transparent');
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            document.getElementById(`tab-${t}`).classList.remove('hidden');
+            e.stopPropagation();
+            const idx = parseInt(btn.dataset.index);
+            state.sessions[state.currentSessionId].solves.splice(idx, 1);
+            saveStorage();
+            updateUI();
         });
     });
-    toggleInspection.addEventListener('change', (e) => { inspectionEnabled = e.target.checked; saveStorage(); });
+
+    $('stat-count').innerText = solves.length;
+    $('stat-count-badge').innerText = `${solves.length} Solves`;
+
+    if (solves.length > 0) {
+        const validTimes = solves.filter(s => !s.dnf).map(s => s.time);
+        $('stat-best').innerText = validTimes.length > 0 ? formatTime(Math.min(...validTimes)) : 'DNF';
+
+        const mo3 = calcMoN(solves, 3);
+        $('stat-mo3').innerText = mo3 ? (mo3.dnf ? 'DNF' : formatTime(mo3.value)) : '-';
+
+        [3, 5, 12, 50, 100].forEach(n => {
+            const ao = calcAoN(solves, n);
+            const el = $(`stat-ao${n}`);
+            if (el) {
+                el.innerText = ao ? (ao.dnf ? 'DNF' : formatTime(ao.value)) : '-';
+            }
+        });
+    } else {
+        ['stat-best','stat-mo3','stat-ao3','stat-ao5','stat-ao12','stat-ao50','stat-ao100'].forEach(id => $(id).innerText = '-');
+    }
+
+    resetTimerDisplay();
+    drawTrendChart(solves);
+}
+
+function drawTrendChart(solves) {
+    const canvas = trendCanvas;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!solves || solves.length < 2) return;
+    const validSolves = solves.filter(s => !s.dnf).slice(0, 20).reverse();
+    if (validSolves.length < 2) return;
+    const times = validSolves.map(s => s.time);
+    const minT = Math.min(...times), maxT = Math.max(...times);
+    const range = maxT - minT || 1;
+    const pad = 12, w = canvas.width - pad*2, h = canvas.height - pad*2;
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#10b981';
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    validSolves.forEach((s, i) => {
+        const x = pad + (i / (validSolves.length - 1)) * w;
+        const y = canvas.height - pad - ((s.time - minT) / range) * h;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    validSolves.forEach((s, i) => {
+        const x = pad + (i / (validSolves.length - 1)) * w;
+        const y = canvas.height - pad - ((s.time - minT) / range) * h;
+        ctx.fillStyle = accent;
+        ctx.beginPath();
+        ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+    });
+}
+
+function updateCubeButtonsUI() {
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#10b981';
+    document.querySelectorAll('.cube-btn').forEach(btn => {
+        if (btn.dataset.cube === state.currentCube) {
+            btn.style.background = accent;
+            btn.style.color = '#fff';
+        } else {
+            btn.style.background = 'var(--card)';
+            btn.style.color = '#a1a1aa';
+        }
+    });
+}
+
+/* ============ PENALTY MODAL ============ */
+function openPenaltyModal(idx) {
+    const solves = state.sessions[state.currentSessionId]?.solves || [];
+    const solve = solves[idx];
+    if (!solve) return;
+    state.penaltySolveIndex = idx;
+    $('penalty-title').innerText = 'Apply Penalty';
+    $('penalty-solve-info').innerText = `Solve #${solves.length - idx} — ${formatSolveDisplay(solve)}`;
+    $('penalty-plus2-btn').style.opacity = solve.penalty === '+2' ? '1' : '0.85';
+    $('penalty-dnf-btn').style.opacity = solve.dnf ? '1' : '0.85';
+    $('penalty-ok-btn').style.opacity = (!solve.penalty && !solve.dnf) ? '1' : '0.85';
+    $('penalty-modal').classList.remove('hidden');
+}
+
+function closePenaltyModal() {
+    $('penalty-modal').classList.add('hidden');
+    state.penaltySolveIndex = null;
+}
+
+function applyPenalty(type) {
+    const idx = state.penaltySolveIndex;
+    if (idx === null) return;
+    const solves = state.sessions[state.currentSessionId]?.solves;
+    if (!solves || !solves[idx]) return;
+    const solve = solves[idx];
+
+    solve.dnf = false;
+    solve.penalty = '';
+    if (solve.rawTime !== undefined) {
+        solve.time = solve.rawTime;
+    } else {
+        solve.rawTime = solve.time;
+    }
+
+    if (type === '+2') {
+        solve.penalty = '+2';
+        solve.time = solve.rawTime + 2;
+    } else if (type === 'dnf') {
+        solve.dnf = true;
+        solve.penalty = 'DNF';
+    }
+
+    saveStorage();
+    updateUI();
+    closePenaltyModal();
+}
+
+/* ============ ASSISTANT ============ */
+const assistantPools = {
+    openingTip: {
+        R: ["Open with R — start building the right block early.", "R opener — keep that right-hand grip ready for the next move.", "Starting on R, watch the DFR corner during inspection."],
+        L: ["L opener — plan your left cross edge while keeping U free.", "Starting on L, track the back-left slot.", "L opener — good chance to set up an R trigger next."],
+        U: ["U opener — set up the cross in the back layer.", "Starting on U — use this to align two cross edges at once.", "U opener, look for a free pair after this."],
+        D: ["D opener — plan your first-layer corners carefully.", "Starting on D — the F2L pairs will come to the front.", "D opener — track the U-layer pieces as they rotate."],
+        F: ["F opener — check which U-layer pieces move to the front.", "Starting on F — be careful with grip on the next move.", "F opener — set up for an easy cross edge insert."],
+        B: ["B opener — track your back edges before they disappear.", "Starting on B — keep the F-face free for cross work.", "B opener — inspect the UB edge, it's about to move."]
+    },
+    prime: ["Lots of prime moves — keep your rotations natural and flowy.", "Prime-heavy scramble. Take a breath during inspection; don't rush the grip.", "Many primes here. Slowing down by 5% will actually speed you up."],
+    double: ["Multiple double turns — these are look-ahead goldmines. Use them.", "Doubles mean fast execution — plan the next step while it's spinning.", "Double turns incoming — good opportunity to prep the next pair."],
+    wide: ["Wide moves present — grip up before they come.", "Wide turns: keep your hands centered on the cube, not the edges.", "Wide moves — good time to check your OLL recognition."],
+    long: ["Full WCA-length scramble — plan the cross fully during inspection.", "Long scramble. Cross + first pair = target. Don't overthink it.", "This is a full scramble, so planning the cross is essential."]
+};
+
+function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function assistantReactToScramble(scr) {
+    if (!scr) return;
+    const reply = analyzeScramble(scr);
+    if (state.chatHistory.length > 0 && !$('assistant-panel').classList.contains('hidden')) {
+        addChatMessage('bot', reply);
+    } else {
+        state.chatHistory.push({ who: 'bot', text: reply, silent: true });
+    }
+}
+
+function analyzeScramble(scr) {
+    const moves = scr.split(' ');
+    const first = moves[0] || 'R';
+    const primeCount = moves.filter(m => m.includes("'")).length;
+    const doubleCount = moves.filter(m => m.includes('2')).length;
+    const wideCount = moves.filter(m => /w/.test(m)).length;
+    const tips = [];
+    const firstBase = first.replace(/[3w'2]/g, '');
+    const openingTips = assistantPools.openingTip[firstBase];
+    if (openingTips) tips.push(pickRandom(openingTips));
+    if (primeCount > moves.length / 2) tips.push(pickRandom(assistantPools.prime));
+    if (doubleCount > 2) tips.push(pickRandom(assistantPools.double));
+    if (wideCount > 0) tips.push(pickRandom(assistantPools.wide));
+    if (moves.length >= 18) tips.push(pickRandom(assistantPools.long));
+    if (tips.length === 0) tips.push("Interesting scramble — plan the cross fully, then commit.");
+    return `New scramble: "${scr}"\n\n${tips.slice(0, 3).map(t => '• ' + t).join('\n')}`;
+}
+
+function addChatMessage(who, text) {
+    state.chatHistory.push({ who, text });
+    const container = $('chat-messages');
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble ' + (who === 'user' ? 'chat-user' : 'chat-bot');
+    bubble.innerText = text;
+    container.appendChild(bubble);
+    container.scrollTop = container.scrollHeight;
+}
+
+function showTypingIndicator() {
+    const container = $('chat-messages');
+    removeTypingIndicator();
+    const typing = document.createElement('div');
+    typing.id = 'typing-indicator';
+    typing.className = 'chat-bubble chat-bot';
+    typing.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+    container.appendChild(typing);
+    container.scrollTop = container.scrollHeight;
+}
+
+function removeTypingIndicator() {
+    const t = $('typing-indicator');
+    if (t) t.remove();
+}
+
+function respondToChat(text) {
+    const t = text.toLowerCase().trim();
+    let reply = '';
+
+    if (/^(hi|hey|hello|yo|sup|hola|greetings|good morning|good evening|good afternoon)\b/.test(t) || t === 'hi' || t === 'hey' || t === 'hello') {
+        reply = pickRandom([
+            "Hey! 🧩 Ready to break a PB? Ask me about cross, F2L, OLL, PLL, or your stats.",
+            "Hey there! I watch every scramble you get. What are we working on?",
+            "Hello! Working on speed, consistency, or learning new algs today?",
+            "Yo! 🎯 Got a scramble? I can analyze it. Or ask about any solving technique."
+        ]);
+    }
+    else if (/how are you|how's it going|how do you do/.test(t)) {
+        reply = "Running great! 🚀 Ready to help you shave off some seconds. What's your current average?";
+    }
+    else if (/your name|who are you|what are you/.test(t)) {
+        reply = "I'm your cube assistant 🧩 — built into KKK Timer. I analyze scrambles, give solving tips, and help with stats. Always online.";
+    }
+    else if (/thank|thanks|thx|ty\b/.test(t)) {
+        reply = pickRandom(["Anytime! 🧩", "You got it. Keep solving.", "Happy to help! Now go break a PB.", "No problem — that's what I'm here for."]);
+    }
+    else if (/bye|goodbye|see you|good night|gn\b/.test(t)) {
+        reply = pickRandom(["Goodbye! Come back and crush a PB soon. 👋", "See you! Keep practicing.", "Good night! Rest those fingers. 🌙"]);
+    }
+    else if (/cross/.test(t)) {
+        reply = pickRandom([
+            "Cross plan: find the 4 white edges, align 2 at a time, keep cube rotations minimal. A good cross is 6-8 moves and under 2 seconds.",
+            "For the cross, inspect the four white edges first. Aim to solve 2 of them with a single rotation, then the other 2.",
+            "Cross tip: choose the D-face edge that's furthest away and bring it in first — the rest usually falls into place.",
+            "Always plan the whole cross during inspection. Most cubers lose 1-2 seconds just because they didn't plan."
+        ]);
+    }
+    else if (/f2l|first two layers|first 2 layers/.test(t)) {
+        reply = pickRandom([
+            "F2L: pair the corner + edge in the top layer, then insert. Look at the BACK of the cube first — the front pair usually becomes visible last.",
+            "For F2L, learn the 3 basic insert cases (basic, split, corner-in-slot) before memorizing specific algs.",
+            "F2L tip: track your next pair while inserting the current one. That's where most of your time is lost.",
+            "Don't rotate the cube during F2L — use U moves to bring pairs to the front instead. Saves time and improves look-ahead."
+        ]);
+    }
+    else if (/oll/.test(t)) {
+        reply = pickRandom([
+            "OLL: learn 2-look first — edges (F R U R' U' F'), then corners (Sune + Antisune). That covers 90% of cases with 3 algs.",
+            "For OLL, drills help. Pick one case, do 50 reps in a row, then move on.",
+            "OLL tip: watch the yellow edges after F2L. The shape of the yellow cross tells you exactly which 2-look alg to use.",
+            "2-look OLL is enough to sub-25. Full OLL saves maybe 1-2 seconds but requires 57 algs."
+        ]);
+    }
+    else if (/pll/.test(t)) {
+        reply = pickRandom([
+            "PLL priority: Ua, Ub, H, Z, T, Y. These cover 70% of cases. Master these before the harder ones.",
+            "PLL tips: T-perm and Y-perm are workhorses. Learn them cold and you'll never fear corner permutation.",
+            "For PLL, time yourself on each alg. Any alg above 1.5s needs practice, even if it 'feels' fast.",
+            "2-look PLL: corners first (Aa, Ab, E), then edges (Ua, Ub, H, Z). 6 algs cover everything."
+        ]);
+    }
+    else if (/last layer|ll\b/.test(t)) {
+        reply = "Last layer = OLL + PLL. Start with 2-look for both: it's only 9 algs total and gets you to sub-25 easily. Then gradually learn full sets.";
+    }
+    else if (/scramble/.test(t)) {
+        reply = `Current scramble: "${state.scrambleHistory[state.scrambleHistoryIndex] || 'none'}"\n\nUse inspection fully. Cross planning is your cheapest time save.`;
+    }
+    else if (/faster|get fast|speed|improve/.test(t)) {
+        reply = pickRandom([
+            "To get faster: (1) turn slower than you think, (2) look at the NEXT piece, (3) 20 focused solves beats 200 unfocused ones.",
+            "Speed comes from look-ahead, not raw TPS. Practice with deliberate slow solves — match 50% of normal speed and never stop looking.",
+            "Fastest fix: stop pausing. Any pause > 0.5s is a red flag. Identify WHEN you pause and drill that specific moment.",
+            "Do deliberate practice: pick ONE weakness (cross, F2L, OLL, PLL) and spend 20 solves only on that. You'll improve 3x faster."
+        ]);
+    }
+    else if (/sub-?\d+|time|how long/.test(t)) {
+        const match = t.match(/sub-?(\d+)/);
+        if (match) {
+            const target = parseInt(match[1]);
+            reply = `Getting sub-${target}:\n• If you're above sub-30: focus on cross + F2L basics\n• Sub-30 → sub-20: 2-look OLL/PLL + eliminate rotations\n• Sub-20 → sub-15: full PLL, better F2L look-ahead\n• Sub-15 → sub-10: full OLL + faster recognition\nYour current best: ${state.sessions[state.currentSessionId]?.solves.filter(s=>!s.dnf).length ? formatTime(Math.min(...state.sessions[state.currentSessionId].solves.filter(s=>!s.dnf).map(s=>s.time))) : 'not enough solves yet'}`;
+        } else {
+            reply = "Improving time: focus on eliminating pauses, not on turning faster. Time yourself, find where you pause, drill that specific spot.";
+        }
+    }
+    else if (/music|track|song/.test(t)) {
+        reply = "50 unique tracks — different rhythms, tempos, and scales. Match tempo to solving: fast tracks help drilling, slow tracks help look-ahead.";
+    }
+    else if (/theme|color|colour/.test(t)) {
+        reply = "25 themes in Settings → 🎨 Theme. Try a few — the color genuinely affects mood and concentration.";
+    }
+    else if (/stat|average|avg|ao5|ao12|ao50|pb|best|record/.test(t)) {
+        const s = state.sessions[state.currentSessionId];
+        if (s && s.solves.length > 0) {
+            const validSolves = s.solves.filter(x => !x.dnf);
+            const times = validSolves.map(x => x.time);
+            const best = times.length > 0 ? Math.min(...times) : null;
+            const ao5 = calcAoN(s.solves, 5);
+            const ao12 = calcAoN(s.solves, 12);
+            const dnfCount = s.solves.filter(x => x.dnf).length;
+            let lines = [`📊 Session: ${s.name}`, `Solves: ${s.solves.length}${dnfCount > 0 ? ` (${dnfCount} DNF)` : ''}`];
+            if (best !== null) lines.push(`Best: ${formatTime(best)}`);
+            if (ao5) lines.push(`Ao5: ${ao5.dnf ? 'DNF' : formatTime(ao5.value)}`);
+            if (ao12) lines.push(`Ao12: ${ao12.dnf ? 'DNF' : formatTime(ao12.value)}`);
+            if (ao5 && best && !ao5.dnf) lines.push(`Gap between best and Ao5: ${formatTime(ao5.value - best)} — ${ao5.value - best < 2 ? 'good consistency!' : 'aim to close this gap.'}`);
+            reply = lines.join('\n');
+        } else {
+            reply = "No solves yet in this session. Do 3-5 solves and I'll analyze.";
+        }
+    }
+    else if (/dnf/.test(t)) {
+        reply = "DNF = Did Not Finish. Common causes: (1) forgot inspection time limit, (2) made a move after timer stopped, (3) physically messed up. Click any solve to mark +2 or DNF.";
+    }
+    else if (/\+2|plus 2|penalty/.test(t)) {
+        reply = "Click any solve in the list → choose +2 (adds 2s) or DNF (marks as DNF). Tap 'OK' to remove a penalty.";
+    }
+    else if (/inspection/.test(t)) {
+        reply = "Inspection is 15 seconds. During inspection you can start the solve early by holding Spacebar (or holding the screen) — no penalty. If you let it run to 15s, +2 applies and the timer auto-starts.";
+    }
+    else if (/session/.test(t)) {
+        reply = "Sessions let you separate solves by cube type or practice style. Use the + button (top-right) to create one, and the dropdown to switch. Stats are per-session.";
+    }
+    else if (/2x2|2\*2|3x3|3\*3|4x4|4\*4|5x5|5\*5|6x6|6\*6|7x7|7\*7|skewb/.test(t)) {
+        reply = "Select your cube at the bottom bar. Scramble length adjusts: 3x3 = 20 moves, 4x4 = 40, 7x7 = 100. Skewb has its own notation.";
+    }
+    else if (/tps|turns per second/.test(t)) {
+        reply = "TPS = turns per second. Sub-20 cubers average 3-4 TPS. Don't chase TPS — chase zero pauses. A smooth 3 TPS with no pauses beats a stuttery 5 TPS.";
+    }
+    else if (/look ahead|lookahead/.test(t)) {
+        reply = "Look-ahead: while executing the current move, your eyes move to the NEXT pair/piece. Practice slow solves — 50% speed — and NEVER stop looking for the next piece. Speed will follow.";
+    }
+    else if (/finger|fingertrick|grip/.test(t)) {
+        reply = "Finger tricks: U with right index (push), U' with left index (push), R with right ring/pinky. Learn one alg at a time with proper fingering — never change it once solid.";
+    }
+    else if (/alg|algorithm/.test(t)) {
+        reply = "Learning algs: 1 new alg per week, drilled 100+ times, is better than 10 half-known ones. Test each alg — if it's over 1.5s, keep practicing.";
+    }
+    else if (/practice|training|how to train/.test(t)) {
+        reply = "Practice routine: 50 solves per session. First 10 = slow deliberate. Next 30 = normal speed. Last 10 = push pace. Track your slowest segment — that's where you lose time.";
+    }
+    else if (/help|what can you do|commands|options/.test(t)) {
+        reply = "I can help with:\n• Cross, F2L, OLL, PLL\n• Scramble analysis\n• Speed / time targets\n• Stats analysis\n• TPS & look-ahead\n• Finger tricks\n• Algorithm learning\n• Sessions, themes, penalties\n\nJust ask naturally — no commands needed.";
+    }
+    else {
+        reply = pickRandom([
+            "I don't have a specific answer for that, but here's a general tip: focus on your slowest step. Identify it, drill it 50 times, move on.",
+            "Interesting question! I'm strongest on cross, F2L, OLL, PLL, stats, and speed tips. Try asking about one of those.",
+            "Not sure I understood that. Try: 'cross tips', 'how to get sub-20', 'analyze my stats', 'explain OLL', or 'how does inspection work'.",
+            "Try rephrasing — I can help with any cubing topic: solving methods, algs, technique, stats, or equipment."
+        ]);
+    }
+
+    showTypingIndicator();
+    setTimeout(() => {
+        removeTypingIndicator();
+        addChatMessage('bot', reply);
+    }, 400 + Math.random() * 300);
+}
+
+/* ============ AO MODAL ============ */
+function openAoModal(stat) {
+    const s = state.sessions[state.currentSessionId];
+    const content = $('ao-modal-content');
+    const titleEl = $('ao-modal-title');
+    const n = parseInt(stat.replace('ao', ''));
+    titleEl.innerText = `Ao${n} — ${s.name}`;
+    content.innerHTML = '';
+    if (!s || s.solves.length === 0) {
+        content.innerHTML = '<p class="text-zinc-400 text-sm">No solves yet.</p>';
+    } else {
+        const recent = s.solves.slice(0, n);
+        const sum = document.createElement('div');
+        sum.className = 'rounded-lg p-3 mb-3 border';
+        sum.style.background = 'var(--card)';
+        sum.style.borderColor = 'var(--border)';
+        const aoResult = calcAoN(s.solves, n);
+        if (s.solves.length < n) {
+            sum.innerHTML = `<div class="text-xs text-zinc-400">Need ${n - s.solves.length} more solve(s) for Ao${n}. Showing latest ${recent.length}:</div>`;
+        } else if (aoResult && aoResult.dnf) {
+            sum.innerHTML = `<div class="flex justify-between mb-1"><span class="text-zinc-400 text-xs">Current Ao${n}</span><span class="font-mono font-bold text-red-400">DNF</span></div><div class="text-[10px] text-zinc-500">2+ DNFs in trimmed set</div>`;
+        } else {
+            const sorted = [...recent].sort((a, b) => getTimeForAvg(a) - getTimeForAvg(b));
+            const fastest = sorted[0];
+            const slowest = sorted[sorted.length-1];
+            sum.innerHTML = `
+                <div class="flex justify-between mb-1">
+                    <span class="text-zinc-400 text-xs">Current Ao${n}</span>
+                    <span class="font-mono font-bold" style="color:var(--accent)">${formatTime(aoResult.value)}</span>
+                </div>
+                <div class="text-[10px] text-zinc-500">Fastest ${formatSolveDisplay(fastest)} • Slowest ${formatSolveDisplay(slowest)} (trimmed)</div>
+            `;
+        }
+        content.appendChild(sum);
+        recent.forEach((solve, idx) => {
+            const div = document.createElement('div');
+            div.className = 'p-2.5 rounded-lg border cursor-pointer';
+            div.style.background = 'var(--card)';
+            div.style.borderColor = 'var(--border)';
+            const isFirst = idx === 0 && s.solves.length >= n;
+            const solveIdx = idx;
+            let display = formatSolveDisplay(solve);
+            let colorStyle = solve.dnf ? 'color:#ef4444' : (solve.penalty === '+2' ? 'color:#f59e0b' : (isFirst ? 'color:var(--accent)' : 'color:#fff'));
+            div.innerHTML = `
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-zinc-400 text-[10px] font-mono">Solve #${s.solves.length - idx}</span>
+                    <span class="font-mono font-bold text-sm" style="${colorStyle}">${display}</span>
+                </div>
+                <div class="text-[10px] font-mono text-zinc-400 break-words leading-tight">${solve.scramble || ''}</div>
+            `;
+            div.addEventListener('click', () => {
+                $('ao-modal').classList.add('hidden');
+                openPenaltyModal(solveIdx);
+            });
+            content.appendChild(div);
+        });
+    }
+    $('ao-modal').classList.remove('hidden');
 }
 
 /* ============ SHARE ============ */
-function setupShareFeature() {
-    const modal = document.getElementById('share-modal');
-    document.getElementById('share-session-btn').addEventListener('click', (e) => { e.stopPropagation(); openShareModal(); });
-    document.getElementById('close-share-btn').addEventListener('click', () => modal.classList.add('hidden'));
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
-    document.getElementById('share-more-btn').addEventListener('click', () => openNativeShare());
-    document.getElementById('share-copy-btn').addEventListener('click', () => copySessionToClipboard());
-}
-
 function buildShareText() {
-    const s = sessions[currentSessionId];
+    const s = state.sessions[state.currentSessionId];
     if (!s) return 'No session';
-    let txt = `=== KKK TIMER SESSION SHARE ===\nSession: ${s.name}\nCube: ${s.cubeType}\nSolves: ${s.solves.length}\n\n`;
+    let txt = `=== KKK TIMER SESSION ===\nSession: ${s.name}\nCube: ${s.cubeType}\nSolves: ${s.solves.length}\n\n`;
     s.solves.slice(0, 50).forEach((solve, i) => {
-        txt += `#${s.solves.length - i}: ${formatTime(solve.time)} — ${solve.scramble}\n`;
+        txt += `#${s.solves.length - i}: ${formatSolveDisplay(solve)} — ${solve.scramble}\n`;
     });
     if (s.solves.length > 50) txt += `...and ${s.solves.length - 50} more\n`;
     return txt;
 }
 
 function openShareModal() {
-    const grid = document.getElementById('share-apps-grid');
+    const grid = $('share-apps-grid');
     grid.innerHTML = '';
     const apps = [
         { name:'WhatsApp', emoji:'💬', url:'https://wa.me/?text=' },
@@ -876,32 +1507,30 @@ function openShareModal() {
     ];
     apps.forEach(app => {
         const btn = document.createElement('button');
-        btn.className = 'flex flex-col items-center justify-center p-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 transition active:scale-95 border border-zinc-700/50';
+        btn.className = 'flex flex-col items-center justify-center p-2.5 rounded-xl border';
+        btn.style.background = 'var(--card)';
+        btn.style.borderColor = 'var(--border)';
         btn.innerHTML = `<div class="text-xl mb-1">${app.emoji}</div><div class="text-[10px] font-semibold text-zinc-200">${app.name}</div>`;
         btn.addEventListener('click', () => {
             const text = buildShareText();
-            if (navigator.share && (app.name === 'More' || app.url === null)) {
-                navigator.share({ title: 'KKK Timer Session', text: text }).then(() => document.getElementById('share-modal').classList.add('hidden')).catch(() => {});
-            } else if (app.url) {
+            if (app.url) {
                 window.open(app.url + encodeURIComponent(text), '_blank');
-                document.getElementById('share-modal').classList.add('hidden');
+                $('share-modal').classList.add('hidden');
             } else if (navigator.share) {
-                navigator.share({ title: 'KKK Timer Session', text: text }).then(() => document.getElementById('share-modal').classList.add('hidden')).catch(() => {});
+                navigator.share({ title: 'KKK Timer Session', text }).then(() => $('share-modal').classList.add('hidden')).catch(() => {});
             } else {
                 copySessionToClipboard();
             }
         });
         grid.appendChild(btn);
     });
-    document.getElementById('share-modal').classList.remove('hidden');
+    $('share-modal').classList.remove('hidden');
 }
 
 function openNativeShare() {
     const text = buildShareText();
     if (navigator.share) {
-        navigator.share({ title: 'KKK Timer Session', text: text })
-            .then(() => document.getElementById('share-modal').classList.add('hidden'))
-            .catch(() => {});
+        navigator.share({ title: 'KKK Timer Session', text }).then(() => $('share-modal').classList.add('hidden')).catch(() => {});
     } else {
         copySessionToClipboard();
     }
@@ -909,44 +1538,84 @@ function openNativeShare() {
 
 function copySessionToClipboard() {
     const text = buildShareText();
-    navigator.clipboard.writeText(text).then(() => {
-        alert('Session copied to clipboard!');
-        document.getElementById('share-modal').classList.add('hidden');
-    }).catch(() => {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        try { document.execCommand('copy'); alert('Session copied!'); } catch(e) { alert('Copy failed.'); }
-        document.body.removeChild(ta);
-        document.getElementById('share-modal').classList.add('hidden');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Session copied to clipboard!');
+            $('share-modal').classList.add('hidden');
+        }).catch(() => fallbackCopy(text));
+    } else {
+        fallbackCopy(text);
+    }
+}
+
+function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); alert('Session copied!'); $('share-modal').classList.add('hidden'); }
+    catch(e) { alert('Copy failed.'); }
+    document.body.removeChild(ta);
+}
+
+/* ============ WIRING ============ */
+function setupSettingsModal() {
+    const modal = $('settings-modal');
+    $('settings-btn').addEventListener('click', (e) => { e.stopPropagation(); modal.classList.remove('hidden'); });
+    $('close-modal-btn').addEventListener('click', () => modal.classList.add('hidden'));
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const tab = e.currentTarget.dataset.tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            $(`tab-${tab}`).classList.remove('hidden');
+        });
+    });
+    toggleInspection.addEventListener('change', (e) => {
+        state.inspectionEnabled = e.target.checked;
+        saveStorage();
+        const track = $('inspection-toggle-track');
+        if (track) track.style.backgroundColor = e.target.checked ? 'var(--accent)' : '#3f3f46';
     });
 }
 
-/* ============ ASSISTANT ============ */
-let chatHistory = [];
+function setupShareFeature() {
+    $('share-session-btn').addEventListener('click', (e) => { e.stopPropagation(); openShareModal(); });
+    $('close-share-btn').addEventListener('click', () => $('share-modal').classList.add('hidden'));
+    $('share-modal').addEventListener('click', (e) => { if (e.target === $('share-modal')) $('share-modal').classList.add('hidden'); });
+    $('share-more-btn').addEventListener('click', openNativeShare);
+    $('share-copy-btn').addEventListener('click', copySessionToClipboard);
+}
+
 function setupAssistant() {
-    const panel = document.getElementById('assistant-panel');
-    document.getElementById('assistant-btn').addEventListener('click', (e) => {
+    const panel = $('assistant-panel');
+    $('assistant-btn').addEventListener('click', (e) => {
         e.stopPropagation();
         panel.classList.remove('hidden');
-        panel.classList.add('flex');
-        if (chatHistory.length === 0) {
-            addChatMessage('bot', "Hey! I'm your cube assistant 🧩 I'll automatically react to every new scramble and give tips. Ask me anything — like 'How do I solve the first layer?' or 'tips for R U R prime'.");
+        panel.classList.add('flex', 'assistant-open');
+        const silent = state.chatHistory.filter(m => m.silent);
+        state.chatHistory = state.chatHistory.filter(m => !m.silent);
+        if (state.chatHistory.length === 0) {
+            addChatMessage('bot', "Hey! 🧩 I'm your cube assistant. I watch every scramble and react with tips. Ask me about cross, F2L, OLL, PLL, stats, or how to get faster.");
         }
+        silent.forEach(m => addChatMessage('bot', m.text));
+        setTimeout(() => panel.classList.remove('assistant-open'), 350);
     });
-    document.getElementById('close-assistant-btn').addEventListener('click', () => {
+    $('close-assistant-btn').addEventListener('click', () => {
         panel.classList.add('hidden');
         panel.classList.remove('flex');
     });
-    document.getElementById('chat-send-btn').addEventListener('click', sendChatFromInput);
-    document.getElementById('chat-input').addEventListener('keydown', (e) => {
+    $('chat-send-btn').addEventListener('click', sendChatFromInput);
+    $('chat-input').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') { e.preventDefault(); sendChatFromInput(); }
     });
 }
 
 function sendChatFromInput() {
-    const input = document.getElementById('chat-input');
+    const input = $('chat-input');
     const text = input.value.trim();
     if (!text) return;
     input.value = '';
@@ -954,344 +1623,168 @@ function sendChatFromInput() {
     respondToChat(text);
 }
 
-function addChatMessage(who, text) {
-    chatHistory.push({ who, text });
-    const container = document.getElementById('chat-messages');
-    const bubble = document.createElement('div');
-    bubble.className = 'chat-bubble ' + (who === 'user' ? 'chat-user' : 'chat-bot');
-    bubble.innerText = text;
-    container.appendChild(bubble);
-    container.scrollTop = container.scrollHeight;
-}
-
-function assistantObserveScramble(scr) {
-    if (!scr) return;
-    const reply = analyzeScramble(scr);
-    if (chatHistory.length > 0) {
-        addChatMessage('bot', reply);
-    } else {
-        chatHistory.push({ who: 'bot', text: reply, silent: true });
-    }
-}
-
-function analyzeScramble(scr) {
-    const moves = scr.split(' ');
-    const first = moves[0] || 'R';
-    const tips = [];
-    const primeCount = moves.filter(m => m.includes("'")).length;
-    const doubleCount = moves.filter(m => m.includes('2')).length;
-    const wideCount = moves.filter(m => m.includes('w')).length;
-    if (first.startsWith('R')) tips.push('Opening with R — try to build the right-side block and watch the D-face edge.');
-    else if (first.startsWith('L')) tips.push('Opening with L — plan your left cross edge while keeping U-face free.');
-    else if (first.startsWith('U')) tips.push('Opening with U — great for setting up the cross in the back.');
-    else if (first.startsWith('F')) tips.push('Opening with F — be careful with F moves; inspect which pieces they bring to the U layer.');
-    else if (first.startsWith('D')) tips.push('Opening with D — plan your first-layer corners carefully.');
-    else if (first.startsWith('B')) tips.push("Opening with B — track your back edges so you don't lose them.");
-    if (primeCount > moves.length / 2) tips.push('Lots of prime moves (' + primeCount + ') — orient the cube to keep the rotations natural and flowy.');
-    if (doubleCount > 2) tips.push('Multiple double turns (' + doubleCount + ') — these are great chances to look ahead.');
-    if (wideCount > 0) tips.push('Wide moves present (' + wideCount + ') — prep your grip before the wide turns.');
-    if (moves.length >= 20) tips.push("This is a full WCA-length scramble — inspect for the cross and first pair, don't rush.");
-    return `New scramble received ✅\n"${scr}"\n\n${tips.slice(0, 3).map(t => '• ' + t).join('\n')}`;
-}
-
-function respondToChat(text) {
-    const t = text.toLowerCase();
-    let reply = '';
-    if (/cross|first layer|f2l/.test(t)) {
-        reply = 'For the cross, look for the 4 white edges. Try to align 2 at a time so you reduce cube rotations. For F2L, pair the corner and edge in the top layer, then insert. Practice slow — accuracy beats speed.';
-    } else if (/oll|pll|last layer/.test(t)) {
-        reply = 'For OLL: learn 2-look (edges first, then corners) to cut down on recognition time. For PLL: master Ua, Ub, H, Z first — they appear most. Then slowly add other algs.';
-    } else if (/scramble|scrambles/.test(t)) {
-        reply = `Current scramble is: "${scrambleHistory[scrambleHistoryIndex] || 'none'}"\nTry to plan the whole cross during inspection — that alone can save 1–2 seconds.`;
-    } else if (/time|speed|faster/.test(t)) {
-        reply = 'To get faster: (1) turn slowly and look ahead, (2) avoid cube rotations, (3) learn algs one at a time, (4) do 20-solve focused sessions on one weakness at a time.';
-    } else if (/music|track|song/.test(t)) {
-        reply = 'Tip: pick a track whose tempo matches your solving rhythm. Fast tempo helps with drilling algs, slower chill tracks help with look-ahead.';
-    } else if (/help|how|what/.test(t)) {
-        reply = 'I can help with: cross, F2L, OLL/PLL, scramble interpretation, tips to get faster, or explaining your session stats. Just ask!';
-    } else if (/hi|hello|hey/.test(t)) {
-        reply = 'Hey! Ready to break some PBs? Ask me about a specific scramble, a technique, or tell me what you want to improve.';
-    } else if (/stats|average|ao5|ao12|ao50/.test(t)) {
-        const s = sessions[currentSessionId];
-        if (s && s.solves.length > 0) {
-            const times = s.solves.map(x => x.time);
-            reply = `You've done ${s.solves.length} solves. Best: ${formatTime(Math.min(...times))}. Ao5: ${s.solves.length>=5 ? formatTime(calcAoN(times,5)) : 'need 5'}. Ao12: ${s.solves.length>=12 ? formatTime(calcAoN(times,12)) : 'need 12'}. Keep going!`;
-        } else {
-            reply = "No solves yet in this session. Do a few solves and I'll analyze your stats.";
-        }
-    } else if (/theme|color|colour/.test(t)) {
-        reply = 'You can change the theme in Settings → 🎨 Theme. There are 25 different color themes — try a few and pick the one that feels best!';
-    } else {
-        reply = "Nice question! Try asking me about: cross planning, F2L tricks, OLL/PLL algs, scramble tips, or stats analysis. I'll give you a concrete tip.";
-    }
-    setTimeout(() => addChatMessage('bot', reply), 350);
-}
-
-/* ============ AO DETAILS ============ */
 function setupAoDetails() {
     document.querySelectorAll('.stat-card-clickable').forEach(card => {
         card.addEventListener('click', (e) => {
             e.stopPropagation();
-            const stat = card.getAttribute('data-stat');
-            openAoModal(stat);
+            openAoModal(card.dataset.stat);
         });
     });
-    const modal = document.getElementById('ao-modal');
-    document.getElementById('close-ao-btn').addEventListener('click', () => modal.classList.add('hidden'));
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+    $('close-ao-btn').addEventListener('click', () => $('ao-modal').classList.add('hidden'));
+    $('ao-modal').addEventListener('click', (e) => { if (e.target === $('ao-modal')) $('ao-modal').classList.add('hidden'); });
 }
 
-function openAoModal(stat) {
-    const s = sessions[currentSessionId];
-    const content = document.getElementById('ao-modal-content');
-    const titleEl = document.getElementById('ao-modal-title');
-    const n = parseInt(stat.replace('ao',''));
-    titleEl.innerText = `Ao${n} Details — ${s.name}`;
-    content.innerHTML = '';
-    if (!s || s.solves.length === 0) {
-        content.innerHTML = '<p class="text-zinc-400 text-sm">No solves yet in this session.</p>';
-    } else {
-        const recent = s.solves.slice(0, n);
-        const sum = document.createElement('div');
-        sum.className = 'bg-zinc-800/60 rounded-lg p-3 mb-3 border border-zinc-700/50';
-        if (s.solves.length < n) {
-            sum.innerHTML = `<div class="text-xs text-zinc-400">Need ${n - s.solves.length} more solve(s) to compute Ao${n}. Showing latest ${recent.length}:</div>`;
+function setupPenaltyModal() {
+    $('penalty-ok-btn').addEventListener('click', () => applyPenalty('ok'));
+    $('penalty-plus2-btn').addEventListener('click', () => applyPenalty('+2'));
+    $('penalty-dnf-btn').addEventListener('click', () => applyPenalty('dnf'));
+    $('penalty-cancel-btn').addEventListener('click', closePenaltyModal);
+    $('penalty-modal').addEventListener('click', (e) => { if (e.target === $('penalty-modal')) closePenaltyModal(); });
+}
+
+function setupScrambleNav() {
+    $('next-scramble-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (state.scrambleHistoryIndex < state.scrambleHistory.length - 1) {
+            state.scrambleHistoryIndex++;
+            renderScramble();
+            assistantReactToScramble(state.scrambleHistory[state.scrambleHistoryIndex]);
         } else {
-            const sorted = [...recent].sort((a,b)=>a.time-b.time);
-            const trimmed = sorted.slice(1, n-1);
-            const avg = trimmed.reduce((acc,x)=>acc+x.time,0) / trimmed.length;
-            sum.innerHTML = `<div class="flex justify-between"><span class="text-zinc-400 text-xs">Current Ao${n}</span><span class="text-emerald-400 font-mono font-bold">${formatTime(avg)}</span></div>
-                             <div class="text-[10px] text-zinc-500 mt-1">Fastest: ${formatTime(sorted[0].time)} • Slowest: ${formatTime(sorted[sorted.length-1].time)} (trimmed from average)</div>`;
+            generateScramble();
         }
-        content.appendChild(sum);
-        recent.forEach((solve, idx) => {
-            const div = document.createElement('div');
-            div.className = 'bg-zinc-800/40 p-2.5 rounded-lg border border-zinc-800/60';
-            const isFast = idx === 0 && s.solves.length >= n;
-            div.innerHTML = `
-                <div class="flex justify-between items-center mb-1">
-                    <span class="text-zinc-400 text-[10px] font-mono">Solve #${s.solves.length - idx}</span>
-                    <span class="font-mono font-bold ${isFast ? 'text-emerald-400' : 'text-white'} text-sm">${formatTime(solve.time)}</span>
-                </div>
-                <div class="text-[10px] font-mono text-zinc-400 break-words leading-tight">${solve.scramble || ''}</div>
-            `;
-            content.appendChild(div);
-        });
-    }
-    document.getElementById('ao-modal').classList.remove('hidden');
+    });
+    $('prev-scramble-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (state.scrambleHistoryIndex > 0) {
+            state.scrambleHistoryIndex--;
+            renderScramble();
+            assistantReactToScramble(state.scrambleHistory[state.scrambleHistoryIndex]);
+        }
+    });
 }
 
-/* ============ TIMER LOGIC ============ */
-function setupUnifiedInputListeners() {
+function setupInput() {
     window.addEventListener('keydown', (e) => {
-        if (document.activeElement && ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
-        if (!document.getElementById('settings-modal').classList.contains('hidden')) return;
-        if (!document.getElementById('share-modal').classList.contains('hidden')) return;
-        if (!document.getElementById('ao-modal').classList.contains('hidden')) return;
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+        if (!$('settings-modal').classList.contains('hidden')) return;
+        if (!$('share-modal').classList.contains('hidden')) return;
+        if (!$('ao-modal').classList.contains('hidden')) return;
+        if (!$('penalty-modal').classList.contains('hidden')) return;
         if (e.code === 'Space') {
             e.preventDefault();
-            if (!e.repeat) handleTimerPress();
-        } else if (timerState === 'RUNNING') {
+            if (!e.repeat) onPress();
+        } else if (state.timerState === 'RUNNING') {
             stopTimer();
         }
     });
     window.addEventListener('keyup', (e) => {
-        if (document.activeElement && ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
-        if (e.code === 'Space') handleTimerRelease();
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+        if (e.code === 'Space') {
+            e.preventDefault();
+            onRelease();
+        }
     });
-    mainTimerArea.addEventListener('mousedown', (e) => { if (e.button === 0) handleTimerPress(); });
+    mainTimerArea.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        onPress();
+    });
     window.addEventListener('mouseup', () => {
-        if (timerState === 'HOLDING' || timerState === 'READY') handleTimerRelease();
-        else if (timerState === 'RUNNING') stopTimer();
+        if (state.ignoreNextMouseUp) { state.ignoreNextMouseUp = false; return; }
+        if (state.timerState === 'RUNNING') { stopTimer(); return; }
+        if (state.timerState === 'HOLDING' || state.timerState === 'READY') onRelease();
     });
-    mainTimerArea.addEventListener('touchstart', (e) => { e.preventDefault(); handleTimerPress(); }, { passive: false });
+    mainTimerArea.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        onPress();
+    }, { passive: false });
     mainTimerArea.addEventListener('touchend', (e) => {
         e.preventDefault();
-        if (timerState === 'HOLDING' || timerState === 'READY') handleTimerRelease();
-        else if (timerState === 'RUNNING') stopTimer();
+        if (state.ignoreNextTouchEnd) { state.ignoreNextTouchEnd = false; return; }
+        if (state.timerState === 'HOLDING' || state.timerState === 'READY') onRelease();
+        else if (state.timerState === 'RUNNING') stopTimer();
     }, { passive: false });
+
+    // CRITICAL: stop touchstart/touchmove on the solves list from bubbling to the timer
+    const blockTouch = (e) => { e.stopPropagation(); };
+    solvesList.addEventListener('touchstart', blockTouch, { passive: true });
+    solvesList.addEventListener('touchmove', blockTouch, { passive: true });
+    solvesList.addEventListener('mousedown', blockTouch);
 }
 
-function handleTimerPress() {
-    if (timerState === 'IDLE') {
-        timerState = 'HOLDING';
-        timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight holding drop-shadow-2xl transition-colors duration-75';
-        statusIndicator.innerText = 'HOLD TO START';
-        statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 holding';
-        holdTimeout = setTimeout(() => {
-            if (timerState === 'HOLDING') {
-                timerState = 'READY';
-                timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight ready drop-shadow-2xl transition-colors duration-75';
-                statusIndicator.innerText = 'READY';
-                statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 ready';
+/* ============ INIT ============ */
+function init() {
+    loadStorage();
+    buildThemeGrid();
+    applyTheme(state.currentTheme);
+    populateSessionSelect();
+    updateCubeButtonsUI();
+
+    setupSettingsModal();
+    setupShareFeature();
+    setupAssistant();
+    setupAoDetails();
+    setupPenaltyModal();
+    setupScrambleNav();
+    setupMusicPlayer();
+    setupInput();
+
+    sessionSelect.addEventListener('change', (e) => switchSession(e.target.value));
+
+    $('add-session-btn').addEventListener('click', () => {
+        const name = prompt('Session name:', `Session ${Object.keys(state.sessions).length + 1}`);
+        if (name && name.trim()) createSession(name);
+    });
+
+    $('delete-session-btn').addEventListener('click', () => {
+        if (Object.keys(state.sessions).length <= 1) { alert('You must keep at least one session.'); return; }
+        if (confirm(`Delete "${state.sessions[state.currentSessionId].name}"?`)) {
+            delete state.sessions[state.currentSessionId];
+            state.currentSessionId = Object.keys(state.sessions)[0];
+            state.currentCube = state.sessions[state.currentSessionId].cubeType;
+            populateSessionSelect();
+            updateCubeButtonsUI();
+            resetScrambleHistory();
+            generateScramble();
+            saveStorage();
+            updateUI();
+        }
+    });
+
+    document.querySelectorAll('.cube-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const cube = e.currentTarget.dataset.cube;
+            state.currentCube = cube;
+            let found = false;
+            for (const id in state.sessions) {
+                if (state.sessions[id].cubeType === cube) { state.currentSessionId = id; found = true; break; }
             }
-        }, 500);
-    } else if (timerState === 'RUNNING') {
-        stopTimer();
-    }
-}
+            if (!found) {
+                const newId = 'session_' + Date.now();
+                state.sessions[newId] = { id: newId, name: `${cube} Session`, cubeType: cube, solves: [] };
+                state.currentSessionId = newId;
+            }
+            populateSessionSelect();
+            updateCubeButtonsUI();
+            resetScrambleHistory();
+            generateScramble();
+            saveStorage();
+            updateUI();
+        });
+    });
 
-function handleTimerRelease() {
-    if (timerState === 'HOLDING') {
-        clearTimeout(holdTimeout);
-        timerState = 'IDLE';
-        timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75';
-        statusIndicator.innerText = 'TAP & HOLD SCREEN OR SPACEBAR';
-        statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500';
-    } else if (timerState === 'READY') {
-        clearTimeout(holdTimeout);
-        if (inspectionEnabled) startInspection();
-        else startTimer();
-    }
-}
+    window.addEventListener('resize', () => {
+        drawTrendChart(state.sessions[state.currentSessionId]?.solves || []);
+    });
 
-function startInspection() {
-    timerState = 'INSPECTING';
-    inspectionTimeLeft = 15;
-    timerDisplay.innerText = inspectionTimeLeft;
-    timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight inspecting drop-shadow-2xl transition-colors duration-75';
-    statusIndicator.innerText = 'INSPECTION';
-    statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 inspecting';
-    inspectionInterval = setInterval(() => {
-        inspectionTimeLeft--;
-        if (inspectionTimeLeft > 0) timerDisplay.innerText = inspectionTimeLeft;
-        else if (inspectionTimeLeft === 0) timerDisplay.innerText = '+2';
-        else { timerDisplay.innerText = 'DNF'; clearInterval(inspectionInterval); }
-    }, 1000);
-}
-
-function startTimer() {
-    if (inspectionInterval) clearInterval(inspectionInterval);
-    timerState = 'RUNNING';
-    startTime = performance.now();
-    timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75';
-    statusIndicator.innerText = 'SOLVING...';
-    statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-emerald-400';
-    elapsedInterval = setInterval(() => {
-        const elapsed = (performance.now() - startTime) / 1000;
-        timerDisplay.innerText = formatTime(elapsed);
-    }, 10);
-}
-
-function stopTimer() {
-    if (timerState !== 'RUNNING') return;
-    clearInterval(elapsedInterval);
-    const finalTime = (performance.now() - startTime) / 1000;
-    timerState = 'IDLE';
-    const currentScramble = scrambleHistory[scrambleHistoryIndex] || scrambleDisplay.innerText;
-    const solveObj = { time: finalTime, scramble: currentScramble, date: Date.now() };
-    if (!sessions[currentSessionId]) {
-        sessions[currentSessionId] = { id:currentSessionId, name:'Session', cubeType:currentCube, solves:[] };
-    }
-    sessions[currentSessionId].solves.unshift(solveObj);
-    saveStorage();
+    resetTimerDisplay();
+    resetScrambleHistory();
     generateScramble();
     updateUI();
-    setTimeout(() => {
-        if (chatHistory.length > 0) {
-            addChatMessage('bot', `⏱️ ${formatTime(finalTime)} recorded! ${finalTime < 10 ? 'That was fast 🔥' : finalTime < 20 ? 'Solid solve.' : 'Good effort — keep pushing!'} Want a tip on what to improve next?`);
-        }
-    }, 500);
 }
 
-function formatTime(seconds) {
-    if (isNaN(seconds) || seconds === null) return '-';
-    if (seconds >= 60) {
-        const mins = Math.floor(seconds / 60);
-        const secs = (seconds % 60).toFixed(2);
-        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-    }
-    return seconds.toFixed(2);
-}
-
-function calcAoN(times, n) {
-    const subset = times.slice(0, n).sort((a,b)=>a-b);
-    const trimmed = subset.slice(1, n-1);
-    if (trimmed.length === 0) return 0;
-    return trimmed.reduce((a,b)=>a+b,0) / trimmed.length;
-}
-function calcMoN(times, n) {
-    const subset = times.slice(0, n);
-    return subset.reduce((a,b)=>a+b,0) / n;
-}
-
-/* ============ UI UPDATE ============ */
-function updateUI() {
-    const currentSolves = sessions[currentSessionId] ? sessions[currentSessionId].solves : [];
-    solvesList.innerHTML = '';
-    currentSolves.forEach((solve, index) => {
-        const solveNum = currentSolves.length - index;
-        const div = document.createElement('div');
-        div.className = 'flex justify-between items-center bg-zinc-800/40 hover:bg-zinc-800/80 p-1.5 rounded-lg border border-zinc-800/60 text-xs transition';
-        div.innerHTML = `
-            <span class="text-zinc-400 font-mono">#${solveNum}</span>
-            <span class="font-mono font-bold text-white">${formatTime(solve.time)}</span>
-            <button class="text-red-400 hover:text-red-300 px-1 font-bold delete-solve-btn" data-index="${index}">&times;</button>
-        `;
-        solvesList.appendChild(div);
-    });
-    solvesList.querySelectorAll('.delete-solve-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const idx = parseInt(btn.getAttribute('data-index'));
-            if (sessions[currentSessionId] && sessions[currentSessionId].solves[idx] !== undefined) {
-                sessions[currentSessionId].solves.splice(idx, 1);
-                saveStorage();
-                updateUI();
-            }
-        });
-    });
-
-    statCount.innerText = currentSolves.length;
-    statCountBadge.innerText = `${currentSolves.length} Solves`;
-
-    if (currentSolves.length > 0) {
-        const times = currentSolves.map(s => s.time);
-        statBest.innerText = formatTime(Math.min(...times));
-        statMo3.innerText = currentSolves.length >= 3 ? formatTime(calcMoN(times, 3)) : '-';
-        statAo3.innerText = currentSolves.length >= 3 ? formatTime(calcAoN(times, 3)) : '-';
-        statAo5.innerText = currentSolves.length >= 5 ? formatTime(calcAoN(times, 5)) : '-';
-        statAo12.innerText = currentSolves.length >= 12 ? formatTime(calcAoN(times, 12)) : '-';
-        statAo50.innerText = currentSolves.length >= 50 ? formatTime(calcAoN(times, 50)) : '-';
-        statAo100.innerText = currentSolves.length >= 100 ? formatTime(calcAoN(times, 100)) : '-';
-    } else {
-        ['statBest','statMo3','statAo3','statAo5','statAo12','statAo50','statAo100'].forEach(id => {
-            document.getElementById(id).innerText = '-';
-        });
-    }
-
-    timerDisplay.innerText = '0.00';
-    timerDisplay.className = 'text-6xl sm:text-8xl md:text-9xl font-black font-mono-timer tabular-nums tracking-tight text-white drop-shadow-2xl transition-colors duration-75';
-    statusIndicator.innerText = 'TAP & HOLD SCREEN OR SPACEBAR';
-    statusIndicator.className = 'text-xs sm:text-sm uppercase tracking-widest font-bold mt-2 text-zinc-500';
-
-    drawTrendChart(currentSolves);
-}
-
-function drawTrendChart(solves) {
-    const canvas = trendCanvas;
-    const ctx = canvas.getContext('2d');
-    canvas.width = canvas.parentElement.clientWidth;
-    canvas.height = canvas.parentElement.clientHeight;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (!solves || solves.length === 0) return;
-    const recent = solves.slice(0, 20).reverse();
-    if (recent.length < 2) return;
-    const times = recent.map(s => s.time);
-    const minT = Math.min(...times), maxT = Math.max(...times);
-    const range = maxT - minT || 1;
-    const pad = 15, w = canvas.width - pad*2, h = canvas.height - pad*2;
-    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-green').trim() || '#10b981';
-    ctx.strokeStyle = accent;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    recent.forEach((s, i) => {
-        const x = pad + (i / (recent.length - 1)) * w;
-        const y = canvas.height - pad - ((s.time - minT) / range) * h;
-        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-}
+window.addEventListener('load', init);
 </script>
 </body>
 </html>
