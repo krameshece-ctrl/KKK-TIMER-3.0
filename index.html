@@ -1267,12 +1267,18 @@ function respondToChat(text) {
     const t = text.toLowerCase().trim();
     let reply = '';
 
-    if (/^(hi|hey|hello|yo|sup|hola|greetings|good morning|good evening|good afternoon)\b/.test(t) || t === 'hi' || t === 'hey' || t === 'hello') {
+    if (/^(hi|hey|hello|yo|sup|hola|greetings|good morning|good evening|good afternoon|bro|nice to meet you|my friend|alright)\b/.test(t) || t === 'hi' || t === 'hey' || t === 'hello') {
         reply = pickRandom([
             "Hey! 🧩 Ready to break a PB? Ask me about cross, F2L, OLL, PLL, or your stats.",
             "Hey there! I watch every scramble you get. What are we working on?",
             "Hello! Working on speed, consistency, or learning new algs today?",
             "Yo! 🎯 Got a scramble? I can analyze it. Or ask about any solving technique."
+            "Bro! Determined today? Let's rock today."
+            "Back to speedcubing, right? You can ask me help."
+            "Hi, I promise you that I will teach you something new today"
+            "Nice to meet you, speedcuber. Ready to have solve?
+            "Good day, brother. I am here to help you.
+            "Back again? I beleive in you.
         ]);
     }
     else if (/how are you|how's it going|how do you do/.test(t)) {
@@ -1284,10 +1290,10 @@ function respondToChat(text) {
     else if (/thank|thanks|thx|ty\b/.test(t)) {
         reply = pickRandom(["Anytime! 🧩", "You got it. Keep solving.", "Happy to help! Now go break a PB.", "No problem — that's what I'm here for."]);
     }
-    else if (/bye|goodbye|see you|good night|gn\b/.test(t)) {
+    else if (/bye|goodbye|see you|good night|see you soon|see you later|later|i am leaving|getting out|tata|gn\b/.test(t)) {
         reply = pickRandom(["Goodbye! Come back and crush a PB soon. 👋", "See you! Keep practicing.", "Good night! Rest those fingers. 🌙"]);
     }
-    else if (/cross/.test(t)) {
+    else if (/cross|tips for cross/.test(t)) {
         reply = pickRandom([
             "Cross plan: find the 4 white edges, align 2 at a time, keep cube rotations minimal. A good cross is 6-8 moves and under 2 seconds.",
             "For the cross, inspect the four white edges first. Aim to solve 2 of them with a single rotation, then the other 2.",
@@ -1295,17 +1301,20 @@ function respondToChat(text) {
             "Always plan the whole cross during inspection. Most cubers lose 1-2 seconds just because they didn't plan."
         ]);
     }
-    else if (/f2l|first two layers|first 2 layers/.test(t)) {
+    else if (/f2l|first two layers|first 2 layers|F2L|tips for f2l|tips for first two layes|tips for first 2 layers/.test(t)) {
         reply = pickRandom([
             "F2L: pair the corner + edge in the top layer, then insert. Look at the BACK of the cube first — the front pair usually becomes visible last.",
             "For F2L, learn the 3 basic insert cases (basic, split, corner-in-slot) before memorizing specific algs.",
             "F2L tip: track your next pair while inserting the current one. That's where most of your time is lost.",
             "Don't rotate the cube during F2L — use U moves to bring pairs to the front instead. Saves time and improves look-ahead."
+            "Learn all the case of F2L. Use them in solves"
+            "Try to finish the F2L in fewest moves. You must take only 8 moves or less per one pairing"
+            "Learn X CROSS. In X CROSS you must plan and execute the cross with one F2L pair"
         ]);
     }
-    else if (/oll/.test(t)) {
+    else if (/oll|tips for oll|oll tips/.test(t)) {
         reply = pickRandom([
-            "OLL: learn 2-look first — edges (F R U R' U' F'), then corners (Sune + Antisune). That covers 90% of cases with 3 algs.",
+            "OLL: learn 2-look first — edges (F R U R' U' F'), then corners (Sune + Antisune). That covers 90% of cases with 3 algs.Then learn full OLL",
             "For OLL, drills help. Pick one case, do 50 reps in a row, then move on.",
             "OLL tip: watch the yellow edges after F2L. The shape of the yellow cross tells you exactly which 2-look alg to use.",
             "2-look OLL is enough to sub-25. Full OLL saves maybe 1-2 seconds but requires 57 algs."
@@ -1313,10 +1322,10 @@ function respondToChat(text) {
     }
     else if (/pll/.test(t)) {
         reply = pickRandom([
-            "PLL priority: Ua, Ub, H, Z, T, Y. These cover 70% of cases. Master these before the harder ones.",
-            "PLL tips: T-perm and Y-perm are workhorses. Learn them cold and you'll never fear corner permutation.",
+            "PLL priority: Ua, Ub, H, Z, T, Y. These cover 70% of cases. Master these before the harder ones. Move to full PLL mastering then.",
+            "PLL tips: T-perm and Y-perm are workhorses. Learn them cold and you'll never fear corner permutation. Then apply it to all the perms",
             "For PLL, time yourself on each alg. Any alg above 1.5s needs practice, even if it 'feels' fast.",
-            "2-look PLL: corners first (Aa, Ab, E), then edges (Ua, Ub, H, Z). 6 algs cover everything."
+            "2-look PLL: corners first (Aa, Ab, E), then edges (Ua, Ub, H, Z). 6 algs cover everything. But you need to learn every single alg for improvement in time."
         ]);
     }
     else if (/last layer|ll\b/.test(t)) {
