@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://krameshece-ctrl.github.io/KKK-TIMER-3.0/sitemap.xml
