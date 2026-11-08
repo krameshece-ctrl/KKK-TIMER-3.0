@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>How to Use — KKK Timer 3.0</title>
+  <meta name="description" content="Complete guide to KKK Timer 3.0: mobile and keyboard controls, 15s inspection, Ao5/Ao12/Mo3 stats explained, supported puzzles (2x2–7x7, Skewb), sessions, penalties, and the built-in cube assistant.">
+  <link rel="canonical" href="https://krameshece-ctrl.github.io/KKK-TIMER-3.0/help.html">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    a { color: #10b981; }
+    a:hover { text-decoration: underline; }
+    h2 { color: #10b981; }
+    code, kbd {
+      background: #1a1a1f; border: 1px solid #2a2a2f; border-radius: 4px;
+      padding: 1px 6px; font-size: 0.9em; font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200 p-6 max-w-3xl mx-auto leading-relaxed">
+
+  <nav class="mb-8 text-sm">
+    <a href="/KKK-TIMER-3.0/">← Back to timer</a>
+  </nav>
+
+  <h1 class="text-3xl sm:text-4xl font-black mb-2">How to Use KKK Timer 3.0</h1>
+  <p class="text-zinc-400 mb-8 text-sm">Complete guide — controls, stats, puzzles, and features.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Starting a solve</h2>
+
+  <h3 class="text-base font-bold mt-4 mb-2">📱 Mobile / touchscreen</h3>
+  <ol class="list-decimal list-inside space-y-1 mb-4">
+    <li>Touch and <strong>hold</strong> anywhere on the timer area for about half a second.</li>
+    <li>The timer turns <span style="color:#ef4444">red</span>, then <span style="color:#10b981">green</span> — that means "ready."</li>
+    <li><strong>Release</strong> to start the timer.</li>
+    <li>When you finish the solve, <strong>tap once</strong> anywhere to stop.</li>
+  </ol>
+
+  <h3 class="text-base font-bold mt-4 mb-2">💻 Desktop / keyboard</h3>
+  <ol class="list-decimal list-inside space-y-1 mb-4">
+    <li>Hold the <kbd>Spacebar</kbd> for about half a second until it turns green.</li>
+    <li><strong>Release</strong> the spacebar to start the timer.</li>
+    <li>Press <strong>any key</strong> to stop the timer when you finish.</li>
+  </ol>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">15-second inspection</h2>
+  <p class="mb-3">Enable inspection in <strong>Settings → Features → 15s Inspection Time</strong>. When enabled:</p>
+  <ul class="list-disc list-inside space-y-1 mb-4">
+    <li>The timer counts down from 15 before each solve.</li>
+    <li>You can start solving early at any time — hold and release as normal, no penalty.</li>
+    <li>If the countdown reaches zero, a <strong>+2 penalty</strong> is applied and the timer starts automatically.</li>
+  </ul>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Stats explained</h2>
+  <dl class="space-y-3 mb-4">
+    <div>
+      <dt class="font-bold">Best</dt>
+      <dd class="text-zinc-400 text-sm">Your fastest single solve in the current session (DNFs excluded).</dd>
+    </div>
+    <div>
+      <dt class="font-bold">Mo3 (Mean of 3)</dt>
+      <dd class="text-zinc-400 text-sm">Straight average of your last 3 solves. Any DNF makes the whole Mo3 a DNF.</dd>
+    </div>
+    <div>
+      <dt class="font-bold">Ao5, Ao12, Ao50, Ao100 (Average of N)</dt>
+      <dd class="text-zinc-400 text-sm">Trimmed averages. The fastest and slowest solves are dropped, and the rest are averaged. Two or more DNFs in the window make the average a DNF. These are the standard WCA-style averages.</dd>
+    </div>
+    <div>
+      <dt class="font-bold">Count</dt>
+      <dd class="text-zinc-400 text-sm">Number of solves recorded in the current session.</dd>
+    </div>
+  </dl>
+  <p class="text-sm text-zinc-400 mb-4">Tap any average card (Ao3, Ao5, etc.) to see the individual solves that make up that average.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Penalties (+2 and DNF)</h2>
+  <p class="mb-3">Click any solve in the session list to open the penalty menu:</p>
+  <ul class="list-disc list-inside space-y-1 mb-4">
+    <li><strong>OK</strong> — removes any existing penalty.</li>
+    <li><strong>+2</strong> — adds 2 seconds to the solve.</li>
+    <li><strong>DNF</strong> — marks the solve as Did Not Finish (excluded from best/avg calculations, but counted toward Ao/DNF rules).</li>
+  </ul>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Supported puzzles</h2>
+  <p class="mb-3">Select your puzzle from the bar at the bottom of the timer. Scramble length adjusts automatically:</p>
+  <ul class="list-disc list-inside space-y-1 mb-4">
+    <li>2×2 — 11 moves (WCA style)</li>
+    <li>3×3 — 20 moves</li>
+    <li>4×4 — 40 moves</li>
+    <li>5×5 — 60 moves</li>
+    <li>6×6 — 80 moves</li>
+    <li>7×7 — 100 moves</li>
+    <li>Skewb — 10 moves (Skewb notation)</li>
+  </ul>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Sessions</h2>
+  <p class="mb-3">Sessions let you keep separate statistics for different puzzles or practice styles. Use the dropdown in the top bar to switch sessions, the <strong>+</strong> button to create a new one, and the trash icon to delete the current one.</p>
+  <p class="mb-4">Every session stores its own solves, stats, and averages. Switching puzzles (2×2 → 3×3, etc.) switches to that puzzle's session automatically.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Built-in cube assistant</h2>
+  <p class="mb-3">Click the chat icon (top left) to open the assistant. It can help with:</p>
+  <ul class="list-disc list-inside space-y-1 mb-4">
+    <li>Scramble analysis and opening-move advice</li>
+    <li>Cross, F2L, OLL, PLL tips</li>
+    <li>Time-target coaching (sub-30, sub-20, sub-15…)</li>
+    <li>Stats interpretation (Ao5, Ao12 gaps, consistency)</li>
+    <li>Finger tricks, look-ahead, TPS</li>
+  </ul>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Music and themes</h2>
+  <p class="mb-4">50 focus music tracks are available in the bottom bar — pick one or tap <strong>Turn Off</strong> for silence. 25 color themes are available in <strong>Settings → 🎨 Theme</strong>. Your choice is saved automatically.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Sharing a session</h2>
+  <p class="mb-4">Click the share icon (top bar) to send your current session's solves and scrambles to WhatsApp, Telegram, email, or copy them to your clipboard.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Privacy</h2>
+  <p class="mb-4">All solves, sessions, and settings are stored locally in your browser. Nothing is uploaded to a server. See the <a href="/KKK-TIMER-3.0/privacy.html">privacy page</a> for details.</p>
+
+  <hr class="my-8 border-zinc-800">
+
+  <nav class="text-sm flex flex-wrap gap-4">
+    <a href="/KKK-TIMER-3.0/">← Timer</a>
+    <a href="/KKK-TIMER-3.0/about.html">About</a>
+    <a href="/KKK-TIMER-3.0/privacy.html">Privacy</a>
+    <a href="https://github.com/krameshece-ctrl/KKK-TIMER-3.0" target="_blank" rel="noopener">Source code</a>
+  </nav>
+
+</body>
+</html>
