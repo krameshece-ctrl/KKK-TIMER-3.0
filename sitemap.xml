@@ -3,7 +3,13 @@
   <url>
     <loc>https://krameshece-ctrl.github.io/KKK-TIMER-3.0/</loc>
     <lastmod>2026-11-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://krameshece-ctrl.github.io/KKK-TIMER-3.0/about.html</loc>
+    <lastmod>2026-11-08</lastmod>
+  </url>
+  <url>
+    <loc>https://krameshece-ctrl.github.io/KKK-TIMER-3.0/privacy.html</loc>
+    <lastmod>2026-11-08</lastmod>
   </url>
 </urlset>
