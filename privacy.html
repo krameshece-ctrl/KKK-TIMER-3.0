@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Privacy — KKK Timer 3.0</title>
-  <meta name="description" content="Privacy policy for KKK Timer 3.0 — all data is stored locally in your browser. No cookies, no tracking, no ads.">
+  <title>Privacy Policy — KKK Timer 3.0</title>
+  <meta name="description" content="Complete privacy policy for KKK Timer 3.0. Learn exactly what data is stored, where it lives, what is never collected, how third-party services are used, and how to delete your data at any time.">
   <link rel="canonical" href="https://krameshece-ctrl.github.io/KKK-TIMER-3.0/privacy.html">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -12,6 +12,11 @@
     a { color: #10b981; }
     a:hover { text-decoration: underline; }
     h2 { color: #10b981; }
+    h3 { color: #d4d4d8; }
+    code, kbd {
+      background: #1a1a1f; border: 1px solid #2a2a2f; border-radius: 4px;
+      padding: 1px 6px; font-size: 0.9em; font-family: 'JetBrains Mono', monospace;
+    }
   </style>
 </head>
 <body class="bg-zinc-950 text-zinc-200 p-6 max-w-3xl mx-auto leading-relaxed">
@@ -20,41 +25,121 @@
     <a href="/KKK-TIMER-3.0/">← Back to timer</a>
   </nav>
 
-  <h1 class="text-3xl sm:text-4xl font-black mb-4">Privacy Policy</h1>
+  <h1 class="text-3xl sm:text-4xl font-black mb-2">Privacy Policy</h1>
+  <p class="text-zinc-400 mb-8 text-sm">Last updated: November 2026</p>
 
-  <p class="mb-4">KKK Timer 3.0 is designed to collect nothing. This page explains exactly what is stored and where.</p>
+  <p class="mb-4">KKK Timer 3.0 is built on a simple principle: your solves are yours, and nobody else needs to see them. This page explains exactly what the timer stores, where it stores it, what it never collects, and how you can delete everything at any time. There is no legal hedging here — just a plain description of what actually happens when you use the timer.</p>
 
-  <h2 class="text-xl font-bold mt-8 mb-3">What is stored</h2>
-  <p class="mb-3">All of the following is stored <strong>only in your browser</strong> using <code>localStorage</code>:</p>
+  <p class="mb-4">If you have used other cubing timers, you may already know that many of them require an account, sync your solves to a server, or run analytics to track how you use the app. KKK Timer 3.0 does none of that. Everything you do stays inside your browser, on your own device, and disappears when you clear your browser data. This page is not a legal formality — it is an honest description of how the timer works.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">The short version</h2>
+
   <ul class="list-disc list-inside space-y-1 mb-4">
-    <li>Your solves (times, scrambles, penalties, dates)</li>
-    <li>Your sessions and their names</li>
-    <li>Your chosen theme and inspection setting</li>
+    <li>All solve data is stored <strong>only in your browser</strong>.</li>
+    <li>Nothing is sent to any server owned by the timer.</li>
+    <li>No accounts, no cookies, no analytics, no ads.</li>
+    <li>You can delete everything at any time by clearing browser data.</li>
+    <li>The only external requests are for styling and fonts.</li>
   </ul>
 
-  <h2 class="text-xl font-bold mt-8 mb-3">What is NOT collected</h2>
-  <ul class="list-disc list-inside space-y-1 mb-4">
-    <li>No analytics or tracking scripts</li>
-    <li>No cookies</li>
-    <li>No accounts or sign-ups</li>
-    <li>No advertising</li>
-    <li>No solve data sent to any server</li>
-    <li>No IP logging beyond what GitHub Pages itself does for hosting</li>
+  <p class="mb-4">If you want the full details — including the exact names of what is stored, what third-party services are involved, and the technical specifics — the rest of this page covers all of it.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">What is stored, and where</h2>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Your solves</h3>
+
+  <p class="mb-4">Every solve you record — including the final time, the raw time before any penalties, the scramble it was solved from, any +2 or DNF penalty you applied, and the date it was recorded — is saved to your browser's <code>localStorage</code>. This is a standard browser feature that allows websites to store small amounts of data persistently on a user's device. It is not a server, it is not a database, and it does not communicate with any computer other than your own.</p>
+
+  <p class="mb-4">When you open the timer again on the same browser and the same device, your solves are still there. When you switch to a different browser, a different device, or a private/incognito window, they are not. That is the entire sync model: your data lives wherever you solve, and nowhere else.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Your sessions</h3>
+
+  <p class="mb-4">Session names, session puzzle types, and the group of solves belonging to each session are also stored in <code>localStorage</code>. If you create a "3x3 Main" session and a "2x2 Practice" session, both are saved locally. Deleting a session deletes its solves permanently — there is no undo and no recovery, because there is no server to recover from.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Your preferences</h3>
+
+  <p class="mb-4">The timer remembers a small number of preferences across visits: your current color theme, whether 15-second inspection is enabled, and which session you last had open. These are also stored in <code>localStorage</code>. They are there purely for convenience — so the timer feels like yours each time you open it — and can be reset by clearing site data.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">What localStorage actually is</h3>
+
+  <p class="mb-4">For readers who are not familiar with the term: <code>localStorage</code> is a small storage area (usually a few megabytes) that every modern browser provides to every website. It is the same mechanism that keeps you logged into websites, remembers your shopping cart, and remembers your dark-mode preference on other sites. It is local to your browser, can be inspected by you through your browser's developer tools, and is destroyed the moment you clear your browser's site data.</p>
+
+  <p class="mb-4">Importantly, <code>localStorage</code> is scoped per origin — meaning the data stored by this timer is only accessible to pages served from the same domain. No other website can read it, and the timer cannot read data stored by any other website.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">What is never collected</h2>
+
+  <p class="mb-4">The following is a complete list of things the timer does not do, and will not do:</p>
+
+  <ul class="list-disc list-inside space-y-2 mb-4">
+    <li><strong>No accounts or sign-ups.</strong> There is no registration, no password, no email address required, and no user profile stored anywhere.</li>
+    <li><strong>No analytics.</strong> No Google Analytics, no Plausible, no Matomo, no self-hosted analytics, no tracking pixels, no telemetry of any kind.</li>
+    <li><strong>No cookies.</strong> The timer does not set any cookies, either first-party or third-party. It uses <code>localStorage</code> instead, which is not sent to any server with each request.</li>
+    <li><strong>No advertising.</strong> There are no ad networks, no sponsored placements, no affiliate links, and no commercial relationships that would involve your data.</li>
+    <li><strong>No solve data sent to any server.</strong> Your solves, scrambles, sessions, and statistics never leave your browser.</li>
+    <li><strong>No IP logging by the timer.</strong> The timer itself has no server to log IPs. (GitHub Pages, which hosts the site, does maintain standard web server logs — see the next section.)</li>
+    <li><strong>No cross-site tracking.</strong> The timer does not use any cross-site identifiers, fingerprinting techniques, or tracking beacons.</li>
   </ul>
+
+  <p class="mb-4">If a future version of the timer ever adds any of these, this page will be updated first and the change will be listed at the top with a date.</p>
 
   <h2 class="text-xl font-bold mt-8 mb-3">Third-party services</h2>
-  <p class="mb-3">The timer loads two external resources:</p>
-  <ul class="list-disc list-inside space-y-1 mb-4">
-    <li><strong>Tailwind CSS</strong> (CDN) — for styling</li>
-    <li><strong>Google Fonts</strong> — for the Inter and JetBrains Mono typefaces</li>
-  </ul>
-  <p class="mb-4">These services may log standard web requests (IP, user agent) per their own privacy policies. No solve data is ever sent to them.</p>
 
-  <h2 class="text-xl font-bold mt-8 mb-3">Clearing your data</h2>
-  <p class="mb-4">You can clear all stored data at any time by clearing your browser's site data for this domain. Deleted data cannot be recovered.</p>
+  <p class="mb-4">The timer loads three external resources. None of them receive your solve data, but each may receive standard web request information (IP address, user agent, referring page) as part of how the web works. Here is what each one is and why it is present.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Tailwind CSS (CDN)</h3>
+
+  <p class="mb-4">The timer uses Tailwind CSS to style its interface. It loads from the official Tailwind CDN rather than being bundled into the page, which keeps the HTML file small and makes it easy to update styles without a build step. The CDN may log standard request information. It does not receive, and cannot access, your solves.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Google Fonts</h3>
+
+  <p class="mb-4">The timer uses two Google Fonts — Inter for body text and JetBrains Mono for the timer face. These fonts are served by Google's font CDN. Google may log standard request information for each font load. As with Tailwind, this is limited to network-level information and does not involve your solve data in any way.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">GitHub Pages (hosting)</h3>
+
+  <p class="mb-4">The site is hosted on GitHub Pages. GitHub maintains standard web server logs for its Pages service, which typically include IP address, request time, requested URL, and user agent. These logs are maintained by GitHub, not by the timer, and are governed by GitHub's own privacy policy. The timer itself has no access to these logs.</p>
+
+  <p class="mb-4">If you would prefer to eliminate even these network-level requests, you can self-host the site — download the HTML, host it on your own machine or your own server, and access it locally. Because everything the timer needs is in a single HTML file, this is genuinely simple to do, and the <a href="https://github.com/krameshece-ctrl/KKK-TIMER-3.0" target="_blank" rel="noopener">source code is available</a> on GitHub.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">The built-in assistant</h2>
+
+  <p class="mb-4">The assistant is a chat-style helper that appears in a small panel on the timer page. It reacts to your scrambles and answers questions about cubing technique. It is important to understand that the assistant runs <strong>entirely inside your browser</strong>. Every reply it gives is generated by JavaScript code that ships with the timer — there is no AI service, no external API, no language model, and no network request involved in producing any of its responses.</p>
+
+  <p class="mb-4">The assistant's chat history is stored only in the timer's in-memory state for the duration of your visit. It is not saved to <code>localStorage</code>, not transmitted to any server, and not visible to anyone else. When you close or refresh the page, the chat history is gone. Nothing you type into the assistant is ever sent anywhere.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">The music player</h2>
+
+  <p class="mb-4">The fifty focus tracks in the timer are synthesized in real time using your browser's built-in Web Audio API. No audio files are downloaded, no streaming service is involved, and nothing about the music is tracked. When you close the timer, the music stops and the audio context is released.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Children's privacy</h2>
+
+  <p class="mb-4">The timer does not collect any personal information from anyone, of any age. There are no accounts, no profiles, no chat features that transmit data, and no advertising. It is safe for children to use, and there is no data to delete or manage because there is no data collection to begin with.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Your rights</h2>
+
+  <p class="mb-4">Because the timer does not collect or store any personal data on any server, the standard set of data-protection rights — access, correction, deletion, portability, objection — are all satisfied automatically. Your data is already in your hands, already correct, and already deletable by you whenever you choose.</p>
+
+  <p class="mb-4">If you are covered by the GDPR, the CCPA, or any other privacy regulation, the practical answer is the same: the timer holds no personal data about you on any server, so there is nothing to request and nothing to delete from us. The data you do have is stored locally on your device and is under your control.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">How to delete your data</h2>
+
+  <p class="mb-4">You can delete every solve, session, and preference the timer has stored at any time. The exact method depends on your browser, but the general steps are the same everywhere:</p>
+
+  <ul class="list-disc list-inside space-y-2 mb-4">
+    <li><strong>Chrome / Edge:</strong> Settings → Privacy and security → Site settings → View permissions and data stored across sites → find the timer's domain → Delete.</li>
+    <li><strong>Firefox:</strong> Settings → Privacy &amp; Security → Cookies and Site Data → Manage Data → search for the timer's domain → Remove.</li>
+    <li><strong>Safari (macOS):</strong> Settings → Privacy → Manage Website Data → find the timer's domain → Remove.</li>
+    <li><strong>Safari (iOS):</strong> Settings → Safari → Advanced → Website Data → find the timer's domain → swipe to delete.</li>
+  </ul>
+
+  <p class="mb-4">In most cases, simply clearing all browser data for the site works too. Once cleared, deleted data cannot be recovered — there is no backup, because there was never a server to back up to.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Changes to this policy</h2>
+
+  <p class="mb-4">If this policy ever changes — for example, if a future version of the timer adds a feature that requires new data handling — the change will be listed at the top of this page with a date, and the previous policy will remain accessible for comparison. The current commitment is simple: no accounts, no tracking, no ads, and no data leaving your browser. That commitment is not expected to change.</p>
 
   <h2 class="text-xl font-bold mt-8 mb-3">Contact</h2>
-  <p class="mb-4">Questions or concerns? Open an issue on <a href="https://github.com/krameshece-ctrl/KKK-TIMER-3.0" target="_blank" rel="noopener">GitHub</a>.</p>
+
+  <p class="mb-4">If you have a question about this policy, notice something that seems inconsistent with what the timer actually does, or want to suggest an improvement, please open an issue on the project's <a href="https://github.com/krameshece-ctrl/KKK-TIMER-3.0" target="_blank" rel="noopener">GitHub repository</a>. Questions and corrections are welcome.</p>
 
   <hr class="my-8 border-zinc-800">
 
