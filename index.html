@@ -1041,10 +1041,10 @@
     if (isNaN(seconds) || seconds === null || seconds === undefined) return '-';
     if (seconds >= 60) {
       const m = Math.floor(seconds / 60);
-      const s = (seconds % 60).toFixed(2);
+      const s = (seconds % 60).toFixed(3);
       return `${m}:${s < 10 ? '0' : ''}${s}`;
     }
-    return seconds.toFixed(2);
+    return seconds.toFixed(3);
   }
 
   function formatSolveDisplay(solve) {
