@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>How to Use — KKK Timer 3.0</title>
-  <meta name="description" content="Complete guide to KKK Timer 3.0: mobile and keyboard controls, 15s inspection, Ao5/Ao12/Mo3 stats explained, supported puzzles (2x2–7x7, Skewb), sessions, penalties, and the built-in cube assistant.">
+  <title>How to Use KKK Timer 3.0 — Complete Guide</title>
+  <meta name="description" content="Complete guide to KKK Timer 3.0: mobile and keyboard controls, 15-second inspection, how Ao5 and Mo3 work, supported puzzles (2x2-7x7 and Skewb), sessions, penalties, the cube assistant, music, themes, sharing, and troubleshooting.">
   <link rel="canonical" href="https://krameshece-ctrl.github.io/KKK-TIMER-3.0/help.html">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -12,6 +12,7 @@
     a { color: #10b981; }
     a:hover { text-decoration: underline; }
     h2 { color: #10b981; }
+    h3 { color: #d4d4d8; }
     code, kbd {
       background: #1a1a1f; border: 1px solid #2a2a2f; border-radius: 4px;
       padding: 1px 6px; font-size: 0.9em; font-family: 'JetBrains Mono', monospace;
@@ -25,96 +26,159 @@
   </nav>
 
   <h1 class="text-3xl sm:text-4xl font-black mb-2">How to Use KKK Timer 3.0</h1>
-  <p class="text-zinc-400 mb-8 text-sm">Complete guide — controls, stats, puzzles, and features.</p>
+  <p class="text-zinc-400 mb-8 text-sm">Complete guide — controls, stats, puzzles, features, and troubleshooting.</p>
+
+  <p class="mb-4">This page covers everything you need to use KKK Timer 3.0 effectively. If you have never used a cubing timer before, start with the "Starting a solve" section below and read in order. If you already know the basics, jump straight to whatever you are looking for using the sections below.</p>
+
+  <p class="mb-4">The timer is designed so the core workflow — hold, release, solve, stop — is identical on every device. The rest of the interface is built around that core, and every feature is optional. You can use the timer with only the most basic controls and never touch anything else, or you can go deep into sessions, penalties, inspection, and statistics. Both approaches are fully supported.</p>
 
   <h2 class="text-xl font-bold mt-8 mb-3">Starting a solve</h2>
 
-  <h3 class="text-base font-bold mt-4 mb-2">📱 Mobile / touchscreen</h3>
-  <ol class="list-decimal list-inside space-y-1 mb-4">
-    <li>Touch and <strong>hold</strong> anywhere on the timer area for about half a second.</li>
-    <li>The timer turns <span style="color:#ef4444">red</span>, then <span style="color:#10b981">green</span> — that means "ready."</li>
-    <li><strong>Release</strong> to start the timer.</li>
-    <li>When you finish the solve, <strong>tap once</strong> anywhere to stop.</li>
-  </ol>
+  <h3 class="text-base font-bold mt-4 mb-2">Mobile and touchscreen</h3>
 
-  <h3 class="text-base font-bold mt-4 mb-2">💻 Desktop / keyboard</h3>
-  <ol class="list-decimal list-inside space-y-1 mb-4">
-    <li>Hold the <kbd>Spacebar</kbd> for about half a second until it turns green.</li>
-    <li><strong>Release</strong> the spacebar to start the timer.</li>
-    <li>Press <strong>any key</strong> to stop the timer when you finish.</li>
-  </ol>
+  <p class="mb-4">On a phone or tablet, the entire timer area is the start button. Touch and hold anywhere on the timer face — the large number in the center of the screen — for about half a second. The number will turn red while you are holding, then green once it is ready. The moment it turns green, you can release to start the timer.</p>
+
+  <p class="mb-4">To stop the timer at the end of your solve, tap once anywhere on the timer area. The timer stops immediately and your solve is recorded. You do not need to hold for the stop — a single tap is enough.</p>
+
+  <p class="mb-4">The half-second hold is deliberate. It prevents accidental starts when you are scrolling, adjusting your grip, or picking up your cube. If you have ever started a timer accidentally, you will appreciate how much difference a short hold makes.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Desktop and keyboard</h3>
+
+  <p class="mb-4">On a computer, hold the <kbd>Spacebar</kbd> for about half a second. The timer will turn red, then green, exactly like the mobile version. Release the spacebar to start the timer. To stop, press any key — it does not have to be the spacebar specifically.</p>
+
+  <p class="mb-4">The "any key to stop" behavior is intentional. It means your hands do not have to leave the cube or return to a specific key when you finish. As soon as you touch the keyboard, the timer stops. This is especially useful for fast solves where a fraction of a second matters.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">What each color means</h3>
+
+  <ul class="list-disc list-inside space-y-1 mb-4">
+    <li><strong>White / default</strong> — the timer is idle. Hold to begin.</li>
+    <li><strong>Red</strong> — the timer is registering your hold. Keep holding.</li>
+    <li><strong>Green</strong> — the timer is ready. Release to start.</li>
+    <li><strong>Running</strong> — the timer is counting up. Tap or press any key to stop.</li>
+    <li><strong>Yellow</strong> — inspection is active (if enabled).</li>
+  </ul>
 
   <h2 class="text-xl font-bold mt-8 mb-3">15-second inspection</h2>
-  <p class="mb-3">Enable inspection in <strong>Settings → Features → 15s Inspection Time</strong>. When enabled:</p>
-  <ul class="list-disc list-inside space-y-1 mb-4">
-    <li>The timer counts down from 15 before each solve.</li>
-    <li>You can start solving early at any time — hold and release as normal, no penalty.</li>
-    <li>If the countdown reaches zero, a <strong>+2 penalty</strong> is applied and the timer starts automatically.</li>
-  </ul>
 
-  <h2 class="text-xl font-bold mt-8 mb-3">Stats explained</h2>
-  <dl class="space-y-3 mb-4">
-    <div>
-      <dt class="font-bold">Best</dt>
-      <dd class="text-zinc-400 text-sm">Your fastest single solve in the current session (DNFs excluded).</dd>
-    </div>
-    <div>
-      <dt class="font-bold">Mo3 (Mean of 3)</dt>
-      <dd class="text-zinc-400 text-sm">Straight average of your last 3 solves. Any DNF makes the whole Mo3 a DNF.</dd>
-    </div>
-    <div>
-      <dt class="font-bold">Ao5, Ao12, Ao50, Ao100 (Average of N)</dt>
-      <dd class="text-zinc-400 text-sm">Trimmed averages. The fastest and slowest solves are dropped, and the rest are averaged. Two or more DNFs in the window make the average a DNF. These are the standard WCA-style averages.</dd>
-    </div>
-    <div>
-      <dt class="font-bold">Count</dt>
-      <dd class="text-zinc-400 text-sm">Number of solves recorded in the current session.</dd>
-    </div>
-  </dl>
-  <p class="text-sm text-zinc-400 mb-4">Tap any average card (Ao3, Ao5, etc.) to see the individual solves that make up that average.</p>
+  <p class="mb-4">The timer optionally supports a 15-second inspection countdown, matching World Cube Association competition rules. You can turn it on or off in <strong>Settings → Features → 15s Inspection Time</strong>. When it is enabled, every solve begins with a countdown from 15.</p>
 
-  <h2 class="text-xl font-bold mt-8 mb-3">Penalties (+2 and DNF)</h2>
-  <p class="mb-3">Click any solve in the session list to open the penalty menu:</p>
-  <ul class="list-disc list-inside space-y-1 mb-4">
-    <li><strong>OK</strong> — removes any existing penalty.</li>
-    <li><strong>+2</strong> — adds 2 seconds to the solve.</li>
-    <li><strong>DNF</strong> — marks the solve as Did Not Finish (excluded from best/avg calculations, but counted toward Ao/DNF rules).</li>
-  </ul>
+  <p class="mb-4">During inspection you can do three things. First, you can simply wait and inspect the cube normally. Second, you can start the solve early at any time by holding and releasing as usual — there is no penalty for starting before the countdown ends. Third, you can let the countdown reach zero, at which point a +2 penalty is applied and the timer starts automatically.</p>
+
+  <p class="mb-4">The inspection feature is optional because it adds friction to casual solving. If you are not training for competition, you probably do not need it. If you are, it is the single best way to simulate real competition conditions without any additional equipment.</p>
+
+  <p class="mb-4">The countdown displays the remaining seconds as a large number. The number pulses slightly each second so you can track it peripherally while you plan your cross. When the countdown reaches zero, the timer shows "+2" briefly and then starts the solve with the penalty already applied.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Understanding the statistics</h2>
+
+  <p class="mb-4">The timer tracks five different statistics, each designed to answer a different question about your solving. Here is what each one means and when it is useful.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Best single</h3>
+
+  <p class="mb-4">Your fastest solve in the current session, excluding DNFs. This is the number most people check first, but it is the least useful for tracking progress. A single fast solve is often the result of an easy scramble, a lucky skip, or a good day — not a signal that you are improving. Best single is motivating to look at, but it is not a good measure of skill.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Mo3 (Mean of 3)</h3>
+
+  <p class="mb-4">The straight average of your last three solves. Unlike Ao5, no solves are trimmed — all three count. This makes Mo3 more sensitive to single bad solves, which is why it is useful for spotting inconsistency. If your Mo3 is much worse than your Ao5, it is a sign that your solves vary widely — some are very fast, some are very slow, and you are not producing a consistent pace.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Ao5, Ao12, Ao50, Ao100</h3>
+
+  <p class="mb-4">These are trimmed averages — the standard way cubers measure skill. For Ao5, the fastest and slowest solves in your last five are dropped, and the remaining three are averaged. For Ao12, the fastest and slowest are dropped, and the remaining ten are averaged. The same pattern applies to Ao50 and Ao100.</p>
+
+  <p class="mb-4">The trimming is what makes averages useful. A single bad solve — a pop, a mis-scramble, a distraction — cannot drag down your average because it is one of the dropped times. A single lucky solve cannot pull your average up because it is also dropped. What remains is a fair measure of your typical pace.</p>
+
+  <p class="mb-4">The different window sizes answer different questions. Ao5 tells you how you are doing right now, in this session, in this moment. Ao12 smooths out the noise and gives a more stable picture of your current form. Ao50 and Ao100 tell you where you actually stand as a cuber — they are what you would report to someone who asked "how fast are you?"</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Count</h3>
+
+  <p class="mb-4">The number of solves in the current session. This is useful mainly for tracking practice volume. If you want to do fifty solves a day, the count tells you how far through you are.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Reading the trend graph</h3>
+
+  <p class="mb-4">The small graph below the statistics cards shows your last twenty solves. Each point is a solve, connected by a line. A downward slope means your solves are getting faster. An upward slope means they are getting slower. A flat line means you are consistent.</p>
+
+  <p class="mb-4">The graph is most useful for spotting patterns across a session. A slow start followed by a fast middle and a slow end is very common — it reflects warm-up and fatigue. If you see this pattern repeatedly, it is a signal to practice shorter, more focused sessions rather than marathon ones.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Tapping for more detail</h3>
+
+  <p class="mb-4">Tap any of the average cards (Ao3, Ao5, Ao12, Ao50, Ao100) to see a detailed breakdown of the solves that make up that average. The breakdown shows each solve individually, along with which ones were trimmed. This is useful for understanding exactly why an average is what it is.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Penalties: +2 and DNF</h2>
+
+  <p class="mb-4">Every solve can be marked with a penalty after the fact. Click or tap any solve in the session list to open the penalty menu. From there you can apply a +2 penalty (adds two seconds to the solve), mark the solve as DNF (Did Not Finish — the solve is excluded from averages), or remove any existing penalty.</p>
+
+  <p class="mb-4">Penalties are common in practice. If you knocked the cube over mid-solve, a DNF is more honest than recording a 45-second time. If you accidentally did not stop the timer fast enough, a +2 is a reasonable correction. The timer tracks these honestly and treats them correctly in averages.</p>
+
+  <p class="mb-4">A DNF solve is excluded from the best-single calculation and from averages (with the exception of the standard "two DNFs in a window" rule that turns the average into a DNF). The solve still appears in the list, marked as DNF, so your history is complete.</p>
 
   <h2 class="text-xl font-bold mt-8 mb-3">Supported puzzles</h2>
-  <p class="mb-3">Select your puzzle from the bar at the bottom of the timer. Scramble length adjusts automatically:</p>
-  <ul class="list-disc list-inside space-y-1 mb-4">
-    <li>2×2 — 11 moves (WCA style)</li>
-    <li>3×3 — 20 moves</li>
-    <li>4×4 — 40 moves</li>
-    <li>5×5 — 60 moves</li>
-    <li>6×6 — 80 moves</li>
-    <li>7×7 — 100 moves</li>
-    <li>Skewb — 10 moves (Skewb notation)</li>
+
+  <p class="mb-4">The timer supports seven puzzle types. Select your puzzle from the bar at the bottom of the timer page. Scramble length and scramble generation adjust automatically for each puzzle, using WCA-standard parameters wherever they exist.</p>
+
+  <ul class="list-disc list-inside space-y-2 mb-4">
+    <li><strong>2×2</strong> — 11 moves. Uses the standard face moves (R, U, F) with no slice moves.</li>
+    <li><strong>3×3</strong> — 20 moves. The full set of face turns (R, L, U, D, F, B).</li>
+    <li><strong>4×4</strong> — 40 moves. Includes both face turns and wide moves (Rw, Uw, etc.).</li>
+    <li><strong>5×5</strong> — 60 moves. Same notation, longer scramble.</li>
+    <li><strong>6×6</strong> — 80 moves. Includes 3-layer wide moves (3Rw, 3Uw, etc.).</li>
+    <li><strong>7×7</strong> — 100 moves. Same wide-move notation as 6×6.</li>
+    <li><strong>Skewb</strong> — 10 moves. Uses Skewb notation (R, L, U, B) with optional primes.</li>
   </ul>
+
+  <p class="mb-4">When you switch puzzles, the timer automatically switches to that puzzle's session if one exists. If no session exists for the puzzle, a new one is created automatically. This means you can switch between 3×3 and 2×2 freely without losing your statistics for either.</p>
 
   <h2 class="text-xl font-bold mt-8 mb-3">Sessions</h2>
-  <p class="mb-3">Sessions let you keep separate statistics for different puzzles or practice styles. Use the dropdown in the top bar to switch sessions, the <strong>+</strong> button to create a new one, and the trash icon to delete the current one.</p>
-  <p class="mb-4">Every session stores its own solves, stats, and averages. Switching puzzles (2×2 → 3×3, etc.) switches to that puzzle's session automatically.</p>
 
-  <h2 class="text-xl font-bold mt-8 mb-3">Built-in cube assistant</h2>
-  <p class="mb-3">Click the chat icon (top left) to open the assistant. It can help with:</p>
-  <ul class="list-disc list-inside space-y-1 mb-4">
-    <li>Scramble analysis and opening-move advice</li>
-    <li>Cross, F2L, OLL, PLL tips</li>
-    <li>Time-target coaching (sub-30, sub-20, sub-15…)</li>
-    <li>Stats interpretation (Ao5, Ao12 gaps, consistency)</li>
-    <li>Finger tricks, look-ahead, TPS</li>
-  </ul>
+  <p class="mb-4">Sessions are separate containers for solves, each with its own statistics, history, and scramble list. You can create as many sessions as you want and switch between them freely. Use the dropdown in the top bar to switch sessions, the <strong>+</strong> button to create a new one, and the trash icon to delete the current one.</p>
+
+  <p class="mb-4">The most common use of sessions is one per puzzle — a 3×3 session, a 2×2 session, a Skewb session. But sessions are not limited to puzzle types. You can also use them to separate practice modes (one session for cross drills, one for full solves), cube types (one session per physical cube), or time periods (a "2024" session and a "2025" session, each starting fresh).</p>
+
+  <p class="mb-4">Sessions do not share data. A bad week on a new cube cannot drag down your main 3×3 averages because they are stored separately. This is the main advantage sessions offer over a single, unified solve list.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">The built-in cube assistant</h2>
+
+  <p class="mb-4">The assistant is a chat-style helper that appears in a small panel on the timer page. Click the chat icon in the top left of the header to open it. The assistant reacts to each new scramble with analysis and tips, and it can answer questions about solving technique, statistics, and practice strategy.</p>
+
+  <p class="mb-4">The assistant covers the following topics in depth: cross planning, F2L technique, OLL and PLL algorithms, finger tricks, look-ahead, turns per second (TPS), time targets (sub-30, sub-20, sub-15), statistics interpretation, sessions, penalties, and general practice advice.</p>
+
+  <p class="mb-4">The assistant is not a general-purpose AI. It does not pretend to know things it does not, and it will sometimes tell you it does not have a specific answer. When that happens, it suggests a related topic it does know about. Its goal is to be genuinely useful for the specific skills a cuber needs to improve, not to be impressive in conversation.</p>
 
   <h2 class="text-xl font-bold mt-8 mb-3">Music and themes</h2>
-  <p class="mb-4">50 focus music tracks are available in the bottom bar — pick one or tap <strong>Turn Off</strong> for silence. 25 color themes are available in <strong>Settings → 🎨 Theme</strong>. Your choice is saved automatically.</p>
 
-  <h2 class="text-xl font-bold mt-8 mb-3">Sharing a session</h2>
-  <p class="mb-4">Click the share icon (top bar) to send your current session's solves and scrambles to WhatsApp, Telegram, email, or copy them to your clipboard.</p>
+  <p class="mb-4">Fifty focus music tracks are available in the bottom bar of the timer page. Each track is a short, synthesized loop with a different tempo and mood. You can select a track by clicking it, switch between tracks freely, or turn music off entirely with the "Turn Off" button. No audio files are downloaded — the music is generated in real time using your browser's Web Audio API, which means it works instantly and does not consume data.</p>
 
-  <h2 class="text-xl font-bold mt-8 mb-3">Privacy</h2>
-  <p class="mb-4">All solves, sessions, and settings are stored locally in your browser. Nothing is uploaded to a server. See the <a href="/KKK-TIMER-3.0/privacy.html">privacy page</a> for details.</p>
+  <p class="mb-4">Twenty-five color themes are available in <strong>Settings → 🎨 Theme</strong>. You can preview each theme by clicking it, and your choice is saved automatically for future visits. The theme affects the entire interface — the timer face, the statistics cards, the modals, the assistant panel — so it is worth spending a few minutes with each one to find the one that feels right.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Sharing your session</h2>
+
+  <p class="mb-4">Click the share icon in the top bar to open the sharing panel. From there you can share your current session's solves and scrambles through WhatsApp, Telegram, email, SMS, or your clipboard. The share includes your session name, puzzle type, solve count, and up to fifty individual solves with their scrambles.</p>
+
+  <p class="mb-4">Sharing is useful for posting a weekly summary, comparing progress with a friend, or exporting your data in a format that survives any browser reset. If you are switching devices and want to bring your history with you, copying to clipboard and pasting into a note or message is the simplest way to do it.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Troubleshooting</h2>
+
+  <h3 class="text-base font-bold mt-4 mb-2">The timer does not start on my phone</h3>
+
+  <p class="mb-4">Make sure you are holding your finger on the timer area — the large number in the center — for the full half-second. A quick tap will not start the timer; you need to hold until the number turns green. If the timer still does not start, check that you are touching the timer area and not a button or control.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">The timer starts but does not stop</h3>
+
+  <p class="mb-4">A single tap should stop the timer. If it does not, check that your tap is landing inside the timer area and not on one of the surrounding panels. On some phones, a very quick tap may not register; try a slightly longer tap.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">The music does not play</h3>
+
+  <p class="mb-4">Mobile browsers often block audio until you interact with the page. Clicking a music track counts as interaction, so this should usually work — but on iOS, you may need to click a track, wait a moment, and then click it again. If sound still does not play, check that your phone is not in silent mode and that the volume is up.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">My solves disappeared</h3>
+
+  <p class="mb-4">Solves are stored in your browser's <code>localStorage</code>. They will disappear if you clear your browser's site data, switch to a different browser, switch to a different device, or use a private/incognito window. They will also disappear if your browser is set to clear data on close. If you want to preserve your solves across devices, use the share/copy feature to export them periodically.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">The page looks wrong on my phone</h3>
+
+  <p class="mb-4">Try rotating your phone to landscape, or zooming out slightly if pinch-to-zoom is enabled on your browser. The interface is designed to fit on small screens, but extreme aspect ratios or unusual zoom levels can occasionally cause layout issues. If the page still looks wrong, try opening it in a different browser.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Getting help</h2>
+
+  <p class="mb-4">If you have a question that is not answered here, try the built-in assistant first — it covers many of the same topics in more detail. If you believe you have found a bug, or want to suggest an improvement, please open an issue on the project's <a href="https://github.com/krameshece-ctrl/KKK-TIMER-3.0" target="_blank" rel="noopener">GitHub repository</a>.</p>
 
   <hr class="my-8 border-zinc-800">
 
