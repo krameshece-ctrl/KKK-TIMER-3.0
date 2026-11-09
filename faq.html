@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>FAQ — KKK Timer 3.0</title>
+  <meta name="description" content="Frequently asked questions about KKK Timer 3.0: timer controls, inspection, averages, sessions, puzzles, penalties, the assistant, music, themes, privacy, and troubleshooting. 30 real answers.">
+  <link rel="canonical" href="https://krameshece-ctrl.github.io/KKK-TIMER-3.0/faq.html">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    a { color: #10b981; }
+    a:hover { text-decoration: underline; }
+    h2 { color: #10b981; }
+    h3 { color: #d4d4d8; }
+    code, kbd {
+      background: #1a1a1f; border: 1px solid #2a2a2f; border-radius: 4px;
+      padding: 1px 6px; font-size: 0.9em; font-family: 'JetBrains Mono', monospace;
+    }
+    details {
+      background: #0f0f13; border: 1px solid #1f1f23; border-radius: 10px;
+      padding: 12px 16px; margin-bottom: 8px;
+    }
+    details[open] { border-color: #10b981; }
+    summary {
+      cursor: pointer; font-weight: 600; color: #f4f4f5; list-style: none;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: '+'; color: #10b981; font-size: 20px; font-weight: 700; margin-left: 12px; }
+    details[open] summary::after { content: '−'; }
+    details p { margin-top: 10px; color: #d4d4d8; font-size: 15px; line-height: 1.6; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200 p-6 max-w-3xl mx-auto leading-relaxed">
+
+  <nav class="mb-8 text-sm">
+    <a href="/KKK-TIMER-3.0/">← Back to timer</a>
+  </nav>
+
+  <h1 class="text-3xl sm:text-4xl font-black mb-2">Frequently Asked Questions</h1>
+  <p class="text-zinc-400 mb-8 text-sm">Thirty real answers about the timer — controls, statistics, features, and troubleshooting.</p>
+
+  <p class="mb-6">Click any question to expand the answer. If your question is not here, the <a href="/KKK-TIMER-3.0/help.html">help page</a> has deeper instructions, and the built-in assistant can answer cubing questions directly.</p>
+
+  <!-- ============ GETTING STARTED ============ -->
+  <h2 class="text-xl font-bold mt-8 mb-3">Getting started</h2>
+
+  <details>
+    <summary>How do I start the timer on my phone?</summary>
+    <p>Touch and hold the large number in the center of the screen for about half a second. It turns red while you hold, then green when it's ready. Release when it turns green to start the timer. To stop, tap once anywhere on the timer area.</p>
+  </details>
+
+  <details>
+    <summary>How do I start the timer on a computer?</summary>
+    <p>Hold the <kbd>Spacebar</kbd> for about half a second until it turns green, then release. To stop, press any key — not just the spacebar. This means your hands don't need to return to a specific key when you finish a solve.</p>
+  </details>
+
+  <details>
+    <summary>Why do I have to hold for half a second?</summary>
+    <p>The short hold prevents accidental starts. Without it, any scroll, tap, or grip adjustment on the screen would start the timer. The half-second delay is long enough to be deliberate, short enough that it never feels slow.</p>
+  </details>
+
+  <details>
+    <summary>What do the timer colors mean?</summary>
+    <p>White is idle. Red means your hold is being registered. Green means the timer is ready — release now. Yellow appears during inspection (if enabled). While running, the timer shows the elapsed time in white.</p>
+  </details>
+
+  <details>
+    <summary>Do I need an account to use the timer?</summary>
+    <p>No. There are no accounts, no sign-ups, no email addresses, and no passwords. Open the page and start solving.</p>
+  </details>
+
+  <!-- ============ STATISTICS ============ -->
+  <h2 class="text-xl font-bold mt-10 mb-3">Statistics</h2>
+
+  <details>
+    <summary>What does Ao5 mean?</summary>
+    <p>Ao5 stands for Average of 5. It takes your last five solves, drops the fastest and slowest, and averages the remaining three. This trimming means a single lucky or unlucky solve cannot distort the average. It is the most common measure of current form in cubing.</p>
+  </details>
+
+  <details>
+    <summary>What does Mo3 mean?</summary>
+    <p>Mo3 is Mean of 3 — the straight average of your last three solves with no trimming. All three solve times count. Because nothing is dropped, Mo3 is more sensitive to single bad solves than Ao5, which makes it useful for spotting inconsistency.</p>
+  </details>
+
+  <details>
+    <summary>What is the difference between Ao5, Ao12, Ao50, and Ao100?</summary>
+    <p>They use the same trimming method — drop the fastest and slowest, average the rest — but over different window sizes. Ao5 shows your current pace, Ao12 smooths out noise, Ao50 and Ao100 show your true standing as a cuber. When someone asks "how fast are you?", they usually mean Ao100.</p>
+  </details>
+
+  <details>
+    <summary>Why does my average become DNF?</summary>
+    <p>In standard WCA-style averaging, an average becomes DNF when two or more solves in the window are DNFs. This matches how competitions work: a single DNF can be trimmed, but two cannot. If you see a DNF average, check the solves for unintentional DNF marks.</p>
+  </details>
+
+  <details>
+    <summary>What does the trend graph show?</summary>
+    <p>The graph shows your last twenty solves as points connected by a line. A downward slope means you are getting faster; an upward slope means you are getting slower. It is most useful for spotting fatigue or warm-up patterns across a session.</p>
+  </details>
+
+  <details>
+    <summary>Can I see which solves make up an average?</summary>
+    <p>Yes. Tap any average card — Ao3, Ao5, Ao12, Ao50, or Ao100 — to open a detailed breakdown showing each solve that contributed, which ones were trimmed, and the resulting average.</p>
+  </details>
+
+  <!-- ============ INSPECTION ============ -->
+  <h2 class="text-xl font-bold mt-10 mb-3">Inspection</h2>
+
+  <details>
+    <summary>How do I turn on 15-second inspection?</summary>
+    <p>Open Settings → Features → 15s Inspection Time. Toggle it on. Every solve will now begin with a 15-second countdown. The setting is saved automatically and persists across visits.</p>
+  </details>
+
+  <details>
+    <summary>Can I start solving before the inspection countdown ends?</summary>
+    <p>Yes. During inspection you can hold and release as usual to start the solve early — there is no penalty for this. The countdown only forces a +2 penalty if it reaches zero while you are still inspecting.</p>
+  </details>
+
+  <details>
+    <summary>What happens if inspection reaches zero?</summary>
+    <p>A +2 penalty is applied automatically, the timer shows "+2" briefly, and the solve starts on its own. This matches WCA competition rules. If the countdown goes even further past zero, the solve becomes a DNF and starts automatically.</p>
+  </details>
+
+  <details>
+    <summary>Do I need inspection if I don't compete?</summary>
+    <p>No. Inspection is optional and off by default. It adds friction to casual solving, so it is only worth enabling if you are training for competition or specifically want to practice planning during inspection.</p>
+  </details>
+
+  <!-- ============ PUZZLES ============ -->
+  <h2 class="text-xl font-bold mt-10 mb-3">Puzzles</h2>
+
+  <details>
+    <summary>Which puzzles are supported?</summary>
+    <p>2×2, 3×3, 4×4, 5×5, 6×6, 7×7, and Skewb. Select your puzzle from the bar at the bottom of the timer page. Scramble length and notation adjust automatically for each puzzle.</p>
+  </details>
+
+  <details>
+    <summary>How long are the scrambles for each puzzle?</summary>
+    <p>3×3 uses 20 moves, 2×2 uses 11, 4×4 uses 40, 5×5 uses 60, 6×6 uses 80, and 7×7 uses 100. Skewb uses 10 moves. These follow WCA-standard scramble lengths wherever they exist.</p>
+  </details>
+
+  <details>
+    <summary>Are the scrambles WCA-compliant?</summary>
+    <p>They are generated using WCA-style rules — no repeated consecutive moves, no axis overlap, proper scramble length. They are not the exact scrambles that would appear in a specific competition, but they are equivalent in structure and fairness.</p>
+  </details>
+
+  <details>
+    <summary>Do I lose my solves if I switch puzzles?</summary>
+    <p>No. Each puzzle type has its own session, and switching puzzles switches to that session automatically. Your 3×3 solves remain intact when you switch to 2×2 and back.</p>
+  </details>
+
+  <!-- ============ SESSIONS ============ -->
+  <h2 class="text-xl font-bold mt-10 mb-3">Sessions</h2>
+
+  <details>
+    <summary>What is a session?</summary>
+    <p>A session is a separate container for solves, with its own statistics, history, and scramble list. Sessions do not share data — a bad week on a new cube cannot drag down your main averages because they are stored separately.</p>
+  </details>
+
+  <details>
+    <summary>How do I create a new session?</summary>
+    <p>Click the <strong>+</strong> button in the top-right of the header. Give the session a name when prompted. It will be created as a new session with the current puzzle type.</p>
+  </details>
+
+  <details>
+    <summary>How do I switch between sessions?</summary>
+    <p>Use the dropdown in the top bar. All your sessions are listed with their names and puzzle types. Selecting one switches the timer to that session's solves and statistics.</p>
+  </details>
+
+  <details>
+    <summary>Can I delete a session?</summary>
+    <p>Yes. Use the trash icon in the top-right of the header. You must have at least one session remaining — the timer will not let you delete the last one. Deletion is permanent; there is no undo and no server backup.</p>
+  </details>
+
+  <!-- ============ PENALTIES ============ -->
+  <h2 class="text-xl font-bold mt-10 mb-3">Penalties</h2>
+
+  <details>
+    <summary>How do I apply a +2 penalty?</summary>
+    <p>Click or tap any solve in the session list to open the penalty menu, then choose "+2 Seconds". The solve time increases by two seconds and the solve is marked with a +. Click "OK" to remove the penalty.</p>
+  </details>
+
+  <details>
+    <summary>How do I mark a solve as DNF?</summary>
+    <p>Click the solve, then choose "DNF". The solve is excluded from best-single and average calculations, but it remains in your history marked as DNF. DNFs count toward the standard "two DNFs in a window" rule that turns an average into DNF.</p>
+  </details>
+
+  <details>
+    <summary>When should I use +2 versus DNF?</summary>
+    <p>Use +2 when the solve was completed but took longer than it should — for example, if you accidentally held the timer too long before stopping. Use DNF when the solve was not actually completed, such as a pop that you did not recover from, or a move made after the timer stopped.</p>
+  </details>
+
+  <!-- ============ FEATURES ============ -->
+  <h2 class="text-xl font-bold mt-10 mb-3">Features</h2>
+
+  <details>
+    <summary>Does the assistant use a real AI?</summary>
+    <p>No. The assistant is a built-in helper with a large library of cubing advice: cross, F2L, OLL, PLL, finger tricks, look-ahead, TPS, time targets, and statistics interpretation. It runs entirely in your browser, has no network latency, and works offline after the page loads.</p>
+  </details>
+
+  <details>
+    <summary>Does the music download any files?</summary>
+    <p>No. All fifty tracks are synthesized in real time using your browser's built-in Web Audio API. Nothing is downloaded, nothing is streamed, and no audio data leaves your device.</p>
+  </details>
+
+  <details>
+    <summary>How many themes are available?</summary>
+    <p>Twenty-five color themes, available in Settings → 🎨 Theme. Your choice is saved automatically and applies to the entire interface — timer face, statistics cards, modals, and assistant panel.</p>
+  </details>
+
+  <details>
+    <summary>Can I share my solves with someone?</summary>
+    <p>Yes. Click the share icon in the top bar to open the sharing panel. You can share through WhatsApp, Telegram, email, SMS, or copy the session to your clipboard. The share includes your session name, puzzle type, and up to fifty solves with their scrambles.</p>
+  </details>
+
+  <details>
+    <summary>Do I need internet to use the timer?</summary>
+    <p>Only for the first load. After that, the timer, statistics, sessions, music, themes, and assistant all work offline because everything runs locally in your browser. Internet is only needed if you refresh the page or open it in a new tab.</p>
+  </details>
+
+  <!-- ============ PRIVACY ============ -->
+  <h2 class="text-xl font-bold mt-10 mb-3">Privacy</h2>
+
+  <details>
+    <summary>Where is my solve data stored?</summary>
+    <p>All solves, sessions, and preferences are stored in your browser's <code>localStorage</code>. They never leave your device and are not transmitted to any server. Clearing your browser's site data will erase them permanently.</p>
+  </details>
+
+  <details>
+    <summary>Does the timer track me?</summary>
+    <p>No. There are no analytics, no cookies, no tracking pixels, no advertising, and no cross-site identifiers. The full details are on the <a href="/KKK-TIMER-3.0/privacy.html">privacy page</a>.</p>
+  </details>
+
+  <details>
+    <summary>Will my solves disappear if I switch devices?</summary>
+    <p>Yes. Because solves are stored locally, they stay only on the device and browser where you recorded them. To move your history, use the share/copy feature to export your solves before switching.</p>
+  </details>
+
+  <!-- ============ TROUBLESHOOTING ============ -->
+  <h2 class="text-xl font-bold mt-10 mb-3">Troubleshooting</h2>
+
+  <details>
+    <summary>The timer does not start when I hold my phone screen.</summary>
+    <p>Make sure you are holding the large number in the center, not a button or control. Hold for the full half-second until it turns green. If it still does not start, try a slightly longer hold or check that your tap is landing inside the timer area.</p>
+  </details>
+
+  <details>
+    <summary>The timer starts but will not stop.</summary>
+    <p>A single tap should stop it. Check that your tap is landing inside the timer area and not on an adjacent panel. On some phones, a very quick tap may not register — try a slightly longer tap.</p>
+  </details>
+
+  <details>
+    <summary>The music does not play on my iPhone.</summary>
+    <p>iOS blocks audio until you interact with the page. Clicking a track counts as interaction, but on iOS you may need to click a track, wait a moment, and click it again. Also check that your phone is not on silent mode and the volume is up.</p>
+  </details>
+
+  <details>
+    <summary>My solves disappeared after I closed the browser.</summary>
+    <p>This happens if your browser is set to clear site data on close, or if you are in a private/incognito window. Disable "clear data on close" in your browser settings, or use the share feature to export your solves periodically.</p>
+  </details>
+
+  <details>
+    <summary>The layout looks broken on my phone.</summary>
+    <p>Try rotating to landscape or zooming out slightly. Extreme aspect ratios or unusual zoom levels can occasionally cause layout issues. If it persists, try opening the page in a different browser.</p>
+  </details>
+
+  <hr class="my-10 border-zinc-800">
+
+  <nav class="text-sm flex flex-wrap gap-4">
+    <a href="/KKK-TIMER-3.0/">← Timer</a>
+    <a href="/KKK-TIMER-3.0/help.html">Help</a>
+    <a href="/KKK-TIMER-3.0/about.html">About</a>
+    <a href="/KKK-TIMER-3.0/privacy.html">Privacy</a>
+    <a href="https://github.com/krameshece-ctrl/KKK-TIMER-3.0" target="_blank" rel="noopener">Source code</a>
+  </nav>
+
+  <!-- FAQPage Schema — helps Google show these as rich results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "How do I start the timer on my phone?", "acceptedAnswer": {"@type": "Answer", "text": "Touch and hold the large number in the center of the screen for about half a second. It turns red while you hold, then green when it's ready. Release when it turns green to start the timer. To stop, tap once anywhere on the timer area."}},
+      {"@type": "Question", "name": "How do I start the timer on a computer?", "acceptedAnswer": {"@type": "Answer", "text": "Hold the Spacebar for about half a second until it turns green, then release. To stop, press any key — not just the spacebar."}},
+      {"@type": "Question", "name": "What does Ao5 mean?", "acceptedAnswer": {"@type": "Answer", "text": "Ao5 stands for Average of 5. It takes your last five solves, drops the fastest and slowest, and averages the remaining three. This trimming means a single lucky or unlucky solve cannot distort the average."}},
+      {"@type": "Question", "name": "What does Mo3 mean?", "acceptedAnswer": {"@type": "Answer", "text": "Mo3 is Mean of 3 — the straight average of your last three solves with no trimming. All three solve times count. Because nothing is dropped, Mo3 is more sensitive to single bad solves than Ao5."}},
+      {"@type": "Question", "name": "How do I turn on 15-second inspection?", "acceptedAnswer": {"@type": "Answer", "text": "Open Settings → Features → 15s Inspection Time. Toggle it on. Every solve will now begin with a 15-second countdown."}},
+      {"@type": "Question", "name": "Which puzzles are supported?", "acceptedAnswer": {"@type": "Answer", "text": "2×2, 3×3, 4×4, 5×5, 6×6, 7×7, and Skewb. Select your puzzle from the bar at the bottom of the timer page."}},
+      {"@type": "Question", "name": "What is a session?", "acceptedAnswer": {"@type": "Answer", "text": "A session is a separate container for solves, with its own statistics, history, and scramble list. Sessions do not share data — a bad week on a new cube cannot drag down your main averages because they are stored separately."}},
+      {"@type": "Question", "name": "How do I apply a +2 penalty?", "acceptedAnswer": {"@type": "Answer", "text": "Click or tap any solve in the session list to open the penalty menu, then choose '+2 Seconds'. The solve time increases by two seconds and the solve is marked with a +."}},
+      {"@type": "Question", "name": "Does the assistant use a real AI?", "acceptedAnswer": {"@type": "Answer", "text": "No. The assistant is a built-in helper with a large library of cubing advice. It runs entirely in your browser, has no network latency, and works offline after the page loads."}},
+      {"@type": "Question", "name": "Where is my solve data stored?", "acceptedAnswer": {"@type": "Answer", "text": "All solves, sessions, and preferences are stored in your browser's localStorage. They never leave your device and are not transmitted to any server."}},
+      {"@type": "Question", "name": "Does the timer track me?", "acceptedAnswer": {"@type": "Answer", "text": "No. There are no analytics, no cookies, no tracking pixels, no advertising, and no cross-site identifiers."}},
+      {"@type": "Question", "name": "The timer does not start when I hold my phone screen.", "acceptedAnswer": {"@type": "Answer", "text": "Make sure you are holding the large number in the center, not a button or control. Hold for the full half-second until it turns green."}},
+      {"@type": "Question", "name": "The music does not play on my iPhone.", "acceptedAnswer": {"@type": "Answer", "text": "iOS blocks audio until you interact with the page. Clicking a track counts as interaction, but on iOS you may need to click a track, wait a moment, and click it again."}}
+    ]
+  }
+  </script>
+
+</body>
+</html>
