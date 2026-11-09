@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>About — KKK Timer 3.0</title>
-  <meta name="description" content="About KKK Timer 3.0 — a free, open, browser-based speedcubing timer for PC and mobile. No install, no account, no tracking.">
+  <title>About KKK Timer 3.0 — The Complete Guide</title>
+  <meta name="description" content="Everything about KKK Timer 3.0: what it is, who it's for, every feature explained in detail, how it compares to other speedcubing timers, how it stays free and private, and how to get the most out of it.">
   <link rel="canonical" href="https://krameshece-ctrl.github.io/KKK-TIMER-3.0/about.html">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -12,6 +12,11 @@
     a { color: #10b981; }
     a:hover { text-decoration: underline; }
     h2 { color: #10b981; }
+    h3 { color: #d4d4d8; }
+    code, kbd {
+      background: #1a1a1f; border: 1px solid #2a2a2f; border-radius: 4px;
+      padding: 1px 6px; font-size: 0.9em; font-family: 'JetBrains Mono', monospace;
+    }
   </style>
 </head>
 <body class="bg-zinc-950 text-zinc-200 p-6 max-w-3xl mx-auto leading-relaxed">
@@ -20,29 +25,108 @@
     <a href="/KKK-TIMER-3.0/">← Back to timer</a>
   </nav>
 
-  <h1 class="text-3xl sm:text-4xl font-black mb-4">About KKK Timer 3.0</h1>
+  <h1 class="text-3xl sm:text-4xl font-black mb-2">About KKK Timer 3.0</h1>
+  <p class="text-zinc-400 mb-8 text-sm">The complete guide — what it is, who it's for, and every feature explained.</p>
 
-  <p class="mb-4">KKK Timer 3.0 is a free, browser-based speedcubing timer built for desktop and mobile. No install, no account, no tracking, no ads — open the page and start solving.</p>
+  <p class="mb-4">KKK Timer 3.0 is a free, browser-based speedcubing timer built for anyone who solves twisty puzzles and wants to track their progress honestly. It runs entirely in your browser, works on desktop and mobile, requires no install, no account, and no payment, and stores every solve locally on your own device. This page explains what the timer is, who it is designed for, what each feature does, how it compares to other timers, and how to get the most out of it.</p>
 
-  <h2 class="text-xl font-bold mt-8 mb-3">What it does</h2>
-  <ul class="list-disc list-inside space-y-1 mb-4">
-    <li>Precise solve timing with hold-to-start controls (spacebar on desktop, touch on mobile)</li>
-    <li>Standard WCA-style averages: Mo3, Ao5, Ao12, Ao50, Ao100</li>
-    <li>Best-single tracking and a solve-trend graph</li>
-    <li>Multiple sessions, so you can keep different puzzles or practice modes separate</li>
-    <li>WCA-style scrambles for 2×2, 3×3, 4×4, 5×5, 6×6, 7×7, and Skewb</li>
-    <li>Optional 15-second inspection with automatic +2 penalty</li>
-    <li>+2 and DNF penalties on any solve</li>
-    <li>Built-in cube assistant for cross, F2L, OLL, PLL, and stats tips</li>
-    <li>50 focus music tracks and 25 color themes</li>
-    <li>Session sharing via WhatsApp, Telegram, email, or clipboard</li>
-  </ul>
+  <p class="mb-4">If you have used other cubing timers before, you already know the drill: hold, release, solve, stop. KKK Timer 3.0 keeps that core experience intact but wraps it in a cleaner interface, adds a built-in assistant, and removes the friction that makes many timers feel heavier than they need to be. If you have never used a cubing timer, this page will walk you through everything from first principles.</p>
 
-  <h2 class="text-xl font-bold mt-8 mb-3">Privacy</h2>
-  <p class="mb-4">Everything is stored locally in your browser. Nothing is uploaded to a server. See the <a href="/KKK-TIMER-3.0/privacy.html">privacy page</a> for details.</p>
+  <h2 class="text-xl font-bold mt-8 mb-3">What a speedcubing timer actually does</h2>
 
-  <h2 class="text-xl font-bold mt-8 mb-3">Open source</h2>
-  <p class="mb-4">The full source code is available on <a href="https://github.com/krameshece-ctrl/KKK-TIMER-3.0" target="_blank" rel="noopener">GitHub</a>.</p>
+  <p class="mb-4">A speedcubing timer is the single most important training tool a cuber owns after the cube itself. At its simplest, it records how long each solve takes so you can see whether you are improving. At its most useful, it turns a pile of individual times into meaningful statistics — averages, consistency measures, personal bests, and trend graphs — that tell you where you are losing time and whether your practice is actually working.</p>
+
+  <p class="mb-4">Most cubers, regardless of level, follow the same basic ritual: scramble, inspect, solve, record. The timer's job is to stay out of the way during the solve and to give you clean, trustworthy data afterward. Every design decision in KKK Timer 3.0 flows from that principle. The timer face is large and readable. The controls are simple enough to use without looking. The statistics update instantly after each solve. Nothing is buried under menus or requires configuration before you can start.</p>
+
+  <p class="mb-4">The reason timing matters so much is that speedcubing progress is not visible from individual solves. A single 18-second solve tells you almost nothing — it could be a lucky scramble or a bad day. What tells you the truth is a rolling average over five or twelve solves, compared to the same average from last week. If your Ao12 has dropped from 24 seconds to 22 seconds in a month, you are genuinely improving, regardless of what any single solve looked like. The statistics in this timer are built around that reality.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Who KKK Timer 3.0 is for</h2>
+
+  <p class="mb-4">This timer is designed for four broad groups of cubers.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Beginners learning their first method</h3>
+
+  <p class="mb-4">If you have just learned the beginner's method and are solving somewhere between one and three minutes, you need a timer that is patient with you. You do not need a wall of statistics you cannot interpret, or a settings screen that requires you to understand WCA regulations before you can press start. KKK Timer 3.0 shows you only the statistics that matter at your level — your best solve, your Ao5, and your overall solve count — and leaves the rest quietly available when you are ready for it.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Intermediate cubers grinding toward sub-30 or sub-20</h3>
+
+  <p class="mb-4">This is the largest group of cubers in the world, and probably the group this timer serves best. At the sub-30 to sub-20 range, the differences between good and bad practice become enormous. A cuber who drills the same slow step twice a week will progress far faster than one who does a hundred unfocused solves. The statistics here — especially Ao12 and Ao50 — are specifically chosen to show whether your practice is working, not just whether you had a good solve today. The trend graph makes it easy to see your weekly progress at a glance.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Advanced cubers who want a clean, fast tool</h3>
+
+  <p class="mb-4">If you are already sub-15 or sub-10, you do not need a timer to teach you how to solve. You need a timer that responds instantly, does not interfere with keyboard shortcuts, and does not waste your attention on decorations. KKK Timer 3.0 is deliberately minimal: the timer face dominates the screen, the spacebar is the only key you need, and the statistics update without animation delays. Nothing about the interface competes with your solving.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Casual cubers who just want to know their times</h3>
+
+  <p class="mb-4">Not everyone who solves a cube wants to be a competitor. Some people solve for relaxation, some for the satisfaction of finishing a puzzle, some because a friend showed them a trick and they got hooked. If that describes you, you do not need a full analytics dashboard. You need a timer that just works, records your solves, and lets you close the tab without any fuss. KKK Timer 3.0 is built for you too — every advanced feature is optional, and the core experience is as simple as pressing spacebar and solving.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Every feature, explained</h2>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Precise solve timing</h3>
+
+  <p class="mb-4">The timer records time to the hundredth of a second. It starts the moment you release the hold gesture or spacebar and stops the moment you press any key or tap the screen. There is no artificial delay, no smoothing, no rounding tricks. The time you see is the time that passed between your input events.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Standard WCA-style averages</h3>
+
+  <p class="mb-4">The timer calculates Mo3, Ao5, Ao12, Ao50, and Ao100 — the same averages used in official World Cube Association competition. These are trimmed averages: for Ao5, the fastest and slowest solves in the window are dropped and the remaining three are averaged. For Ao12, the fastest and slowest are dropped and the remaining ten are averaged. This trimming is what makes averages resistant to single bad solves or lucky scrambles, and it is what makes them a fair measure of your actual skill level.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Best single and trend graph</h3>
+
+  <p class="mb-4">Your best individual solve in the current session is displayed prominently, alongside a small trend graph showing your last twenty solves. The graph is the fastest way to notice whether you are in a good stretch of solves or a rough patch. A rising line means your recent solves are slower than your older ones — usually a sign of fatigue or of a new technique that has not yet bedded in. A falling line means you are improving.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Multiple sessions</h3>
+
+  <p class="mb-4">You can create as many sessions as you want, each with its own name, puzzle type, and solve history. A typical setup is one session per puzzle — a 3×3 session, a 2×2 session, a Skewb session — but you can also split by practice mode, by cube, or by anything else that makes sense to you. Sessions do not share statistics with each other, which means a bad week on a new cube cannot drag down your main 3×3 averages.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">WCA-style scrambles for seven puzzle types</h3>
+
+  <p class="mb-4">The timer generates scrambles for 2×2, 3×3, 4×4, 5×5, 6×6, 7×7, and Skewb. The scramble lengths follow the standard used in WCA competition: twenty moves for 3×3, eleven for 2×2, and progressively longer sequences for larger cubes. Scrambles are generated fresh each time, with no axis overlap and no repeated consecutive moves, which produces sequences that are both fair and genuinely representative of what you would see in competition.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Optional fifteen-second inspection</h3>
+
+  <p class="mb-4">If you want to practice under competition conditions, you can enable the fifteen-second inspection timer. When it is on, a countdown starts before each solve and gives you fifteen seconds to plan your cross. You can start the solve early at any time without penalty. If the countdown reaches zero, a +2 penalty is applied automatically and the timer starts on its own — exactly as it would in a real competition. For cubers who do not compete, inspection is optional and off by default.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Penalties: +2 and DNF</h3>
+
+  <p class="mb-4">Every solve can be marked with a +2 penalty (adds two seconds) or a DNF (Did Not Finish — the solve is excluded from averages but still appears in your history). You can apply or remove penalties at any time by clicking the solve in the list. This is useful for honest self-assessment: if you messed up the solve, a DNF is more accurate than a random time.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Built-in cube assistant</h3>
+
+  <p class="mb-4">The assistant is a chat-style helper built directly into the timer. It reacts to every scramble you receive with analysis and tips, and it can answer questions about cross, F2L, OLL, PLL, finger tricks, look-ahead, TPS, time targets, and statistics. It is not a general-purpose AI and it will not pretend to know things it does not — but for the specific skills a cuber actually needs to improve, it has a substantial library of practical advice.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Fifty focus music tracks</h3>
+
+  <p class="mb-4">Fifty short synthesized music loops are available in the bottom bar. Each track has a different tempo and mood, ranging from slow ambient pads for look-ahead practice to fast driving beats for sprint-style drilling. You can switch tracks mid-session or turn music off entirely. No audio files are downloaded; the music is generated in real time using your browser's built-in audio engine.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Twenty-five color themes</h3>
+
+  <p class="mb-4">Twenty-five color themes are available in the settings panel, ranging from dark and minimal to bright and energetic. Your choice is saved automatically and applies to the entire interface. The theme genuinely affects how the timer feels during long practice sessions, so it is worth trying a few to find the one that keeps you comfortable.</p>
+
+  <h3 class="text-base font-bold mt-4 mb-2">Session sharing</h3>
+
+  <p class="mb-4">You can share your current session — every solve and its scramble — through WhatsApp, Telegram, email, or your clipboard. This is useful for posting a weekly summary, comparing progress with a friend, or simply backing up your data in a format that survives any browser reset.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">How it compares to other timers</h2>
+
+  <p class="mb-4">csTimer is the most popular cubing timer in the world, and for good reason — it is extraordinarily feature-rich and it has been refined over more than a decade. If you are a competitive cuber running a full WCA-style practice regimen, csTimer will eventually be the right tool for you. But it comes with hundreds of settings, many of which require real cuber knowledge to configure correctly, and its interface is not welcoming to newer solvers.</p>
+
+  <p class="mb-4">KKK Timer 3.0 does not try to replace csTimer. It aims to be the timer you use when you want to solve right now, without wading through a settings screen first. The core experience — hold, release, solve, stop — is identical. The difference is that everything around it is lighter, faster to read, and friendlier to newer cubers. Over time, if you find you want csTimer's depth, you can move to it. In the meantime, this timer will not stand in your way.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Privacy and open source</h2>
+
+  <p class="mb-4">All of your solves, sessions, and settings are stored locally in your own browser. Nothing is uploaded to any server. There are no accounts, no analytics, no advertising, no tracking scripts, and no third-party services that touch your solve data. The only external resources the page loads are the Tailwind CSS stylesheet and the Google Fonts typefaces, both of which are standard and neither of which receives your solve history.</p>
+
+  <p class="mb-4">The full source code is available on GitHub under a permissive license. You can read exactly what the timer does with your data — nothing hidden, nothing encrypted, nothing sent anywhere. If you want to see the full details, the <a href="/KKK-TIMER-3.0/privacy.html">privacy page</a> covers the data handling in precise terms.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">Getting started</h2>
+
+  <p class="mb-4">If you have never used KKK Timer 3.0, the fastest way to start is to open the <a href="/KKK-TIMER-3.0/">timer page</a> and solve once. Hold the spacebar or touch the screen for about half a second until it turns green, release to start the timer, and press any key or tap the screen again when you finish. That is the entire workflow, and it works identically on desktop and mobile. Every other feature — sessions, inspection, penalties, music — is optional and can be explored later.</p>
+
+  <p class="mb-4">If you want more detailed instructions — including keyboard shortcuts, touch controls, statistics definitions, puzzle-specific notes, and the assistant's capabilities — the <a href="/KKK-TIMER-3.0/help.html">help page</a> covers everything in depth.</p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">About the project</h2>
+
+  <p class="mb-4">KKK Timer 3.0 was built as a personal project by a cuber, for cubers. It is not a commercial product, does not collect revenue, and does not intend to. It exists because the existing options felt heavier than they needed to be, and because a simpler timer — one that did the important things well and stayed out of the way — seemed genuinely useful to build. If it helps you break a personal best, it has done its job.</p>
 
   <hr class="my-8 border-zinc-800">
 
