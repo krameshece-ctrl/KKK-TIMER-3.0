@@ -225,6 +225,13 @@
     </button>
   </div>
 </header>
+  <!-- Ratings box (shows user's own ratings if submitted) -->
+<div id="ratings-box" class="w-full px-3 py-1.5 text-xs flex flex-wrap justify-center items-center gap-2 border-b hidden" style="background:rgba(16,185,129,.08); border-color:var(--border);">
+  <span class="text-zinc-400 font-semibold">Your rating:</span>
+  <span id="ratings-box-stars" class="text-yellow-400 text-sm"></span>
+  <span id="ratings-box-value" class="text-white font-mono font-bold"></span>
+  <a href="/KKK-TIMER-3.0/rate-us.html" class="text-emerald-400 underline ml-2">Edit</a>
+</div>
 
 <!-- main layout -->
 <div class="flex-grow flex flex-col md:flex-row overflow-hidden relative w-full z-10">
