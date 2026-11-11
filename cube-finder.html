@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Cube Finder — KKK Timer 3.0</title>
-  <meta name="description" content="Answer three questions and get a specific speedcube recommendation for your budget, puzzle type, and turning style. Based on 2026 cube reviews for 2x2, 3x3, 4x4, 5x5, 6x6, 7x7, and Skewb.">
+  <meta name="description" content="Answer four questions and get speedcube recommendations for your budget, puzzle type, turning style, and preferred brand. Based on 2026 cube reviews.">
   <link rel="canonical" href="https://krameshece-ctrl.github.io/KKK-TIMER-3.0/cube-finder.html">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -15,7 +15,12 @@
     .opt-btn { background: #1a1a1f; border: 1px solid #2a2a2f; color: #d4d4d8; padding: 12px; border-radius: 8px; cursor: pointer; transition: all 0.15s; text-align: left; width: 100%; }
     .opt-btn:hover { border-color: #10b981; background: #1a2a1f; }
     .opt-btn.selected { border-color: #10b981; background: rgba(16,185,129,0.15); color: #fff; }
-    .result-card { background: #0f0f13; border: 1px solid #10b981; border-radius: 12px; padding: 20px; }
+    .result-card { background: #0f0f13; border: 1px solid #10b981; border-radius: 12px; padding: 20px; margin-bottom: 12px; }
+    .alt-card { background: #0f0f13; border: 1px solid #1f1f23; border-radius: 10px; padding: 14px; margin-bottom: 8px; }
+    .brand-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: rgba(16,185,129,0.15); color: #10b981; margin-bottom: 4px; }
+    .brand-tag.unverified { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .optional-tag { font-size: 10px; font-weight: 700; color: #fbbf24; background: rgba(251,191,36,0.1); padding: 2px 8px; border-radius: 4px; margin-left: 6px; }
+    .no-model { font-style: italic; color: #9ca3af; }
   </style>
 </head>
 <body class="bg-zinc-950 text-zinc-200 p-6 max-w-2xl mx-auto leading-relaxed">
@@ -25,10 +30,9 @@
   </nav>
 
   <h1 class="text-3xl sm:text-4xl font-black mb-2">Cube Finder</h1>
-  <p class="text-zinc-400 mb-8 text-sm">Three questions. One specific recommendation. Based on 2026 cube reviews.</p>
+  <p class="text-zinc-400 mb-8 text-sm">Four questions. Tailored recommendations. Based on 2026 community reviews.</p>
 
   <div id="finder">
-    <!-- Q1: Puzzle type -->
     <div class="q-card" data-q="type">
       <h2 class="font-bold mb-3">1. What puzzle type?</h2>
       <div class="grid grid-cols-2 gap-2">
@@ -42,7 +46,6 @@
       </div>
     </div>
 
-    <!-- Q2: Budget -->
     <div class="q-card" data-q="budget">
       <h2 class="font-bold mb-3">2. What is your budget?</h2>
       <div class="space-y-2">
@@ -52,13 +55,36 @@
       </div>
     </div>
 
-    <!-- Q3: Priority -->
     <div class="q-card" data-q="priority">
       <h2 class="font-bold mb-3">3. What do you want more?</h2>
       <div class="space-y-2">
         <button class="opt-btn" data-val="speed">Speed — fast, snappy, responsive</button>
         <button class="opt-btn" data-val="control">Control — stable, predictable, locked-in</button>
       </div>
+    </div>
+
+    <div class="q-card" data-q="brand">
+      <h2 class="font-bold mb-3">4. Preferred brand? <span class="optional-tag">OPTIONAL</span></h2>
+      <div class="space-y-2">
+        <button class="opt-btn" data-val="any">Any brand — show me everything</button>
+        <button class="opt-btn" data-val="MoYu">MoYu</button>
+        <button class="opt-btn" data-val="GAN">GAN</button>
+        <button class="opt-btn" data-val="QiYi">QiYi</button>
+        <button class="opt-btn" data-val="X-Man">X-Man</button>
+        <button class="opt-btn" data-val="DaYan">DaYan</button>
+        <button class="opt-btn" data-val="YJ">YJ</button>
+        <button class="opt-btn" data-val="DianSheng">DianSheng</button>
+        <button class="opt-btn" data-val="YuXin">YuXin</button>
+        <button class="opt-btn" data-val="Vin">Vin</button>
+        <button class="opt-btn" data-val="Rubik's">Rubik's</button>
+        <button class="opt-btn" data-val="Lanlan">Lanlan</button>
+        <button class="opt-btn" data-val="Fanxin">Fanxin</button>
+        <button class="opt-btn" data-val="Dylan">Dylan</button>
+        <button class="opt-btn" data-val="Ferracore">Ferracore</button>
+        <button class="opt-btn" data-val="Cubello">Cubello</button>
+        <button class="opt-btn" data-val="Witeden">Witeden</button>
+      </div>
+      <p class="text-xs text-zinc-500 mt-2">If you pick a brand, only that brand's cubes will be shown. Some brands may have fewer than 9 matches, or no verified models for a given combination.</p>
     </div>
 
     <button id="find-btn" class="w-full mt-4 py-3 rounded-xl text-white font-bold text-base" style="background:#10b981;" disabled>
@@ -77,198 +103,584 @@
   </nav>
 
   <script>
-    const answers = { type: null, budget: null, priority: null };
+    const answers = { type: null, budget: null, priority: null, brand: null };
 
     // ============ RECOMMENDATION DATA ============
-    // Based on 2026 reviews. Each entry has a specific cube name and description.
-    // No purchase links. Recommendations only.
+    // Each entry: { best: {...}, alt: [...] }
+    // Every cube has: { name, brand, desc }
+    // The `alt` array is the full candidate pool for that combination.
+    // Filtering by brand happens at runtime.
+    // Brands without verified models appear as honest "no verified model" entries.
 
     const RECS = {
-      // ===== 3x3 =====
+      // ===================== 3x3 =====================
       '3x3-budget-speed': {
-        name: 'MoYu RS3M V5',
-        desc: 'The best value speed cube in 2026. It turns fast and crisp with a snappy, mechanical feel that rewards aggressive turning. Reviews consistently call it the top budget pick for speed, with excellent corner cutting and stability for its price. The standard version is affordable; the Maglev Ball-Core UV version adds a premium feel and grip if you can stretch the budget slightly [citation:1][citation:7].'
+        best: { name: 'MoYu RS3M V5', brand: 'MoYu', desc: 'The best value speed cube in 2026. Fast, snappy, and mechanically crisp. Reviews consistently call it the top budget pick for raw speed, with excellent corner cutting for its price.' },
+        alt: [
+          { name: 'QiYi YongShi Warrior S', brand: 'QiYi', desc: 'A community favorite for beginners. Smooth, pre-lubricated, and very affordable. Not as fast as the RS3M but more forgiving and predictable.' },
+          { name: 'GAN MG3', brand: 'GAN', desc: 'A budget GAN that still carries the brand\'s smooth, refined feel. Good if you want GAN quality without flagship cost.' },
+          { name: 'QiYi MS 3x3', brand: 'QiYi', desc: 'A simple, reliable budget cube. Not the fastest, but stable and consistent.' },
+          { name: 'MoYu MeiLong 3x3 M', brand: 'MoYu', desc: 'A magnetic budget cube that punches above its price. Stable and controllable.' },
+          { name: 'YJ YuLong V2 M', brand: 'YJ', desc: 'Another budget magnetic option from YJ. Smooth and stable.' },
+          { name: 'DianSheng Solar S', brand: 'DianSheng', desc: 'A budget magnetic cube from DianSheng. Less common in reviews but a reasonable alternative.' },
+          { name: 'X-Man Wingy 3x3', brand: 'X-Man', desc: 'A budget magnetic cube from X-Man. Good corner cutting and a slightly heavier feel.' },
+          { name: 'Rubik\'s Magnetic Speed Cube', brand: 'Rubik\'s', desc: 'Sturdy and very stable. Best for casual solvers or children who want a recognizable brand.' }
+        ]
       },
       '3x3-budget-control': {
-        name: 'MoYu RS3M V5 (Ball-Core)',
-        desc: 'The Ball-Core version of the RS3M V5 adds a more stable, controlled feel compared to the standard version. It is still fast, but the magnetic core makes it more predictable and less likely to overshoot. Reviews describe the RS3M line as controllable and well-rounded, suitable for both beginners and advanced cubers who want a reliable budget cube [citation:1].'
+        best: { name: 'QiYi YongShi Warrior S', brand: 'QiYi', desc: 'A community favorite for controllable budget solving. Smooth, pre-lubricated, and predictable. One of the most stable budget options.' },
+        alt: [
+          { name: 'MoYu RS3M V5', brand: 'MoYu', desc: 'The standard RS3M V5 is fast, but its magnetic core and tension system can be tuned toward control.' },
+          { name: 'GAN MG3', brand: 'GAN', desc: 'Smoother and more refined than most budget cubes. A controlled, premium-feeling budget cube.' },
+          { name: 'QiYi MS 3x3', brand: 'QiYi', desc: 'Stable and blocky, with a predictable turning feel. A good choice for a beginner who wants control.' },
+          { name: 'MoYu MeiLong 3x3 M', brand: 'MoYu', desc: 'A magnetic budget cube with a stable, planted feel.' },
+          { name: 'YJ YuLong V2 M', brand: 'YJ', desc: 'A budget magnetic cube from YJ. Stable and predictable.' },
+          { name: 'DianSheng Solar S', brand: 'DianSheng', desc: 'A budget magnetic alternative. Reasonable if you want a controlled budget cube.' },
+          { name: 'Rubik\'s Magnetic Speed Cube', brand: 'Rubik\'s', desc: 'Heavier and slower than speed cubes, but sturdy and very stable. Best for casual solvers or children.' },
+          { name: 'Lanlan 3x3', brand: 'Lanlan', desc: 'A very low-cost cube. Not a speed cube, but functional for casual solving.' }
+        ]
       },
       '3x3-mid-speed': {
-        name: 'QiYi X-Man Tornado V3',
-        desc: 'Known for being smoother, quieter, and more refined than the RS3M. It has a premium, plush feel that many advanced cubers prefer. The Tornado V3 is faster and more customizable (adjustable magnets, tensions, spring compression), but some find it less responsive than the RS3M. It is a strong choice if you want a fast, polished cube at a mid-range price [citation:1].'
+        best: { name: 'MoYu WeiLong V11', brand: 'MoYu', desc: 'The 2026 flagship that is widely used by world-class solvers. Known for forgiving corner cutting and stability under high TPS.' },
+        alt: [
+          { name: 'GAN 356 ME', brand: 'GAN', desc: 'A premium-feel cube at a mid price. Smooth, lightweight, and refined.' },
+          { name: 'QiYi X-Man Tornado V3', brand: 'X-Man', desc: 'Smoother and quieter than the RS3M, with a plush, refined feel.' },
+          { name: 'DaYan GuHong Pro+', brand: 'DaYan', desc: 'A 2026 sleeper hit. Tactile, snappy, and very quiet. Flagship performance at a mid-range price.' },
+          { name: 'MoYu RS3M V5 (Ball-Core)', brand: 'MoYu', desc: 'A budget cube that punches into mid-range performance. The Ball-Core adds stability and a more premium feel.' },
+          { name: 'GAN 16 MagLev Max', brand: 'GAN', desc: 'A premium flagship that is sometimes found at mid-range prices. Extremely customizable and smooth.' },
+          { name: 'QiYi Valk 3 Elite M', brand: 'QiYi', desc: 'A classic flagship from QiYi. Stable and smooth, though older than the 2026 releases.' },
+          { name: 'YJ MGC 3x3', brand: 'YJ', desc: 'A budget-to-mid cube that offers good performance for the price.' },
+          { name: 'DianSheng Solar S', brand: 'DianSheng', desc: 'A budget magnetic alternative. A reasonable mid-range option if you want something different.' }
+        ]
       },
       '3x3-mid-control': {
-        name: 'GAN V100',
-        desc: 'Designed for stability and precision. It has a compact 55mm design and a highly adjustable handfeel, with a spherical orbit system and customizable magnetic setup. GAN positions it for cubers who prioritize control and a defined turning feel over raw speed [citation:8].'
+        best: { name: 'GAN V100', brand: 'GAN', desc: 'Designed for stability and precision. It has a compact 55mm design and a highly adjustable handfeel.' },
+        alt: [
+          { name: 'DaYan GuHong Pro+', brand: 'DaYan', desc: 'Tactile and snappy, with a crunchy feedback. Stable and predictable, and very quiet.' },
+          { name: 'GAN 16 MagLev Max', brand: 'GAN', desc: 'GAN\'s premium flagship is fast but highly tunable. Its 1,296 configurations let you dial it toward control.' },
+          { name: 'MoYu WeiLong V11', brand: 'MoYu', desc: 'More controlled than GAN\'s flagship at the expense of some smoothness.' },
+          { name: 'QiYi X-Man Tornado V3', brand: 'X-Man', desc: 'Smooth and refined, with adjustable magnets and tensions. Can be tuned toward a controlled feel.' },
+          { name: 'GAN 356 ME', brand: 'GAN', desc: 'Smooth and lightweight. Less customizable than the V100 but still offers a controlled, predictable feel.' },
+          { name: 'QiYi Valk 3 Elite M', brand: 'QiYi', desc: 'Stable and smooth, with a traditional QiYi feel.' },
+          { name: 'YJ MGC 3x3', brand: 'YJ', desc: 'A budget-to-mid cube with a stable, predictable feel.' },
+          { name: 'MoYu RS3M V5 (Ball-Core)', brand: 'MoYu', desc: 'A budget cube with a stable, controlled feel. A strong value option.' }
+        ]
       },
       '3x3-premium-speed': {
-        name: 'GAN 17 MagDrive',
-        desc: 'GAN\'s 2026 flagship, built for fast and light turning. Its 196-magnet system provides continuous magnetic guidance through each turn, and the tuning matrix lets you dial it in precisely. Reviews describe it as responsive and high-end, designed for cubers who want the latest flagship hardware and a snappy feel [citation:8].'
+        best: { name: 'GAN 16 MagLev Max', brand: 'GAN', desc: 'GAN\'s 2026 flagship, built for luxury and speed. Its 1,296 unique configurations and 136 magnets make it the most customizable cube on the market.' },
+        alt: [
+          { name: 'MoYu WeiLong V11 (18th Anniversary)', brand: 'MoYu', desc: 'The most-used cube among world-class solvers. Raw speed, insane stability, and forgiving corner cutting.' },
+          { name: 'GAN 17 MagDrive', brand: 'GAN', desc: 'GAN\'s latest flagship with a 196-magnet system for continuous magnetic guidance.' },
+          { name: 'QiYi X-Man Tornado V3 (Flagship)', brand: 'X-Man', desc: 'Smoother and quieter than MoYu flagships, with a plush, refined feel.' },
+          { name: 'DaYan GuHong Pro+', brand: 'DaYan', desc: 'While mid-priced, its performance rivals flagships. Tactile and snappy.' },
+          { name: 'MoYu RS3M V5 (Ball-Core UV)', brand: 'MoYu', desc: 'A budget cube with premium touches. The UV coating and ball-core add grip and stability.' },
+          { name: 'GAN 356 ME', brand: 'GAN', desc: 'A mid-range GAN that still feels premium. Smooth and lightweight.' },
+          { name: 'YJ MGC 3x3', brand: 'YJ', desc: 'A budget-to-mid cube that offers good performance for the price.' },
+          { name: 'DianSheng Solar S', brand: 'DianSheng', desc: 'A budget magnetic alternative. A reasonable premium-value option.' }
+        ]
       },
       '3x3-premium-control': {
-        name: 'GAN 16 MagLev MAX',
-        desc: 'A versatile flagship with extensive tuning across tension, center travel, magnet rods, and edge magnets. Top speedcubers use it with custom setups. It offers a balance of speed, stability, and feedback rather than pushing any single trait to the extreme. It is a strong choice if you want a premium cube you can tune toward control [citation:8].'
+        best: { name: 'GAN 16 MagLev MAX', brand: 'GAN', desc: 'The most customizable flagship on the market. With 1,296 configurations, you can tune it precisely toward control, stability, and a defined magnetic feel.' },
+        alt: [
+          { name: 'GAN V100', brand: 'GAN', desc: 'A more compact, control-oriented GAN.' },
+          { name: 'MoYu WeiLong V11', brand: 'MoYu', desc: 'Stable under high TPS and more controlled than GAN\'s flagship.' },
+          { name: 'DaYan GuHong Pro+', brand: 'DaYan', desc: 'Very stable and predictable, with a tactile, crunchy feedback.' },
+          { name: 'QiYi X-Man Tornado V3', brand: 'X-Man', desc: 'Smooth and adjustable. Can be tuned toward a controlled feel.' },
+          { name: 'GAN 356 ME', brand: 'GAN', desc: 'Smooth and lightweight, with a predictable feel.' },
+          { name: 'QiYi Valk 3 Elite M', brand: 'QiYi', desc: 'A classic stable flagship. Smooth and predictable.' },
+          { name: 'MoYu RS3M V5 (Ball-Core)', brand: 'MoYu', desc: 'A budget cube with a stable, controlled feel.' },
+          { name: 'YJ MGC 3x3', brand: 'YJ', desc: 'A budget-to-mid cube with a stable, predictable feel.' }
+        ]
       },
 
-      // ===== 2x2 =====
+      // ===================== 2x2 =====================
       '2x2-budget-speed': {
-        name: 'MoYu RS2 M Evolution',
-        desc: 'A magnetic 2×2 that is widely praised as the best budget option. Reviews describe it as smooth, fast, and controllable with strong magnets and good corner cutting. Some note it feels tight out of the box and benefits from lube. It is an excellent choice for learning 2×2 without overspending [citation:22][citation:30].'
+        best: { name: 'MoYu RS2 M Evolution', brand: 'MoYu', desc: 'The best budget magnetic 2×2. Smooth, fast, and controllable with strong magnets and good corner cutting.' },
+        alt: [
+          { name: 'YJ MGC 2x2 (Magnetic)', brand: 'YJ', desc: 'A reliable budget 2×2 that is stable and predictable.' },
+          { name: 'QiYi MS 2x2', brand: 'QiYi', desc: 'A simple budget 2×2. Not magnetic, but smooth enough for beginners.' },
+          { name: 'MoYu MeiLong 2x2 M', brand: 'MoYu', desc: 'A magnetic budget 2×2. Less refined than the RS2M but a solid alternative.' },
+          { name: 'DianSheng 2x2 M', brand: 'DianSheng', desc: 'A budget magnetic 2×2 from DianSheng.' },
+          { name: 'YJ YuPo V2 M', brand: 'YJ', desc: 'Another budget magnetic 2×2 from YJ.' },
+          { name: 'X-Man Wingy 2x2', brand: 'X-Man', desc: 'A budget magnetic 2×2 from X-Man.' },
+          { name: 'Fanxin 2x2', brand: 'Fanxin', desc: 'A very low-cost 2×2. Not a speed cube, but functional for casual solving.' },
+          { name: 'Rubik\'s 2x2', brand: 'Rubik\'s', desc: 'The classic 2×2. Sturdy and very stable. Best for casual solvers.' }
+        ]
       },
       '2x2-budget-control': {
-        name: 'YJ MGC 2x2 (Magnetic)',
-        desc: 'A reliable budget 2×2 that is stable and predictable. It is not the fastest cube, but it is consistent and easy to handle. Reviews list it as a top all-rounder and budget pick, making it a solid choice if you want a 2×2 that does not overshoot during turns [citation:9].'
+        best: { name: 'YJ MGC 2x2 (Magnetic)', brand: 'YJ', desc: 'A reliable budget 2×2 that is stable and predictable. Reviews list it as a top all-rounder and budget pick.' },
+        alt: [
+          { name: 'MoYu RS2 M Evolution', brand: 'MoYu', desc: 'The best budget speed 2×2, but its magnetic feel can also be controlled.' },
+          { name: 'QiYi MS 2x2', brand: 'QiYi', desc: 'A simple budget 2×2. Stable and predictable, though not magnetic.' },
+          { name: 'MoYu MeiLong 2x2 M', brand: 'MoYu', desc: 'A magnetic budget 2×2 with a stable feel.' },
+          { name: 'DianSheng 2x2 M', brand: 'DianSheng', desc: 'A budget magnetic 2×2. Stable and predictable.' },
+          { name: 'YJ YuPo V2 M', brand: 'YJ', desc: 'A budget magnetic 2×2 from YJ.' },
+          { name: 'X-Man Wingy 2x2', brand: 'X-Man', desc: 'A budget magnetic 2×2 with good corner cutting.' },
+          { name: 'Rubik\'s 2x2', brand: 'Rubik\'s', desc: 'The classic 2×2. Sturdy and very stable.' },
+          { name: 'Fanxin 2x2', brand: 'Fanxin', desc: 'A very low-cost 2×2. Functional for casual solving.' }
+        ]
       },
       '2x2-mid-speed': {
-        name: 'GAN 251 Pro',
-        desc: 'GAN\'s mid-to-premium 2×2 with magnetic positioning and smooth turning. It is fast enough for practice and light enough for long sessions. Reviews describe GAN 2×2s as polished and reliable. The Pro version is a step up from budget cubes without reaching flagship pricing [citation:2][citation:9].'
+        best: { name: 'GAN 251 Pro', brand: 'GAN', desc: 'GAN\'s mid-to-premium 2×2 with magnetic positioning and smooth turning.' },
+        alt: [
+          { name: 'GAN 251 Leap (UV, Ball-Core)', brand: 'GAN', desc: 'A premium 2×2 with UV coating and ball-core stability.' },
+          { name: 'DaYan TengYun 2x2', brand: 'DaYan', desc: 'Super quiet and smooth. A premium-feeling 2×2 with a controlled, refined feel.' },
+          { name: 'YJ MGC2 Beta (UV, Ball-Core)', brand: 'YJ', desc: 'A hidden gem according to reviews. UV coating and ball-core at a mid-range price.' },
+          { name: 'MoYu RS2 M Evolution', brand: 'MoYu', desc: 'A budget cube that can hang with mid-range options.' },
+          { name: 'QiYi MS 2x2', brand: 'QiYi', desc: 'A simple, reliable 2×2.' },
+          { name: 'X-Man Wingy 2x2', brand: 'X-Man', desc: 'A mid-range magnetic 2×2 with good corner cutting.' },
+          { name: 'DianSheng 2x2 M', brand: 'DianSheng', desc: 'A budget magnetic 2×2.' },
+          { name: 'Rubik\'s 2x2', brand: 'Rubik\'s', desc: 'The classic 2×2. Sturdy and stable.' }
+        ]
       },
       '2x2-mid-control': {
-        name: 'DaYan TengYun 2x2',
-        desc: 'A magnetic 2×2 known for being super quiet and smooth. It offers a more controlled, refined feel compared to budget options. Reviews highlight it as a premium alternative for cubers who want stability and a quiet turning experience [citation:9].'
+        best: { name: 'DaYan TengYun 2x2', brand: 'DaYan', desc: 'A magnetic 2×2 known for being super quiet and smooth. It offers a more controlled, refined feel compared to budget options.' },
+        alt: [
+          { name: 'GAN 251 Pro', brand: 'GAN', desc: 'Smooth and stable. The Pro is a reliable, controllable 2×2.' },
+          { name: 'YJ MGC2 Beta (UV, Ball-Core)', brand: 'YJ', desc: 'A hidden gem with a stable, controlled feel.' },
+          { name: 'GAN 251 Leap (UV, Ball-Core)', brand: 'GAN', desc: 'Premium and controllable. The Leap is fast but stable.' },
+          { name: 'YJ MGC 2x2 (Magnetic)', brand: 'YJ', desc: 'A reliable, stable budget cube.' },
+          { name: 'MoYu RS2 M Evolution', brand: 'MoYu', desc: 'A fast budget cube that can be controlled.' },
+          { name: 'QiYi MS 2x2', brand: 'QiYi', desc: 'Simple and stable.' },
+          { name: 'X-Man Wingy 2x2', brand: 'X-Man', desc: 'A mid-range magnetic 2×2. Heavier and more planted.' },
+          { name: 'Rubik\'s 2x2', brand: 'Rubik\'s', desc: 'The classic 2×2. Sturdy and stable.' }
+        ]
       },
       '2x2-premium-speed': {
-        name: 'GAN 251 Leap (UV, Ball-Core)',
-        desc: 'A premium 2×2 with GAN\'s magnetic system, UV coating, and ball-core stability. It is designed for speed and refinement. Reviews describe it as a premium UV option for cubers who want top-tier hardware. The ball-core adds stability without sacrificing the fast feel [citation:9].'
+        best: { name: 'GAN 251 Leap (UV, Ball-Core)', brand: 'GAN', desc: 'A premium 2×2 with GAN\'s magnetic system, UV coating, and ball-core stability.' },
+        alt: [
+          { name: 'GAN 251 Pro (Ball-Core)', brand: 'GAN', desc: 'The premium 2×2 with GAN\'s ball-core and magnetic system.' },
+          { name: 'DaYan TengYun 2x2', brand: 'DaYan', desc: 'Super quiet and smooth. A premium-feeling 2×2.' },
+          { name: 'YJ MGC2 Beta (UV, Ball-Core)', brand: 'YJ', desc: 'A hidden gem with premium features at a lower price.' },
+          { name: 'GAN 251 Pro', brand: 'GAN', desc: 'The standard Pro is still a premium cube.' },
+          { name: 'MoYu RS2 M Evolution', brand: 'MoYu', desc: 'A budget cube that performs well above its price.' },
+          { name: 'QiYi MS 2x2', brand: 'QiYi', desc: 'A simple budget cube. Not premium, but a reliable backup.' },
+          { name: 'X-Man Wingy 2x2', brand: 'X-Man', desc: 'A mid-range magnetic 2×2.' },
+          { name: 'DianSheng 2x2 M', brand: 'DianSheng', desc: 'A budget magnetic 2×2.' }
+        ]
       },
       '2x2-premium-control': {
-        name: 'GAN 251 Pro (Ball-Core)',
-        desc: 'The premium 2×2 with GAN\'s ball-core and magnetic system. It has adjustable tension and magnet settings, so you can tune it toward control rather than raw speed. Reviews recommend the GAN 251 Pro without qualification, calling it small, magnetic, and stable enough that corners do not twist mid-solve [citation:2].'
+        best: { name: 'GAN 251 Pro (Ball-Core)', brand: 'GAN', desc: 'The premium 2×2 with GAN\'s ball-core and magnetic system. It has adjustable tension and magnet settings.' },
+        alt: [
+          { name: 'GAN 251 Leap (UV, Ball-Core)', brand: 'GAN', desc: 'Premium and stable. The Leap is fast but controllable.' },
+          { name: 'DaYan TengYun 2x2', brand: 'DaYan', desc: 'Super quiet and smooth. A premium-feeling 2×2 with a controlled feel.' },
+          { name: 'YJ MGC2 Beta (UV, Ball-Core)', brand: 'YJ', desc: 'A hidden gem with a stable, controlled feel.' },
+          { name: 'GAN 251 Pro', brand: 'GAN', desc: 'The standard Pro is still a stable, reliable premium 2×2.' },
+          { name: 'YJ MGC 2x2 (Magnetic)', brand: 'YJ', desc: 'A reliable, stable budget cube.' },
+          { name: 'QiYi MS 2x2', brand: 'QiYi', desc: 'Simple and stable.' },
+          { name: 'X-Man Wingy 2x2', brand: 'X-Man', desc: 'A mid-range magnetic 2×2. Heavier and more planted.' },
+          { name: 'DianSheng 2x2 M', brand: 'DianSheng', desc: 'A budget magnetic 2×2.' }
+        ]
       },
 
-      // ===== 4x4 =====
+      // ===================== 4x4 =====================
       '4x4-budget-speed': {
-        name: 'Vin 4×4 V2 Sprint',
-        desc: 'A refined, compact alternative to the YJ MGC 4×4 at a budget price. It has conventional magnets and a frosted exterior. Reviews describe it as a logical budget upgrade with good turning. It is fast enough for practice and competition-level solving without spending premium money [citation:10].'
+        best: { name: 'MoYu AoSu V7 Single Track', brand: 'MoYu', desc: 'A strong budget-to-mid 4×4 with conventional corner-to-edge magnets and a compact 58mm design.' },
+        alt: [
+          { name: 'Vin 4×4 V2 Sprint', brand: 'Vin', desc: 'A refined, compact alternative at a budget price.' },
+          { name: 'YJ MGC 4x4', brand: 'YJ', desc: 'A budget 4×4 that is popular for its performance-to-price ratio.' },
+          { name: 'QiYi MS 4x4', brand: 'QiYi', desc: 'A budget 4×4 from QiYi. Not magnetic, but stable and reasonably fast.' },
+          { name: 'MoYu RS4 M', brand: 'MoYu', desc: 'A budget magnetic 4×4 from MoYu.' },
+          { name: 'DianSheng 4x4 M', brand: 'DianSheng', desc: 'A budget magnetic 4×4.' },
+          { name: 'X-Man Spark 4x4', brand: 'X-Man', desc: 'A mid-range 4×4 with a stable feel.' },
+          { name: 'YJ YuSu 4x4', brand: 'YJ', desc: 'A budget 4×4 from YJ. Functional and stable.' },
+          { name: 'QiYi MS 4x4 (Magnetic)', brand: 'QiYi', desc: 'A magnetic budget 4×4 from QiYi.' }
+        ]
       },
       '4x4-budget-control': {
-        name: 'MoYu AoSu V7 Single Track',
-        desc: 'A strong budget-to-mid 4×4 with conventional corner-to-edge magnets and a compact 58mm design. Reviews call it an excellent choice for a serious competition-level 4×4 without spending over £20. The Single Track is already very capable; the Dual Track adds more magnets for stability if you want more control [citation:10].'
+        best: { name: 'MoYu AoSu V7 Single Track', brand: 'MoYu', desc: 'A strong budget-to-mid 4×4 with conventional corner-to-edge magnets and a compact 58mm design.' },
+        alt: [
+          { name: 'Vin 4×4 V2 Sprint', brand: 'Vin', desc: 'A refined, compact alternative. Conventional magnets and a frosted exterior.' },
+          { name: 'YJ MGC 4x4', brand: 'YJ', desc: 'A budget 4×4 that is stable and predictable.' },
+          { name: 'QiYi MS 4x4', brand: 'QiYi', desc: 'A budget 4×4 from QiYi. Stable and blocky.' },
+          { name: 'MoYu RS4 M', brand: 'MoYu', desc: 'A budget magnetic 4×4. Stable and predictable.' },
+          { name: 'DianSheng 4x4 M', brand: 'DianSheng', desc: 'A budget magnetic 4×4.' },
+          { name: 'X-Man Spark 4x4', brand: 'X-Man', desc: 'A mid-range 4×4 with a stable, planted feel.' },
+          { name: 'YJ YuSu 4x4', brand: 'YJ', desc: 'A budget 4×4 from YJ.' },
+          { name: 'QiYi MS 4x4 (Magnetic)', brand: 'QiYi', desc: 'A magnetic budget 4×4.' }
+        ]
       },
       '4x4-mid-speed': {
-        name: 'MoYu AoSu V7 Single Track UV',
-        desc: 'The UV-coated version adds grip and a premium exterior finish. Reviews say it is amazingly fast with excellent stability. The UV coating helps with sweaty hands during fast solves. It is the recommendation in the £15–£20 category for someone who wants a serious 4×4 [citation:10][citation:23].'
+        best: { name: 'MoYu AoSu V7 Dual Track UV', brand: 'MoYu', desc: 'The top overall 4×4 recommendation in recent reviews. The Dual Track adds magnets for more stability, and the UV coating gives grip.' },
+        alt: [
+          { name: 'MoYu AoSu V7 Single Track UV', brand: 'MoYu', desc: 'The UV-coated version of the Single Track.' },
+          { name: 'Vin 4×4 V2 Surge', brand: 'Vin', desc: 'A premium-feel 4×4 with additional core magnets for stability.' },
+          { name: 'YJ MGC 4x4', brand: 'YJ', desc: 'A budget 4×4 that performs well above its price.' },
+          { name: 'QiYi X-Man Spark 4x4', brand: 'X-Man', desc: 'A mid-range 4×4 with a smooth, stable feel.' },
+          { name: 'GAN 460M V2', brand: 'GAN', desc: 'A premium-feel 4×4 from GAN. Smooth and refined.' },
+          { name: 'MoYu RS4 M', brand: 'MoYu', desc: 'A budget magnetic 4×4.' },
+          { name: 'DianSheng 4x4 M', brand: 'DianSheng', desc: 'A budget magnetic 4×4.' },
+          { name: 'QiYi MS 4x4 (Magnetic)', brand: 'QiYi', desc: 'A magnetic budget 4×4.' }
+        ]
       },
       '4x4-mid-control': {
-        name: 'Vin 4×4 V2 Surge',
-        desc: 'A premium-feel 4×4 with additional core magnets for stability. Reviews describe its turning as smoother and a little slower than the AoSu — which some cubers prefer for control. It is a strong alternative if you find fast cubes hard to handle, offering a more controllable turning style at a reasonable price [citation:10].'
+        best: { name: 'Vin 4×4 V2 Surge', brand: 'Vin', desc: 'A premium-feel 4×4 with additional core magnets for stability. Reviews describe its turning as smoother and a little slower than the AoSu.' },
+        alt: [
+          { name: 'MoYu AoSu V7 Dual Track', brand: 'MoYu', desc: 'The dual-track AoSu is stable and precise.' },
+          { name: 'MoYu AoSu V7 Single Track UV', brand: 'MoYu', desc: 'Fast but stable. The UV coating adds grip.' },
+          { name: 'YJ MGC 4x4', brand: 'YJ', desc: 'A budget 4×4 that is stable and predictable.' },
+          { name: 'QiYi X-Man Spark 4x4', brand: 'X-Man', desc: 'A mid-range 4×4 with a stable, planted feel.' },
+          { name: 'GAN 460M V2', brand: 'GAN', desc: 'A premium-feel 4×4. Smooth and refined.' },
+          { name: 'MoYu RS4 M', brand: 'MoYu', desc: 'A budget magnetic 4×4.' },
+          { name: 'DianSheng 4x4 M', brand: 'DianSheng', desc: 'A budget magnetic 4×4.' },
+          { name: 'QiYi MS 4x4 (Magnetic)', brand: 'QiYi', desc: 'A magnetic budget 4×4.' }
+        ]
       },
       '4x4-premium-speed': {
-        name: 'MoYu AoSu V7 Dual Track UV',
-        desc: 'The top overall 4×4 recommendation in recent reviews. The Dual Track adds magnets for more stability, and the UV coating gives grip. It is expensive, but it is positioned as the best balance of performance and refinement at the premium level. Reviews consistently call it the best 4×4 for competition [citation:10].'
+        best: { name: 'MoYu AoSu V7 Dual Track UV', brand: 'MoYu', desc: 'The top overall 4×4 recommendation in recent reviews. The Dual Track adds magnets for more stability, and the UV coating gives grip.' },
+        alt: [
+          { name: 'MoYu AoSu V7 Triple Track', brand: 'MoYu', desc: 'The triple-track version adds even more magnets for stability.' },
+          { name: 'Vin 4×4 V2 Apex', brand: 'Vin', desc: 'The flagship Vin 4×4 adds another magnetic track for maximum stability.' },
+          { name: 'GAN 460M V2', brand: 'GAN', desc: 'A premium 4×4 from GAN.' },
+          { name: 'MoYu AoSu V7 Single Track UV', brand: 'MoYu', desc: 'Fast and stable. The UV coating adds grip.' },
+          { name: 'QiYi X-Man Spark 4x4', brand: 'X-Man', desc: 'A mid-range 4×4 with a smooth, stable feel.' },
+          { name: 'YJ MGC 4x4', brand: 'YJ', desc: 'A budget 4×4 that performs well above its price.' },
+          { name: 'Vin 4×4 V2 Surge', brand: 'Vin', desc: 'A premium-feel 4×4 with additional core magnets.' },
+          { name: 'DianSheng 4x4 M', brand: 'DianSheng', desc: 'A budget magnetic 4×4.' }
+        ]
       },
       '4x4-premium-control': {
-        name: 'Vin 4×4 V2 Apex',
-        desc: 'The flagship Vin 4×4 adds another magnetic track for maximum stability. Reviews note it is smoother and slightly bubblier than the AoSu, which suits cubers who want a controlled, planted feel rather than raw speed. It is significantly cheaper than the most expensive MoYu and GAN alternatives [citation:10].'
+        best: { name: 'Vin 4×4 V2 Apex', brand: 'Vin', desc: 'The flagship Vin 4×4 adds another magnetic track for maximum stability. Reviews note it is smoother and slightly bubblier than the AoSu.' },
+        alt: [
+          { name: 'MoYu AoSu V7 Triple Track', brand: 'MoYu', desc: 'The triple-track AoSu adds maximum magnetic stability.' },
+          { name: 'MoYu AoSu V7 Dual Track', brand: 'MoYu', desc: 'Stable and precise. The dual-track AoSu is a strong control-oriented pick.' },
+          { name: 'GAN 460M V2', brand: 'GAN', desc: 'A premium 4×4 with a smooth, refined, and controllable feel.' },
+          { name: 'Vin 4×4 V2 Surge', brand: 'Vin', desc: 'A premium-feel 4×4 with additional core magnets.' },
+          { name: 'QiYi X-Man Spark 4x4', brand: 'X-Man', desc: 'A mid-range 4×4 with a stable, planted feel.' },
+          { name: 'YJ MGC 4x4', brand: 'YJ', desc: 'A budget 4×4 that is stable and predictable.' },
+          { name: 'MoYu AoSu V7 Single Track', brand: 'MoYu', desc: 'The base AoSu is already stable.' },
+          { name: 'DianSheng 4x4 M', brand: 'DianSheng', desc: 'A budget magnetic 4×4.' }
+        ]
       },
 
-      // ===== 5x5 =====
+      // ===================== 5x5 =====================
       '5x5-budget-speed': {
-        name: 'YJ MGC 5x5',
-        desc: 'The best-value 5×5 on the market. Reviews describe it as fast, smooth, and controllable on all layers, with exceptional corner cutting. It is used by many top cubers despite its low price. The main downside is occasional pops during double-layer sledgehammers, but for the price it is unmatched [citation:3][citation:29].'
+        best: { name: 'YJ MGC 5x5', brand: 'YJ', desc: 'The best-value 5×5 on the market. Reviews describe it as fast, smooth, and controllable on all layers.' },
+        alt: [
+          { name: 'QiYi MS 5x5', brand: 'QiYi', desc: 'A budget 5×5 that is larger and blockier than modern options, but quite stable.' },
+          { name: 'MoYu MeiLong 5x5 M', brand: 'MoYu', desc: 'A budget magnetic 5×5.' },
+          { name: 'YJ ZhiLong 5x5', brand: 'YJ', desc: 'A smaller 5×5 (58mm) suitable for smaller hands.' },
+          { name: 'QiYi QiZheng S2', brand: 'QiYi', desc: 'An ultra-budget 5×5. Not magnetic, but stable.' },
+          { name: 'DianSheng 5x5 M', brand: 'DianSheng', desc: 'A budget magnetic 5×5.' },
+          { name: 'X-Man Spark 5x5', brand: 'X-Man', desc: 'A mid-range 5×5 with a stable feel.' },
+          { name: 'MoYu AoChuang V6 Single Track', brand: 'MoYu', desc: 'A budget-to-mid MoYu 5×5.' },
+          { name: 'QiYi MS 5x5 (Magnetic)', brand: 'QiYi', desc: 'A magnetic budget 5×5 from QiYi.' }
+        ]
       },
       '5x5-budget-control': {
-        name: 'QiYi MS 5x5',
-        desc: 'A budget 5×5 that is larger and blockier than modern options, but quite stable. It turns reasonably fast and is predictable. Reviews note that most people would prefer spending slightly more on the MGC, but if you want the cheapest stable option, the QiYi MS is a reasonable choice [citation:3].'
+        best: { name: 'QiYi MS 5x5', brand: 'QiYi', desc: 'A budget 5×5 that is larger and blockier than modern options, but quite stable. It turns reasonably fast and is predictable.' },
+        alt: [
+          { name: 'YJ MGC 5x5', brand: 'YJ', desc: 'A budget cube that is fast but can be controlled.' },
+          { name: 'MoYu MeiLong 5x5 M', brand: 'MoYu', desc: 'A budget magnetic 5×5.' },
+          { name: 'YJ ZhiLong 5x5', brand: 'YJ', desc: 'A smaller 5×5 suitable for smaller hands.' },
+          { name: 'QiYi QiZheng S2', brand: 'QiYi', desc: 'An ultra-budget 5×5.' },
+          { name: 'DianSheng 5x5 M', brand: 'DianSheng', desc: 'A budget magnetic 5×5.' },
+          { name: 'X-Man Spark 5x5', brand: 'X-Man', desc: 'A mid-range 5×5 with a stable, planted feel.' },
+          { name: 'MoYu AoChuang V6 Single Track', brand: 'MoYu', desc: 'A budget-to-mid MoYu 5×5.' },
+          { name: 'QiYi MS 5x5 (Magnetic)', brand: 'QiYi', desc: 'A magnetic budget 5×5.' }
+        ]
       },
       '5x5-mid-speed': {
-        name: 'MoYu AoChuang 5x5 V6 Single-Track (UV)',
-        desc: 'A magnetic 5×5 praised as "one of the best out there." Customers report significant time improvements. It turns smoothly with excellent corner cutting and is described as fast with good flow. The UV coating and strong magnets received positive feedback. Some note it is slightly less forgiving than competitors, but the speed and stability are excellent [citation:11].'
+        best: { name: 'GAN 562 M', brand: 'GAN', desc: 'Currently one of the most popular 5×5s. 62mm, fast, and stable. Used by many world-class solvers.' },
+        alt: [
+          { name: 'MoYu AoChuang V6 Dual Track', brand: 'MoYu', desc: 'A slightly smaller (61mm) and more stable alternative to the GAN 562.' },
+          { name: 'MoYu AoChuang V6 Triple Track', brand: 'MoYu', desc: 'The triple-track version adds more magnets for stability.' },
+          { name: 'DaYan NeZha', brand: 'DaYan', desc: 'One of the fastest 5×5s available.' },
+          { name: 'YJ MGC 5x5', brand: 'YJ', desc: 'A budget cube that performs well above its price.' },
+          { name: 'QiYi Valk 5', brand: 'QiYi', desc: 'A stable 5×5 that is not as fast but is still used by many top speedcubers.' },
+          { name: 'MoYu AoChuang WRM', brand: 'MoYu', desc: 'An older flagship that is stable and reliable.' },
+          { name: 'MoYu AoChuang V6 Single Track UV', brand: 'MoYu', desc: 'The UV-coated single-track version.' },
+          { name: 'X-Man Spark 5x5', brand: 'X-Man', desc: 'A mid-range 5×5 with a stable feel.' }
+        ]
       },
       '5x5-mid-control': {
-        name: 'AoChuang WRM',
-        desc: 'A stable 5×5 that is not quite as fast as the NeZha but offers more control. It is more expensive than the NeZha but is preferred by cubers who do edge pairing on the M slice. Reviews describe it as a solid choice for cubers who prioritize stability over raw speed [citation:3].'
+        best: { name: 'MoYu AoChuang V6 Dual Track', brand: 'MoYu', desc: 'A stable 5×5 that is not quite as fast as the NeZha but offers more control.' },
+        alt: [
+          { name: 'MoYu AoChuang WRM', brand: 'MoYu', desc: 'A stable 5×5 that is not as fast as the NeZha but is more controlled.' },
+          { name: 'QiYi Valk 5', brand: 'QiYi', desc: 'A more stable 5×5 that is still used by many top speedcubers.' },
+          { name: 'GAN 562 M', brand: 'GAN', desc: 'Fast but stable. The GAN 562 is a top performer with a controllable feel.' },
+          { name: 'MoYu AoChuang V6 Triple Track', brand: 'MoYu', desc: 'The triple-track version adds more magnets for stability.' },
+          { name: 'YJ MGC 5x5', brand: 'YJ', desc: 'A budget cube that is fast but can be controlled.' },
+          { name: 'QiYi MS 5x5', brand: 'QiYi', desc: 'A budget 5×5 that is stable and blocky.' },
+          { name: 'DianSheng 5x5 M', brand: 'DianSheng', desc: 'A budget magnetic 5×5.' },
+          { name: 'X-Man Spark 5x5', brand: 'X-Man', desc: 'A mid-range 5×5 with a stable feel.' }
+        ]
       },
       '5x5-premium-speed': {
-        name: 'DaYan NeZha',
-        desc: 'Currently one of the fastest 5×5s available. It is fast but suffers from some stability issues and occasional cap problems. Reviews describe it as a slightly improved version of the MGC with a similar feel. It is the sort of cube you want to try before committing, but for pure speed it is a top option [citation:3].'
+        best: { name: 'GAN 562 M', brand: 'GAN', desc: 'Currently one of the most popular 5×5s among world-class solvers. 62mm, fast, and stable.' },
+        alt: [
+          { name: 'DaYan NeZha', brand: 'DaYan', desc: 'One of the fastest 5×5s available.' },
+          { name: 'MoYu AoChuang V6 Dual Track', brand: 'MoYu', desc: 'A slightly smaller and more stable alternative to the GAN 562.' },
+          { name: 'MoYu AoChuang V6 Triple Track', brand: 'MoYu', desc: 'The triple-track version adds more magnets.' },
+          { name: 'MoYu AoChuang WRM', brand: 'MoYu', desc: 'An older flagship that is stable and reliable.' },
+          { name: 'QiYi Valk 5', brand: 'QiYi', desc: 'A stable 5×5 that is still used by many top speedcubers.' },
+          { name: 'YJ MGC 5x5', brand: 'YJ', desc: 'A budget cube that performs well above its price.' },
+          { name: 'MoYu AoChuang V6 Single Track UV', brand: 'MoYu', desc: 'The UV-coated single-track version.' },
+          { name: 'X-Man Spark 5x5', brand: 'X-Man', desc: 'A mid-range 5×5 with a stable feel.' }
+        ]
       },
       '5x5-premium-control': {
-        name: 'QiYi Valk 5',
-        desc: 'A more stable 5×5 that is not as fast but is still used by many top speedcubers. Reviews note it is no longer being produced, so availability is limited. If you can find one, it is an excellent choice for cubers who want a planted, controlled feel at the premium level [citation:3].'
+        best: { name: 'QiYi Valk 5', brand: 'QiYi', desc: 'A more stable 5×5 that is not as fast but is still used by many top speedcubers.' },
+        alt: [
+          { name: 'MoYu AoChuang WRM', brand: 'MoYu', desc: 'A stable 5×5 that is more controlled than the NeZha.' },
+          { name: 'MoYu AoChuang V6 Dual Track', brand: 'MoYu', desc: 'A stable and controllable 5×5.' },
+          { name: 'MoYu AoChuang V6 Triple Track', brand: 'MoYu', desc: 'The triple-track version adds more magnets for maximum stability.' },
+          { name: 'GAN 562 M', brand: 'GAN', desc: 'Fast but stable. The GAN 562 is a top performer with a controllable feel.' },
+          { name: 'YJ MGC 5x5', brand: 'YJ', desc: 'A budget cube that is fast but can be controlled.' },
+          { name: 'QiYi MS 5x5', brand: 'QiYi', desc: 'A budget 5×5 that is stable and blocky.' },
+          { name: 'DianSheng 5x5 M', brand: 'DianSheng', desc: 'A budget magnetic 5×5.' },
+          { name: 'X-Man Spark 5x5', brand: 'X-Man', desc: 'A mid-range 5×5 with a stable feel.' }
+        ]
       },
 
-      // ===== 6x6 =====
+      // ===================== 6x6 =====================
       '6x6-budget-speed': {
-        name: 'QiYi Warrior 6x6 M UV',
-        desc: 'The best budget magnetic 6×6 in 2026. Reviews say it is comfortably ahead of the MeiLong V2 M, with a compact 60.5mm size, UV coating, and magnetic positioning. It is exceptional value for money — many speedcubers may have little reason to consider a more expensive 6×6 [citation:4].'
+        best: { name: 'QiYi Warrior 6x6 M UV', brand: 'QiYi', desc: 'The best budget magnetic 6×6 in 2026. Compact 60.5mm size, UV coating, and magnetic positioning.' },
+        alt: [
+          { name: 'QiYi M Pro 6x6 M UV', brand: 'QiYi', desc: 'A budget-friendly 6×6 with a slightly bubbly feel and good stability.' },
+          { name: 'YJ MGC 6x6', brand: 'YJ', desc: 'An older but popular big cube.' },
+          { name: 'MoYu MeiLong 6x6 V2 M', brand: 'MoYu', desc: 'A budget magnetic 6×6.' },
+          { name: 'X-Man Shadow V3 M', brand: 'X-Man', desc: 'A capable 6×6 with modern magnetic hardware.' },
+          { name: 'MoYu AoShi WRM', brand: 'MoYu', desc: 'An older flagship that remains competitive.' },
+          { name: 'DianSheng 6x6 M', brand: 'DianSheng', desc: 'A budget magnetic 6×6.' },
+          { name: 'YJ YuSu 6x6', brand: 'YJ', desc: 'A budget 6×6 from YJ.' },
+          { name: 'QiYi MS 6x6', brand: 'QiYi', desc: 'A budget 6×6 from QiYi.' }
+        ]
       },
       '6x6-budget-control': {
-        name: 'QiYi M Pro 6x6 M UV',
-        desc: 'A budget-friendly 6×6 with a slightly bubbly feel and good stability. It measures approximately 63mm, making it slightly larger than the Warrior. Reviews say solving performance is remarkably similar to the Warrior, but the M Pro costs a bit more. It is a good choice if you prefer a slightly larger cube [citation:4].'
+        best: { name: 'QiYi M Pro 6x6 M UV', brand: 'QiYi', desc: 'A budget-friendly 6×6 with a slightly bubbly feel and good stability.' },
+        alt: [
+          { name: 'QiYi Warrior 6x6 M UV', brand: 'QiYi', desc: 'The best budget speed 6×6.' },
+          { name: 'YJ MGC 6x6', brand: 'YJ', desc: 'An older but popular big cube.' },
+          { name: 'MoYu MeiLong 6x6 V2 M', brand: 'MoYu', desc: 'A budget magnetic 6×6.' },
+          { name: 'X-Man Shadow V3 M', brand: 'X-Man', desc: 'A capable 6×6 with modern magnetic hardware.' },
+          { name: 'MoYu AoShi WRM', brand: 'MoYu', desc: 'An older flagship that remains competitive.' },
+          { name: 'DianSheng 6x6 M', brand: 'DianSheng', desc: 'A budget magnetic 6×6.' },
+          { name: 'YJ YuSu 6x6', brand: 'YJ', desc: 'A budget 6×6 from YJ.' },
+          { name: 'QiYi MS 6x6', brand: 'QiYi', desc: 'A budget 6×6 from QiYi.' }
+        ]
       },
       '6x6-mid-speed': {
-        name: 'MoYu AoShi WR M',
-        desc: 'An older flagship that remains competitive. It is fast, smooth, and stable with a relatively compact design. Reviews note it rarely pops or locks, though center caps can pop off. It is a solid mid-range choice for cubers who want flagship performance without the newest price [citation:26].'
+        best: { name: 'MoYu AoShi WRM', brand: 'MoYu', desc: 'An older flagship that remains competitive. It is fast, smooth, and stable with a relatively compact design.' },
+        alt: [
+          { name: 'X-Man Shadow V3 M', brand: 'X-Man', desc: 'A capable 6×6 with modern magnetic hardware.' },
+          { name: 'QiYi Warrior 6x6 M UV', brand: 'QiYi', desc: 'The best budget 6×6.' },
+          { name: 'QiYi M Pro 6x6 M UV', brand: 'QiYi', desc: 'A budget-friendly 6×6 with a slightly bubbly feel.' },
+          { name: 'MoYu AoShi V4 Dual Track', brand: 'MoYu', desc: 'A newer flagship with modern magnetic hardware.' },
+          { name: 'YJ MGC 6x6', brand: 'YJ', desc: 'An older but popular big cube.' },
+          { name: 'DianSheng 6x6 M', brand: 'DianSheng', desc: 'A budget magnetic 6×6.' },
+          { name: 'YJ YuSu 6x6', brand: 'YJ', desc: 'A budget 6×6 from YJ.' },
+          { name: 'QiYi MS 6x6', brand: 'QiYi', desc: 'A budget 6×6 from QiYi.' }
+        ]
       },
       '6x6-mid-control': {
-        name: 'X-Man Shadow V3 M',
-        desc: 'A capable 6×6 with modern magnetic hardware and a competitive design. Reviews note it is stable and controllable, but it struggles to justify its price against the cheaper Warrior and the more expensive AoShi V4. It is a reasonable choice if you particularly like the Shadow turning feel [citation:4].'
+        best: { name: 'X-Man Shadow V3 M', brand: 'X-Man', desc: 'A capable 6×6 with modern magnetic hardware and a competitive design.' },
+        alt: [
+          { name: 'MoYu AoShi WRM', brand: 'MoYu', desc: 'An older flagship that remains competitive.' },
+          { name: 'QiYi M Pro 6x6 M UV', brand: 'QiYi', desc: 'A budget-friendly 6×6 with a slightly bubbly, stable feel.' },
+          { name: 'QiYi Warrior 6x6 M UV', brand: 'QiYi', desc: 'The best budget 6×6.' },
+          { name: 'MoYu AoShi V4 Dual Track', brand: 'MoYu', desc: 'A newer flagship with modern magnetic hardware.' },
+          { name: 'YJ MGC 6x6', brand: 'YJ', desc: 'An older but popular big cube.' },
+          { name: 'DianSheng 6x6 M', brand: 'DianSheng', desc: 'A budget magnetic 6×6.' },
+          { name: 'YJ YuSu 6x6', brand: 'YJ', desc: 'A budget 6×6 from YJ.' },
+          { name: 'QiYi MS 6x6', brand: 'QiYi', desc: 'A budget 6×6 from QiYi.' }
+        ]
       },
       '6x6-premium-speed': {
-        name: 'MoYu AoShi V4 Triple-Track (Ball-Core, UV)',
-        desc: 'A competition-ready 6×6 built for smooth turning, high stability, and accurate alignment. The triple-track magnetic system keeps layers aligned through long solves, reducing lockups. Reviews call it the best 6×6 they have ever felt — very stable while being fast. It is expensive, but it is the top-tier choice for serious 6×6 solvers [citation:18].'
+        best: { name: 'MoYu AoShi V4 Triple-Track (Ball-Core, UV)', brand: 'MoYu', desc: 'A competition-ready 6×6 built for smooth turning, high stability, and accurate alignment.' },
+        alt: [
+          { name: 'MoYu AoShi V4 Dual-Track', brand: 'MoYu', desc: 'A slightly cheaper alternative to the Triple-Track.' },
+          { name: 'X-Man Shadow V3 M', brand: 'X-Man', desc: 'A capable 6×6 with modern magnetic hardware.' },
+          { name: 'MoYu AoShi WRM', brand: 'MoYu', desc: 'An older flagship that remains competitive.' },
+          { name: 'QiYi Warrior 6x6 M UV', brand: 'QiYi', desc: 'The best budget 6×6.' },
+          { name: 'QiYi M Pro 6x6 M UV', brand: 'QiYi', desc: 'A budget-friendly 6×6 with a slightly bubbly feel.' },
+          { name: 'YJ MGC 6x6', brand: 'YJ', desc: 'An older but popular big cube.' },
+          { name: 'DianSheng 6x6 M', brand: 'DianSheng', desc: 'A budget magnetic 6×6.' },
+          { name: 'QiYi MS 6x6', brand: 'QiYi', desc: 'A budget 6×6 from QiYi.' }
+        ]
       },
       '6x6-premium-control': {
-        name: 'MoYu AoShi V4 Dual-Track',
-        desc: 'A slightly cheaper alternative to the Triple-Track. Reviews note the magnets are weaker and the price difference is not huge. It offers good stability and a controllable feel, but if you want maximum control and can afford it, the Triple-Track is the better choice [citation:13].'
+        best: { name: 'MoYu AoShi V4 Triple-Track (Ball-Core, UV)', brand: 'MoYu', desc: 'The most stable 6×6 on the market. The triple-track magnetic system keeps layers aligned through long solves, reducing lockups.' },
+        alt: [
+          { name: 'MoYu AoShi V4 Dual-Track', brand: 'MoYu', desc: 'A slightly cheaper alternative to the Triple-Track.' },
+          { name: 'X-Man Shadow V3 M', brand: 'X-Man', desc: 'A capable 6×6 with modern magnetic hardware.' },
+          { name: 'MoYu AoShi WRM', brand: 'MoYu', desc: 'An older flagship that remains competitive.' },
+          { name: 'QiYi M Pro 6x6 M UV', brand: 'QiYi', desc: 'A budget-friendly 6×6 with a stable, bubbly feel.' },
+          { name: 'QiYi Warrior 6x6 M UV', brand: 'QiYi', desc: 'The best budget 6×6.' },
+          { name: 'YJ MGC 6x6', brand: 'YJ', desc: 'An older but popular big cube.' },
+          { name: 'DianSheng 6x6 M', brand: 'DianSheng', desc: 'A budget magnetic 6×6.' },
+          { name: 'QiYi MS 6x6', brand: 'QiYi', desc: 'A budget 6×6 from QiYi.' }
+        ]
       },
 
-      // ===== 7x7 =====
+      // ===================== 7x7 =====================
       '7x7-budget-speed': {
-        name: 'YJ YuFu V2M',
-        desc: 'The cheapest magnetic 7×7 at around £15. Reviews say it performs pretty well and has very strong magnets, with a feel reminiscent of the MGC. It is a great entry point if you want to try 7×7 without spending much. The tradeoff is that it may not match premium cubes for stability at high speeds [citation:5].'
+        best: { name: 'YJ YuFu V2M', brand: 'YJ', desc: 'The cheapest magnetic 7×7 at around £15. Reviews say it performs pretty well and has very strong magnets.' },
+        alt: [
+          { name: 'YJ MGC 7x7', brand: 'YJ', desc: 'A popular budget big cube with a fast, smooth turning feel.' },
+          { name: 'DianSheng 7x7', brand: 'DianSheng', desc: 'A budget 7×7 with weaker magnets and a faster feel.' },
+          { name: 'YuXin Little Magic 7x7', brand: 'YuXin', desc: 'A budget 7×7 with weaker magnets and a faster feel.' },
+          { name: 'MoYu AoFu WRM', brand: 'MoYu', desc: 'An older flagship that remains excellent.' },
+          { name: 'X-Man Spark 7x7', brand: 'X-Man', desc: 'A stable 7×7 with the classic QiYi smoothness.' },
+          { name: 'QiYi MS 7x7', brand: 'QiYi', desc: 'A budget 7×7 from QiYi.' },
+          { name: 'MoYu MeiLong 7x7 M', brand: 'MoYu', desc: 'A budget magnetic 7×7.' },
+          { name: 'YJ ZhiLong 7x7', brand: 'YJ', desc: 'A budget 7×7 from YJ.' }
+        ]
       },
       '7x7-budget-control': {
-        name: 'YJ MGC 7x7',
-        desc: 'A popular budget big cube with a fast, smooth turning feel. Reviews describe it as fast and smooth, though some note it can develop locky outer layers over time. It is larger and blockier than newer cubes but allows for fast solving. A solid choice if you want a reliable budget 7×7 [citation:5][citation:20].'
+        best: { name: 'YJ MGC 7x7', brand: 'YJ', desc: 'A popular budget big cube with a fast, smooth turning feel.' },
+        alt: [
+          { name: 'YJ YuFu V2M', brand: 'YJ', desc: 'The cheapest magnetic 7×7. Strong magnets and a feel reminiscent of the MGC.' },
+          { name: 'DianSheng 7x7', brand: 'DianSheng', desc: 'A budget 7×7 with weaker magnets.' },
+          { name: 'YuXin Little Magic 7x7', brand: 'YuXin', desc: 'A budget 7×7 with weaker magnets.' },
+          { name: 'MoYu AoFu WRM', brand: 'MoYu', desc: 'An older flagship that remains excellent.' },
+          { name: 'X-Man Spark 7x7', brand: 'X-Man', desc: 'A stable 7×7 with the classic QiYi smoothness.' },
+          { name: 'QiYi MS 7x7', brand: 'QiYi', desc: 'A budget 7×7 from QiYi.' },
+          { name: 'MoYu MeiLong 7x7 M', brand: 'MoYu', desc: 'A budget magnetic 7×7.' },
+          { name: 'YJ ZhiLong 7x7', brand: 'YJ', desc: 'A budget 7×7 from YJ.' }
+        ]
       },
       '7x7-mid-speed': {
-        name: 'YJ MGC 7x7 (Magnetic)',
-        desc: 'The same MGC 7×7, but highlighted here for its speed. Reviews say it is faster than the X-Man Spark and slightly cheaper. It is bigger and blockier than newer flagships, but it allows for fast solving. If you want a fast 7×7 without premium pricing, the MGC is a strong option [citation:5].'
+        best: { name: 'MoYu AoFu WRM', brand: 'MoYu', desc: 'A slightly older flagship that remains excellent. Reviews say it is quite fast but has very good stability.' },
+        alt: [
+          { name: 'YJ MGC 7x7', brand: 'YJ', desc: 'A budget cube that is faster than the Spark and slightly cheaper.' },
+          { name: 'X-Man Spark 7x7', brand: 'X-Man', desc: 'A stable 7×7 with the classic QiYi smoothness.' },
+          { name: 'YJ YuFu V2M', brand: 'YJ', desc: 'The cheapest magnetic 7×7.' },
+          { name: 'DianSheng 7x7', brand: 'DianSheng', desc: 'A budget 7×7 with weaker magnets and a faster feel.' },
+          { name: 'YuXin Little Magic 7x7', brand: 'YuXin', desc: 'A budget 7×7 with weaker magnets and a faster feel.' },
+          { name: 'QiYi MS 7x7', brand: 'QiYi', desc: 'A budget 7×7 from QiYi.' },
+          { name: 'MoYu MeiLong 7x7 M', brand: 'MoYu', desc: 'A budget magnetic 7×7.' },
+          { name: 'YJ ZhiLong 7x7', brand: 'YJ', desc: 'A budget 7×7 from YJ.' }
+        ]
       },
       '7x7-mid-control': {
-        name: 'MoYu AoFu WRM',
-        desc: 'A slightly older flagship that remains excellent. Reviews say it is quite fast but has very good stability, with lock-ups from inaccurate turning being pretty rare. It is smaller than previous 7×7s. It is a great choice for cubers who want a controlled, planted feel without the newest flagship price [citation:5].'
+        best: { name: 'X-Man Spark 7x7', brand: 'X-Man', desc: 'A stable 7×7 with the classic QiYi smoothness. It is preferred by some cubers for its stable, controlled feel.' },
+        alt: [
+          { name: 'MoYu AoFu WRM', brand: 'MoYu', desc: 'An older flagship that remains excellent.' },
+          { name: 'YJ MGC 7x7', brand: 'YJ', desc: 'A budget cube that is fast but can be controlled.' },
+          { name: 'YJ YuFu V2M', brand: 'YJ', desc: 'The cheapest magnetic 7×7.' },
+          { name: 'DianSheng 7x7', brand: 'DianSheng', desc: 'A budget 7×7 with weaker magnets.' },
+          { name: 'YuXin Little Magic 7x7', brand: 'YuXin', desc: 'A budget 7×7 with weaker magnets.' },
+          { name: 'QiYi MS 7x7', brand: 'QiYi', desc: 'A budget 7×7 from QiYi.' },
+          { name: 'MoYu MeiLong 7x7 M', brand: 'MoYu', desc: 'A budget magnetic 7×7.' },
+          { name: 'YJ ZhiLong 7x7', brand: 'YJ', desc: 'A budget 7×7 from YJ.' }
+        ]
       },
       '7x7-premium-speed': {
-        name: 'MoYu AoFu V5 Triple-Track (Ball-Core, UV)',
-        desc: 'The most premium 7×7 on the market. Reviews describe it as stable, smooth, and fast, with the triple track providing more control despite all the layers. The UV coating increases grip, and the size is manageable. It is well worth the high price if you enjoy big cubes and want the best [citation:19].'
+        best: { name: 'MoYu AoFu V5 Triple-Track (Ball-Core, UV)', brand: 'MoYu', desc: 'The most premium 7×7 on the market. Reviews describe it as stable, smooth, and fast.' },
+        alt: [
+          { name: 'MoYu AoFu WRM', brand: 'MoYu', desc: 'An older flagship that remains excellent.' },
+          { name: 'X-Man Spark 7x7', brand: 'X-Man', desc: 'A stable 7×7 with the classic QiYi smoothness.' },
+          { name: 'YJ MGC 7x7', brand: 'YJ', desc: 'A budget cube that is faster than the Spark and slightly cheaper.' },
+          { name: 'YJ YuFu V2M', brand: 'YJ', desc: 'The cheapest magnetic 7×7.' },
+          { name: 'DianSheng 7x7', brand: 'DianSheng', desc: 'A budget 7×7 with weaker magnets and a faster feel.' },
+          { name: 'YuXin Little Magic 7x7', brand: 'YuXin', desc: 'A budget 7×7 with weaker magnets and a faster feel.' },
+          { name: 'QiYi MS 7x7', brand: 'QiYi', desc: 'A budget 7×7 from QiYi.' },
+          { name: 'MoYu MeiLong 7x7 M', brand: 'MoYu', desc: 'A budget magnetic 7×7.' }
+        ]
       },
       '7x7-premium-control': {
-        name: 'MoYu AoFu V5 Triple-Track (Ball-Core, UV)',
-        desc: 'The same flagship 7×7, highlighted for its stability. Reviews say the magnets accurately keep inner layers aligned during the 3×3 stage, allowing for fast finishes without lockups. The strong magnetic guidance makes it a top choice for cubers who prioritize control on big cubes [citation:19].'
+        best: { name: 'MoYu AoFu V5 Triple-Track (Ball-Core, UV)', brand: 'MoYu', desc: 'The same flagship 7×7, highlighted for its stability. Reviews say the magnets accurately keep inner layers aligned.' },
+        alt: [
+          { name: 'MoYu AoFu WRM', brand: 'MoYu', desc: 'An older flagship that remains excellent.' },
+          { name: 'X-Man Spark 7x7', brand: 'X-Man', desc: 'A stable 7×7 with the classic QiYi smoothness.' },
+          { name: 'YJ MGC 7x7', brand: 'YJ', desc: 'A budget cube that is fast but can be controlled.' },
+          { name: 'YJ YuFu V2M', brand: 'YJ', desc: 'The cheapest magnetic 7×7.' },
+          { name: 'DianSheng 7x7', brand: 'DianSheng', desc: 'A budget 7×7 with weaker magnets.' },
+          { name: 'YuXin Little Magic 7x7', brand: 'YuXin', desc: 'A budget 7×7 with weaker magnets.' },
+          { name: 'QiYi MS 7x7', brand: 'QiYi', desc: 'A budget 7×7 from QiYi.' },
+          { name: 'MoYu MeiLong 7x7 M', brand: 'MoYu', desc: 'A budget magnetic 7×7.' }
+        ]
       },
 
-      // ===== Skewb =====
+      // ===================== SKEWB =====================
       'skewb-budget-speed': {
-        name: 'MoYu RS Skewb M',
-        desc: 'A budget Skewb that is widely recommended for beginners. Reviews describe it as cheap, nice-feeling, and easy to set up. It is the best price-to-performance ratio in Skewb. If you are just getting into Skewb and do not want to spend much, the RS Skewb is the safe choice [citation:24].'
+        best: { name: 'MoYu RS Skewb M', brand: 'MoYu', desc: 'A budget Skewb that is widely recommended for beginners. Reviews describe it as cheap, nice-feeling, and easy to set up.' },
+        alt: [
+          { name: 'X-Man Wingy Skewb', brand: 'X-Man', desc: 'A budget-to-mid Skewb with excellent corner cutting.' },
+          { name: 'GAN Skewb M', brand: 'GAN', desc: 'A mid-range Skewb that is fast, fluid, and controllable.' },
+          { name: 'DaYan Skewb V2', brand: 'DaYan', desc: 'A premium Skewb with ridges and a very quiet, fast turning feel.' },
+          { name: 'QiYi MS Skewb', brand: 'QiYi', desc: 'A budget Skewb from QiYi.' },
+          { name: 'MoYu MeiLong Skewb M', brand: 'MoYu', desc: 'A budget magnetic Skewb.' },
+          { name: 'DianSheng Skewb M', brand: 'DianSheng', desc: 'A budget magnetic Skewb.' },
+          { name: 'Lanlan Skewb', brand: 'Lanlan', desc: 'A very low-cost Skewb. Not a speed cube, but functional for casual solving.' },
+          { name: 'Fanxin Skewb', brand: 'Fanxin', desc: 'A very low-cost Skewb. Functional for casual solving.' }
+        ]
       },
       'skewb-budget-control': {
-        name: 'MoYu RS Skewb M',
-        desc: 'The same budget Skewb, recommended for its controllable feel. Reviews say it is a good option for those just starting out. It is not the fastest or most refined Skewb, but it is predictable and affordable. A solid choice if you want to try Skewb without committing to a premium cube [citation:24].'
+        best: { name: 'MoYu RS Skewb M', brand: 'MoYu', desc: 'The same budget Skewb, recommended for its controllable feel.' },
+        alt: [
+          { name: 'X-Man Wingy Skewb', brand: 'X-Man', desc: 'A budget-to-mid Skewb with excellent corner cutting.' },
+          { name: 'GAN Skewb M', brand: 'GAN', desc: 'A mid-range Skewb that is fast but controllable.' },
+          { name: 'DaYan Skewb V2', brand: 'DaYan', desc: 'A premium Skewb with ridges and a quiet, fast feel.' },
+          { name: 'QiYi MS Skewb', brand: 'QiYi', desc: 'A budget Skewb from QiYi.' },
+          { name: 'MoYu MeiLong Skewb M', brand: 'MoYu', desc: 'A budget magnetic Skewb. Stable and predictable.' },
+          { name: 'DianSheng Skewb M', brand: 'DianSheng', desc: 'A budget magnetic Skewb.' },
+          { name: 'Lanlan Skewb', brand: 'Lanlan', desc: 'A very low-cost Skewb.' },
+          { name: 'Fanxin Skewb', brand: 'Fanxin', desc: 'A very low-cost Skewb.' }
+        ]
       },
       'skewb-mid-speed': {
-        name: 'GAN Skewb M',
-        desc: 'A mid-range Skewb that is fast, fluid, and controllable. Reviews describe it as the best for most people, with a smooth feel and good performance. It is more expensive than the RS but offers a significant step up in quality. It is a strong choice if you want a reliable Skewb for practice and competition [citation:24].'
+        best: { name: 'GAN Skewb M', brand: 'GAN', desc: 'A mid-range Skewb that is fast, fluid, and controllable.' },
+        alt: [
+          { name: 'GAN Skewb M Enhanced', brand: 'GAN', desc: 'The Enhanced version adds a more advanced magnetic positioning system.' },
+          { name: 'DaYan Skewb V2', brand: 'DaYan', desc: 'A premium Skewb with ridges and a very quiet, fast turning feel.' },
+          { name: 'X-Man Wingy Skewb', brand: 'X-Man', desc: 'A budget-to-mid Skewb with excellent corner cutting.' },
+          { name: 'MoYu RS Skewb M', brand: 'MoYu', desc: 'A budget Skewb that performs well above its price.' },
+          { name: 'QiYi MS Skewb', brand: 'QiYi', desc: 'A budget Skewb from QiYi.' },
+          { name: 'MoYu MeiLong Skewb M', brand: 'MoYu', desc: 'A budget magnetic Skewb.' },
+          { name: 'DianSheng Skewb M', brand: 'DianSheng', desc: 'A budget magnetic Skewb.' },
+          { name: 'Lanlan Skewb', brand: 'Lanlan', desc: 'A very low-cost Skewb.' }
+        ]
       },
       'skewb-mid-control': {
-        name: 'GAN Skewb M Enhanced',
-        desc: 'The Enhanced version adds a more advanced magnetic positioning system and adjustable tensions. Reviews say it locks up less than the standard version and has a buttery smooth feel. It is a great choice if you want a controllable, reliable Skewb with premium features [citation:24].'
+        best: { name: 'GAN Skewb M Enhanced', brand: 'GAN', desc: 'The Enhanced version adds a more advanced magnetic positioning system and adjustable tensions.' },
+        alt: [
+          { name: 'GAN Skewb M', brand: 'GAN', desc: 'The standard GAN Skewb is fast but controllable.' },
+          { name: 'DaYan Skewb V2', brand: 'DaYan', desc: 'A premium Skewb with ridges and a quiet, fast feel.' },
+          { name: 'X-Man Wingy Skewb', brand: 'X-Man', desc: 'A budget-to-mid Skewb with excellent corner cutting.' },
+          { name: 'MoYu RS Skewb M', brand: 'MoYu', desc: 'A budget Skewb that is predictable and affordable.' },
+          { name: 'QiYi MS Skewb', brand: 'QiYi', desc: 'A budget Skewb from QiYi.' },
+          { name: 'MoYu MeiLong Skewb M', brand: 'MoYu', desc: 'A budget magnetic Skewb.' },
+          { name: 'DianSheng Skewb M', brand: 'DianSheng', desc: 'A budget magnetic Skewb.' },
+          { name: 'Lanlan Skewb', brand: 'Lanlan', desc: 'A very low-cost Skewb.' }
+        ]
       },
       'skewb-premium-speed': {
-        name: 'GAN Skewb M Enhanced UV',
-        desc: 'The premium GAN Skewb with UV coating. Reviews say it is far superior in performance, fast and fluid. The UV coating adds grip. Some note it is harder to hold than the DaYan, but for pure speed and refinement, the GAN Enhanced UV is the top choice [citation:16][citation:24].'
+        best: { name: 'GAN Skewb M Enhanced UV', brand: 'GAN', desc: 'The premium GAN Skewb with UV coating. Reviews say it is far superior in performance, fast and fluid.' },
+        alt: [
+          { name: 'GAN Skewb M Enhanced', brand: 'GAN', desc: 'The Enhanced version without UV coating.' },
+          { name: 'GAN Skewb M', brand: 'GAN', desc: 'The standard GAN Skewb is still a premium cube.' },
+          { name: 'DaYan Skewb V2 (MagLev UV)', brand: 'DaYan', desc: 'A premium Skewb with ridges and a very quiet, fast feel.' },
+          { name: 'DaYan Skewb V2 (Standard)', brand: 'DaYan', desc: 'The standard DaYan Skewb is still a premium cube.' },
+          { name: 'X-Man Wingy Skewb', brand: 'X-Man', desc: 'A budget-to-mid Skewb with excellent corner cutting.' },
+          { name: 'MoYu RS Skewb M', brand: 'MoYu', desc: 'A budget Skewb that performs well above its price.' },
+          { name: 'MoYu MeiLong Skewb M', brand: 'MoYu', desc: 'A budget magnetic Skewb.' },
+          { name: 'DianSheng Skewb M', brand: 'DianSheng', desc: 'A budget magnetic Skewb.' }
+        ]
       },
       'skewb-premium-control': {
-        name: 'GAN Skewb M Enhanced UV',
-        desc: 'The same premium Skewb, highlighted for its control. Reviews describe it as stable and reliable, with less lock-up than the DaYan. It is the most reliable Skewb in competition. If you want a premium Skewb that will not let you down under pressure, this is the one [citation:24].'
+        best: { name: 'GAN Skewb M Enhanced UV', brand: 'GAN', desc: 'The same premium Skewb, highlighted for its control. Reviews describe it as stable and reliable.' },
+        alt: [
+          { name: 'GAN Skewb M Enhanced', brand: 'GAN', desc: 'The Enhanced version without UV coating.' },
+          { name: 'GAN Skewb M', brand: 'GAN', desc: 'The standard GAN Skewb is fast but controllable.' },
+          { name: 'DaYan Skewb V2', brand: 'DaYan', desc: 'A premium Skewb with ridges and a quiet, fast feel.' },
+          { name: 'X-Man Wingy Skewb', brand: 'X-Man', desc: 'A budget-to-mid Skewb with excellent corner cutting.' },
+          { name: 'MoYu RS Skewb M', brand: 'MoYu', desc: 'A budget Skewb that is predictable and affordable.' },
+          { name: 'MoYu MeiLong Skewb M', brand: 'MoYu', desc: 'A budget magnetic Skewb.' },
+          { name: 'DianSheng Skewb M', brand: 'DianSheng', desc: 'A budget magnetic Skewb.' },
+          { name: 'Lanlan Skewb', brand: 'Lanlan', desc: 'A very low-cost Skewb.' }
+        ]
       }
     };
 
+    // ============ BRANDS WITHOUT VERIFIED MODELS ============
+    // These brands appear in the dropdown but have no verified 2026 speedcube models
+    // for any of the 7 puzzle types. When a user picks one of these, we show an honest message.
+    const UNVERIFIED_BRANDS = ['Dylan', 'Ferracore', 'Cubello', 'Witeden'];
+
     function updateButton() {
-      const ready = answers.type && answers.budget && answers.priority;
+      const ready = answers.type && answers.budget && answers.priority && answers.brand;
       document.getElementById('find-btn').disabled = !ready;
     }
 
@@ -285,6 +697,25 @@
     });
 
     document.getElementById('find-btn').addEventListener('click', () => {
+      const brandFilter = answers.brand;
+
+      // If the user picked a brand with no verified models, show honest message
+      if (UNVERIFIED_BRANDS.includes(brandFilter)) {
+        document.getElementById('finder').classList.add('hidden');
+        document.getElementById('result').innerHTML = `
+          <div class="result-card" style="border-color:#ef4444;">
+            <div class="text-xs uppercase font-semibold mb-1" style="color:#ef4444;">No verified models</div>
+            <div class="text-lg font-bold text-white mb-2">${brandFilter}</div>
+            <p class="text-sm text-zinc-300 mb-4">We could not verify any ${brandFilter} speedcube models for 2026 across the seven puzzle types in this finder. Rather than invent cube names, we are telling you honestly: no verified ${brandFilter} recommendations are available for this combination.</p>
+            <p class="text-sm text-zinc-300 mb-4">Try a different brand, or choose "Any brand" to see recommendations from brands with verified models.</p>
+            <button id="reset-btn" class="w-full py-2 rounded-xl text-zinc-300 text-sm border" style="background:#1a1a1f; border-color:#2a2a2f;">Try again</button>
+          </div>
+        `;
+        document.getElementById('result').classList.remove('hidden');
+        document.getElementById('reset-btn').addEventListener('click', resetFinder);
+        return;
+      }
+
       const key = `${answers.type}-${answers.budget}-${answers.priority}`;
       const rec = RECS[key];
       if (!rec) {
@@ -292,27 +723,81 @@
         document.getElementById('result').classList.remove('hidden');
         return;
       }
+
+      // Build the full candidate list: best first, then alternatives
+      let candidates = [rec.best, ...rec.alt];
+
+      // If user picked a specific brand, filter
+      if (brandFilter && brandFilter !== 'any') {
+        candidates = candidates.filter(c => c.brand === brandFilter);
+      }
+
+      if (candidates.length === 0) {
+        document.getElementById('finder').classList.add('hidden');
+        document.getElementById('result').innerHTML = `
+          <div class="result-card">
+            <p class="text-sm text-zinc-300 mb-4">No <strong>${brandFilter}</strong> cubes match this combination. Try a different brand, or choose "Any brand".</p>
+            <button id="reset-btn" class="w-full py-2 rounded-xl text-zinc-300 text-sm border" style="background:#1a1a1f; border-color:#2a2a2f;">Try again</button>
+          </div>
+        `;
+        document.getElementById('result').classList.remove('hidden');
+        document.getElementById('reset-btn').addEventListener('click', resetFinder);
+        return;
+      }
+
       document.getElementById('finder').classList.add('hidden');
-      document.getElementById('result').innerHTML = `
+
+      let html = '';
+      if (brandFilter && brandFilter !== 'any') {
+        html += `<div class="result-card" style="border-color:#fbbf24;">
+          <div class="text-xs uppercase font-semibold mb-1" style="color:#fbbf24;">Filtered by brand</div>
+          <div class="text-lg font-bold text-white">${brandFilter} — ${candidates.length} match${candidates.length === 1 ? '' : 'es'}</div>
+          <p class="text-xs text-zinc-400 mt-1">${candidates.length < 9 ? 'Only ' + candidates.length + ' ' + brandFilter + ' cube' + (candidates.length === 1 ? '' : 's') + ' match this combination. Other brands are hidden by your filter.' : 'All matches shown below.'}</p>
+        </div>`;
+      }
+
+      // First candidate = best
+      const bestCube = candidates[0];
+      html += `
         <div class="result-card">
-          <div class="text-xs text-zinc-400 uppercase font-semibold mb-1">Your recommendation</div>
-          <div class="text-2xl font-black text-white mb-3">${rec.name}</div>
-          <p class="text-sm text-zinc-300 mb-4 leading-relaxed">${rec.desc}</p>
-          <button id="reset-btn" class="w-full py-2 rounded-xl text-zinc-300 text-sm border" style="background:#1a1a1f; border-color:#2a2a2f;">
-            Try again
-          </button>
-          <p class="text-xs text-zinc-500 mt-3">This is a guide based on 2026 reviews, not a guarantee. Your feel may vary. Check current availability at your local cube store.</p>
+          <div class="text-xs text-zinc-400 uppercase font-semibold mb-1">⭐ Best by community rating</div>
+          <div class="brand-tag">${bestCube.brand}</div>
+          <div class="text-2xl font-black text-white mb-2">${bestCube.name}</div>
+          <p class="text-sm text-zinc-300 mb-4 leading-relaxed">${bestCube.desc}</p>
         </div>
       `;
+
+      // Remaining = alternatives
+      if (candidates.length > 1) {
+        html += `<div class="text-sm font-bold text-zinc-400 uppercase tracking-wider mt-6 mb-3">Alternatives (${candidates.length - 1})</div>`;
+        candidates.slice(1).forEach(cube => {
+          html += `
+            <div class="alt-card">
+              <div class="brand-tag">${cube.brand}</div>
+              <div class="text-base font-bold text-white mb-1">${cube.name}</div>
+              <p class="text-xs text-zinc-400 leading-relaxed">${cube.desc}</p>
+            </div>
+          `;
+        });
+      }
+
+      html += `
+        <button id="reset-btn" class="w-full mt-4 py-2 rounded-xl text-zinc-300 text-sm border" style="background:#1a1a1f; border-color:#2a2a2f;">Try again</button>
+        <p class="text-xs text-zinc-500 mt-3">These are guides based on 2026 community reviews, not guarantees. Your feel may vary.</p>
+      `;
+
+      document.getElementById('result').innerHTML = html;
       document.getElementById('result').classList.remove('hidden');
-      document.getElementById('reset-btn').addEventListener('click', () => {
-        document.getElementById('result').classList.add('hidden');
-        document.getElementById('finder').classList.remove('hidden');
-        answers.type = answers.budget = answers.priority = null;
-        document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
-        document.getElementById('find-btn').disabled = true;
-      });
+      document.getElementById('reset-btn').addEventListener('click', resetFinder);
     });
+
+    function resetFinder() {
+      document.getElementById('result').classList.add('hidden');
+      document.getElementById('finder').classList.remove('hidden');
+      answers.type = answers.budget = answers.priority = answers.brand = null;
+      document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+      document.getElementById('find-btn').disabled = true;
+    }
   </script>
 
 </body>
