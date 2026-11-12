@@ -1116,8 +1116,12 @@
         }
       }
       div.innerHTML = `
+              div.innerHTML = `
         <span class="text-zinc-400 font-mono">#${num}</span>
-        <span class="font-mono font-bold" style="${colorStyle}">${timeLabel}</span>
+        <div class="flex flex-col items-end" style="line-height:1.1;">
+          <span class="font-mono font-bold" style="${colorStyle}">${timeLabel}</span>
+          ${deltaHTML}
+        </div>
         <button class="text-red-400 hover:text-red-300 px-1 font-bold delete-solve" data-index="${idx}">&times;</button>
       `;
       div.addEventListener('click', (e) => {
