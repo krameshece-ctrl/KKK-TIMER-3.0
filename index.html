@@ -1101,7 +1101,8 @@
       div.style.borderColor = 'var(--border)';
       const timeLabel = formatSolveDisplay(solve);
       const colorStyle = solve.dnf ? 'color:#ef4444' : (solve.penalty === '+2' ? 'color:#f59e0b' : 'color:#fff');
-            // Compare to older solve
+
+      // Compare to older solve
       let deltaHTML = '';
       const olderSolve = solves[idx + 1];
       if (olderSolve && !solve.dnf && !olderSolve.dnf) {
@@ -1115,8 +1116,8 @@
           deltaHTML = '<span style="color:#10b981;font-size:10px;font-weight:700;" title="Decreased vs older solve">▼ −' + absDiff.toFixed(2) + 's</span>';
         }
       }
+
       div.innerHTML = `
-              div.innerHTML = `
         <span class="text-zinc-400 font-mono">#${num}</span>
         <div class="flex flex-col items-end" style="line-height:1.1;">
           <span class="font-mono font-bold" style="${colorStyle}">${timeLabel}</span>
@@ -1141,7 +1142,7 @@
     });
 
     $('stat-count').innerText = solves.length;
-    $('stat-count-badge').innerText = `${solves.length} Solves`;
+    $('stat-count-badge').innerText = solves.length + ' Solves';
 
     if (solves.length > 0) {
       const validTimes = solves.filter(s => !s.dnf).map(s => s.time);
@@ -1152,7 +1153,7 @@
 
       [3, 5, 12, 50, 100].forEach(n => {
         const ao = calcAoN(solves, n);
-        const el = $(`stat-ao${n}`);
+        const el = $('stat-ao' + n);
         if (el) {
           el.innerText = ao ? (ao.dnf ? 'DNF' : formatTime(ao.value)) : '-';
         }
@@ -1163,8 +1164,7 @@
 
     resetTimerDisplay();
     drawTrendChart(solves);
-  }
-
+}
   function drawTrendChart(solves) {
     const canvas = trendCanvas;
     if (!canvas) return;
