@@ -1101,6 +1101,20 @@
       div.style.borderColor = 'var(--border)';
       const timeLabel = formatSolveDisplay(solve);
       const colorStyle = solve.dnf ? 'color:#ef4444' : (solve.penalty === '+2' ? 'color:#f59e0b' : 'color:#fff');
+            // Compare to older solve
+      let deltaHTML = '';
+      const olderSolve = solves[idx + 1];
+      if (olderSolve && !solve.dnf && !olderSolve.dnf) {
+        const diff = solve.time - olderSolve.time;
+        if (Math.abs(diff) < 0.005) {
+          deltaHTML = '<span style="color:#a1a1aa;font-size:10px;" title="Same as older solve">=</span>';
+        } else if (diff > 0) {
+          deltaHTML = '<span style="color:#ef4444;font-size:10px;font-weight:700;" title="Increased vs older solve">▲ +' + diff.toFixed(2) + 's</span>';
+        } else {
+          const absDiff = Math.abs(diff);
+          deltaHTML = '<span style="color:#10b981;font-size:10px;font-weight:700;" title="Decreased vs older solve">▼ −' + absDiff.toFixed(2) + 's</span>';
+        }
+      }
       div.innerHTML = `
         <span class="text-zinc-400 font-mono">#${num}</span>
         <span class="font-mono font-bold" style="${colorStyle}">${timeLabel}</span>
