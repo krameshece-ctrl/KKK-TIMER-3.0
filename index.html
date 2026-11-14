@@ -665,8 +665,8 @@
 
   function makeScramble() {
     switch (state.currentCube) {
-      case '3*3': return wcaScramble(['R','L','U','D','F','B'], 20);
-      case '2*2': return wcaScramble(['R','U','F'], 11);
+      case '3*3': return WCA.scramble333();
+      case '2*2': return WCA.scramble222();
       case '4*4': return wcaScramble(['R','L','U','D','F','B','Rw','Lw','Uw','Dw','Fw','Bw'], 40);
       case '5*5': return wcaScramble(['R','L','U','D','F','B','Rw','Lw','Uw','Dw','Fw','Bw'], 60);
       case '6*6': return wcaScramble(['3Rw','3Lw','3Uw','3Dw','3Fw','3Bw','Rw','Lw','Uw','Dw','Fw','Bw','R','L','U','D','F','B'], 80);
