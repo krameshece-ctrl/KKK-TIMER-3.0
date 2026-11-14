@@ -1493,6 +1493,244 @@
         "Try rephrasing — I can help with any cubing topic: solving methods, algs, technique, stats, or equipment."
       ]);
     }
+    /* KKK Timer assistant - big reply bank
+   Each reply = opener + topic tip + closer, so every topic gives hundreds of different replies.
+   Usage: ASSISTANT.reply(text) -> string, or null if no topic matches (your old rules then answer). */
+(function () {
+  const TOPICS = [
+    { id: 'cross', re: /\bcross\b|x-?cross/, tips: [
+      "Plan the whole cross during the 15 seconds of inspection so your hands never pause after the first move.",
+      "Aim for a cross of 8 moves or fewer; with practice good solvers average 6 to 7.",
+      "Solve the cross on the bottom so you can see your F2L pairs without rotating the cube.",
+      "Look for edges already sitting next to their partners; they let you place two cross pieces with a single move.",
+      "Be flexible with colours: choosing the cross colour that needs the fewest moves saves time on every solve.",
+      "Drill by inspecting for 15 seconds, closing your eyes, and executing the cross from memory; it trains planning.",
+      "While planning, track where each cross piece will be after every move so you don't lose it halfway.",
+      "Once your cross is solid, try spotting a free corner-edge pair during inspection to turn it into an X-cross."] },
+    { id: 'f2l', re: /f2l|first two layers|first 2 layers|pairing|pairs?\b/, tips: [
+      "Learn the three basic cases first: corner and edge together, split apart, and corner in the slot with the edge on top; most pairs reduce to these.",
+      "Use U moves to bring the pair you want to the front instead of rotating the whole cube.",
+      "Keep your eyes on the next pair while inserting the current one; that overlap is where most of your time is gained.",
+      "If a pair won't go in naturally, solve a different pair and come back instead of fiddling.",
+      "Insert pairs in the back slots first, because they are harder to see later in the solve.",
+      "Practise slow, continuous solves with no pauses; smooth pair building matters more than turning speed.",
+      "Use fingertricks like R U R' and push-pull combinations so you rarely need to regrip.",
+      "Aim to finish each pair in about 8 moves or fewer and learn extra algorithms only for the awkward cases."] },
+    { id: 'oll', re: /\boll\b|orient(ation)? of the last|yellow cross|sune/, tips: [
+      "Start with 2-look OLL: make the yellow cross first, then orient the corners with Sune or Antisune.",
+      "Sune is R U R' U R U2 R'; Antisune is R U2 R' U' R U' R'. These two cover most corner cases in 2-look.",
+      "For the line case use F R U R' U' F', and for the L shape use the wide version f R U R' U' f'.",
+      "Learn OLL by shape: group cases by the pattern of yellow on top and the shape of the edges.",
+      "Drill one OLL case for 50 repetitions, then move on; spaced practice beats cramming many cases at once.",
+      "Add 3 new OLL algorithms per week and test them in real solves so they don't fade.",
+      "After 2-look OLL feels easy, full OLL (57 cases) can save about a second or two per solve.",
+      "Recognise OLL while finishing your last F2L pair; this removes the pause before the last layer."] },
+    { id: 'pll', re: /\bpll\b|permut|t-?perm|y-?perm|u-?perm|\bperms?\b/, tips: [
+      "Start with 2-look PLL: corners first with an A-perm (or Y-perm if there are no headlights), then edges with U-perms, H or Z.",
+      "T-perm and Y-perm are workhorses; learn them cold and corner swaps will never scare you.",
+      "Look for headlights (two matching corners on one side) to recognise the case in a second.",
+      "Learn the U-perms first; they appear very often and unlock the edge step of 2-look.",
+      "Practise AUF (the U turn after PLL) as part of the algorithm so you never stop to align the top.",
+      "Time each algorithm on its own; anything slower than about 1.5 seconds needs more practice.",
+      "Full PLL has 21 cases; add one new case per week and review the older ones each session.",
+      "Use consistent fingertricks for each PLL and never change them once they feel smooth."] },
+    { id: 'lookahead', re: /look ?-?ahead|looking ahead|pauses?|stop(ping)? between/, tips: [
+      "Look-ahead means your eyes find the next piece while your hands finish the current one.",
+      "Practise slow solves at about half speed and never stop looking for the next pair.",
+      "Pauses over half a second are red flags; note where they happen and drill that exact moment.",
+      "Try solving with your eyes only on the next pair, never on the one your hands are working on.",
+      "Track pieces through U moves; most hidden pairs are visible if you glance during the turn.",
+      "Slow down your turning slightly; if you turn too fast, your eyes can't keep up with your hands.",
+      "Look-ahead after F2L matters too: recognise OLL during the last pair, and PLL during the last OLL moves.",
+      "A common trick is to say the next target out loud in your head, such as 'blue-red pair, front right'."] },
+    { id: 'finger', re: /finger ?tricks?|\bgrip\b|regrip|ergonomic|how (to|do i|should i) hold|hold the cube|hand position/, tips: [
+      "Hold the cube loosely with your thumbs underneath so your fingers can flick freely.",
+      "Use the right index finger for U, the left index for U', and the right ring finger for R.",
+      "Learn one algorithm's fingering properly and keep it; changing fingertricks later costs time.",
+      "Avoid regrips by choosing algorithm versions that fit your natural hand position.",
+      "Keep your wrists relaxed and neutral; tension slows turning and can hurt over long sessions.",
+      "Flick moves, don't push; short sharp finger motions are faster than whole-hand pushes.",
+      "Record yourself and watch for wasted hand movements, then practise those turns in isolation.",
+      "Practice slow, correct fingertricks first; speed comes automatically once the motion is clean."] },
+    { id: 'tps', re: /\btps\b|turns? per second|turn(ing)? speed|turn faster|get faster|speed up|faster|improve|get fast/, tips: [
+      "Chasing TPS alone doesn't help; chase zero pauses first and speed follows.",
+      "Slow down by 10 to 20 percent and focus on smoothness; this often makes you faster overall.",
+      "Do deliberate practice: pick one weakness (cross, F2L, OLL or PLL) and spend 20 solves on it.",
+      "Twenty focused solves beat two hundred mindless ones; stay awake during practice.",
+      "Find your slowest step by timing it separately and improve that step first.",
+      "Reduce your move count before speed; fewer moves at the same TPS is a free time save.",
+      "Work on look-ahead; most sub-20 improvement comes from planning, not from raw turning speed.",
+      "Review your solves: watch a recording and note every pause longer than half a second."] },
+    { id: 'inspection', re: /inspect|15 ?s|fifteen seconds|plan(ning)? the cross/, tips: [
+      "Use the full 15 seconds to plan the cross completely, and try to spot your first F2L pair too.",
+      "Practise inspection with your eyes closed afterwards; if you can execute the cross blind, your plan was solid.",
+      "Don't rush inspection; the seconds you spend planning are cheaper than seconds lost mid-solve.",
+      "Rotate the cube during inspection only as much as you must; excess rotation wastes the time.",
+      "Plan the cross so that it ends with a view of the first F2L pair.",
+      "In this timer, hold the screen or spacebar during inspection to start early with no penalty.",
+      "If you run out of inspection time, the +2 penalty applies automatically, so keep an eye on the countdown.",
+      "Track a mental checklist: cross pieces, first pair, and the starting grip."] },
+    { id: 'practice', re: /practi[cs]e|routine|train(ing)?|drill|daily|schedule|how often/, tips: [
+      "Try a 50-solve session: the first 10 slow and deliberate, the next 30 at normal speed, the last 10 pushing your pace.",
+      "Ten to twenty minutes of focused practice daily beats a long session once a week.",
+      "Spend half your practice on solves and half on drills for one weak area.",
+      "Keep notes of what you worked on; progress is easier to see when you track it.",
+      "Take short breaks every 30 solves to keep your hands loose and your mind sharp.",
+      "Warm up with a few slow solves before timing seriously.",
+      "End a session with a few solves just for fun to keep cubing enjoyable.",
+      "Review your worst solve of the day and figure out what went wrong."] },
+    { id: 'algs', re: /alg(orithm)?s?\b|memori[sz]e|memory|forget|muscle memory/, tips: [
+      "Learn one new algorithm per week and drill it 100 times; this beats half-learning ten at once.",
+      "Understand the shape and trigger of an algorithm; it makes memorising much easier.",
+      "Practise algorithms in both slow and fast motion until the fingers do it automatically.",
+      "Review old algorithms every few days so you don't forget them.",
+      "Pair each algorithm with its case picture and a nickname to speed up recall.",
+      "Test algorithms in real solves, not just drills; recognition under pressure is a separate skill.",
+      "If an algorithm feels awkward, try a different version with better fingertricks.",
+      "Use a simple spaced review: practise a new algorithm today, tomorrow, in three days and in a week."] },
+    { id: 'hardware', re: /\blube|lubric|\btension|which cube|best cube|\bbuy\b|magnet|\b(gan|moyu|qiyi)\b|cube brand|recommend a cube|maintenance|clean(ing)? (my|the) cube|\bpopping|\bstiff|\bloose/, tips: [
+      "Silicone-based cube lube is the standard; add a drop or two per piece and turn it in.",
+      "Magnets help stability; many modern speed cubes come with adjustable magnet strength.",
+      "Tension is personal: looser cubes turn faster but can overshoot, tighter ones feel more controlled.",
+      "A cheap, well-set-up cube is better than an expensive cube that you never tune.",
+      "Clean your cube occasionally with a brush or air to remove dust that slows turning.",
+      "Break in a new cube by turning it a few hundred times before judging it.",
+      "Try several cubes if you can; feel is subjective and the best cube is the one you like using.",
+      "Store your cube away from heat; plastic can warp and change how it turns."] },
+    { id: 'beginner', re: /beginner|learn to solve|new to cubing|start cubing|first time|how do i solve|how to solve|teach me/, tips: [
+      "Start with the beginner layer-by-layer method: white cross, white corners, middle layer, yellow cross, yellow corners.",
+      "Learn to solve the cross intuitively before memorising any algorithms.",
+      "Go slowly at first; accuracy now saves you from unlearning habits later.",
+      "Learn the notation (R, L, U, D, F, B, with ' for counter-clockwise and 2 for a half turn) before anything else.",
+      "Expect your first solves to take minutes; getting under a minute usually takes a few weeks of practice.",
+      "Once you can solve consistently, upgrade to CFOP step by step: better cross, then F2L, then 2-look OLL and PLL.",
+      "Use video tutorials alongside this timer; watching the moves is easier than reading them.",
+      "Don't compare yourself to world-class cubers; compare yourself to last month."] },
+    { id: 'blind', re: /blind|\bbld\b|memo ?rization of pieces/, tips: [
+      "Blindfolded solving splits into memorisation and execution; practise each part separately.",
+      "Start with 3-style or the beginner 'Old Pochmann' method, which uses just a few algorithms.",
+      "Use a memory palace or letter pairs to remember piece orders.",
+      "Practise recalling the solution before touching the cube, then check your memo after.",
+      "Accuracy matters more than speed in blind solving; one wrong turn means a DNF.",
+      "Start with 2x2 blindfolded to learn the concept in a smaller space.",
+      "Stay calm and keep a steady rhythm; rushing causes mistakes.",
+      "Track your success rate as well as your time; a consistent 70 percent success is a good early goal."] },
+    { id: 'onehand', re: /one.?hand|\boh\b|single hand/, tips: [
+      "One-handed solving relies on special finger tricks; practise table-assisted turns for stability.",
+      "Use algorithms designed for one-handed solving, which avoid awkward moves like R' U2 R2.",
+      "Hold the cube with your fingers in a stable grip and let the thumb do some of the work.",
+      "Practise B moves and D moves with your ring finger to avoid regrips.",
+      "Use your free hand only for resting on the table if the rules allow, and keep it off the cube.",
+      "Expect your OH times to be about double your two-handed times at first.",
+      "Slow, smooth, and controlled turning gives better OH times than rushing.",
+      "Practise OH last-layer algorithms separately; they are the biggest time sink."] },
+    { id: 'bigcubes', re: /4x4|4\*4|5x5|5\*5|6x6|6\*6|7x7|7\*7|big cube|parity|reduction|centers|centres|edge pairing|pairing edges/, tips: [
+      "On big cubes, solve the centres first, then pair the edges, then solve it like a 3x3.",
+      "OLL parity on 4x4 happens when you see a single flipped edge in the last layer; use a parity algorithm.",
+      "PLL parity on 4x4 shows up as two swapped edges that a 3x3 couldn't produce; practise the algorithm separately.",
+      "Odd-sized cubes like 5x5 and 7x7 don't get the OLL and PLL parity cases that 4x4 and 6x6 do.",
+      "Use the 'free slice' method for pairing edges on 5x5 to avoid disturbing already-solved ones.",
+      "Plan your centres early to solve the last two without breaking the other four.",
+      "Big cubes reward consistency; take time to inspect and avoid mistakes that cost many moves.",
+      "Lubricate and tension big cubes carefully; they are heavier and benefit from smooth turning."] },
+    { id: 'twobytwo', re: /2x2|2\*2|pocket cube|ortega|cll|eg-?1|eg-?2/, tips: [
+      "On 2x2, solve one face first, then orient and permute the last layer with an algorithm such as Ortega or CLL.",
+      "Ortega solves the first face, then orients, then permutes; it is simple and fast.",
+      "Practise CLL for the fastest 2x2 times; it solves the last layer in one algorithm after the first layer.",
+      "On 2x2 you can plan the first face completely in inspection; aim for under 6 moves.",
+      "Look for blocks early; a good first block makes the rest much easier.",
+      "A 2x2 can be solved in 11 moves at most, so shorter solutions are always possible.",
+      "Learn to recognise cases fast; recognition speed matters more on 2x2 than turning speed.",
+      "Fingertricks are especially important on 2x2 because the solves are so short."] },
+    { id: 'skewb', re: /skewb|skeub|skewbs/, tips: [
+      "Skewb moves rotate around corners, so every turn affects half of the cube.",
+      "Start Skewb with a layer method: solve one face, then use a few algorithms to finish.",
+      "Most Skewb methods need only a handful of short algorithms for the last pieces, so they are quick to learn.",
+      "Try to plan the first face during inspection using intuition, not algorithms.",
+      "Most good Skewb solves are around 8 to 10 moves; focus on efficiency.",
+      "Learn to track centres, as they move independently from corners.",
+      "Use the fixed corner as a reference point so you don't lose orientation.",
+      "Practise the notation: U, R, L, B each turn a corner clockwise, and ' turns it counter-clockwise."] },
+    { id: 'motivation', re: /motivat|plateau|stuck|frustrat|slump|give up|bored|burn(ed)? ?out|not improving|no progress|slow progress|discourag/, tips: [
+      "Plateaus are normal; they usually mean your brain is consolidating, and a jump often follows.",
+      "Change what you practise: try a new algorithm set, a new method, or a different puzzle for a week.",
+      "Set small goals, such as a new Ao12 instead of a new world record, to see progress.",
+      "Take a day or two off if you're frustrated; your hands and mind benefit from rest.",
+      "Review old solves; you'll often notice how far you've come.",
+      "Join a cubing community to share progress and see what others are doing.",
+      "Remember that every fast cuber has felt stuck; consistent practice breaks through it.",
+      "Mix in fun solves with a different puzzle to keep cubing enjoyable."] },
+    { id: 'competition', re: /compet|nervous|nerves|wca|official|tournament|anxiety|pressure|stage/, tips: [
+      "Warm up with 10 to 15 solves before your round, and do slow ones first.",
+      "Practise under pressure by timing yourself with an audience or recording yourself.",
+      "Breathe slowly before each solve; nerves tighten fingers and slow turning.",
+      "Aim for consistency instead of a single lucky solve; averages are what rank you.",
+      "Bring a backup cube and a little lube to competitions.",
+      "Learn the scrambler's rules, such as how inspection and penalties work, before the day.",
+      "Don't change your method or fingertricks right before a competition.",
+      "After a bad solve, move on immediately; you can't change it, so focus on the next one."] },
+    { id: 'methods', re: /roux|zz\b|zz method|cfop|petrus|method|fridrich|lbl|layer by layer/, tips: [
+      "CFOP is the most popular method: cross, F2L, OLL, PLL; it has the most learning resources.",
+      "Roux builds two blocks on the sides, then solves corners, then the last six edges; it uses fewer moves and few rotations.",
+      "ZZ solves edge orientation first, so F2L can be done with only R, U and L moves.",
+      "Petrus builds a 2x2x2 block and expands it; it is good for efficient, low-move solving.",
+      "The best method is the one you will practise consistently; every method reaches world-class times.",
+      "Switching methods takes weeks; only change if you're enjoying learning rather than chasing a quick win.",
+      "Try a method for a month before deciding; early solves will always feel slower.",
+      "Learn the basics of one method deeply before trying another."] },
+    { id: 'notation', re: /notation|apostrophe|prime move|wide move|what does r mean|what is r2|what is a move|\bmove notation\b/, tips: [
+      "R, L, U, D, F and B are clockwise quarter turns of the right, left, up, down, front and back faces.",
+      "An apostrophe, like R', means turn counter-clockwise, and a 2, like R2, means a half turn.",
+      "A lowercase w, as in Rw, means turn the outer two layers together (a wide move).",
+      "On big cubes a number in front, like 3Rw, means turn that many layers from the face.",
+      "Notation always assumes you are looking at the face being turned, not the whole cube.",
+      "M, E and S are middle-slice moves; M follows L, E follows D and S follows F.",
+      "x, y and z are whole-cube rotations around the R, U and F axes.",
+      "Practise reading algorithms out loud until the notation becomes automatic."] },
+    { id: 'recognition', re: /recogni[sz]|identify the case|identify cases|which case|case recognition/, tips: [
+      "Recognise OLL and PLL cases by the pattern, not by memorising every sticker.",
+      "Practise recognition on its own by flashing cases and naming them without solving.",
+      "Look at headlights, bars and blocks on PLL; they narrow the case down fast.",
+      "Recognise cases during the last pair of F2L so there is no pause before the last layer.",
+      "Use consistent cube orientation; moving your head or cube changes what you see.",
+      "Train recognition with a case-trainer app, then solve to test it in practice.",
+      "Look at edge orientation first in OLL; it often reveals the case.",
+      "If recognition is slow, review your hardest cases more often than the easy ones."] }
+  ];
+
+  const OPEN = [
+    "Good question!", "Here's a tip:", "Try this:", "Quick advice:", "Here's what works for most cubers:",
+    "Happy to help.", "Great topic.", "Short answer:", "Pro tip:", "Here you go:", "Solid thing to ask about.", "Let me help with that."
+  ];
+  const CLOSE = [
+    "Keep solving! \u{1F9E9}", "Try it for 10 solves and see.", "Want tips on another topic?", "Ask me for more detail anytime.",
+    "Consistency beats intensity.", "You've got this!", "Small daily practice adds up fast.", "Slow is smooth, smooth is fast.",
+    "Come back and tell me how it goes.", "Now go set a new PB. \u{1F3C6}"
+  ];
+
+  // Leave stats, scrambles, greetings and thanks to the existing rules in index.html
+  const SKIP = /\b(stats?|average|avg|ao\d+|pb|record|scramble)\b|sub-?\d+|^(hi|hey|hello|yo|bye|thanks?|thx|ty|good (morning|night|evening))\b/;
+  const pick = a => a[(Math.random() * a.length) | 0];
+  const lastTip = {};
+
+  function reply(text) {
+    const t = String(text || '').toLowerCase().trim();
+    if (!t || SKIP.test(t)) return null;
+    const topic = TOPICS.find(x => x.re.test(t));
+    if (!topic) return null;
+    let tip, n = 0;
+    do { tip = pick(topic.tips); n++; } while (tip === lastTip[topic.id] && n < 10);
+    lastTip[topic.id] = tip;
+    return pick(OPEN) + ' ' + tip + ' ' + pick(CLOSE);
+  }
+
+  window.ASSISTANT = {
+    reply,
+    topics: TOPICS.length,
+    tips: TOPICS.reduce((n, t) => n + t.tips.length, 0),
+    possibleReplies: TOPICS.reduce((n, t) => n + t.tips.length, 0) * OPEN.length * CLOSE.length
+  };
+})();
 
     showTypingIndicator();
     setTimeout(() => {
