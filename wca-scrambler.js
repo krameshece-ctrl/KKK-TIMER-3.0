@@ -3,6 +3,8 @@
    2x2: random state + exact BFS table, scramble = inverse of optimal solution (min 4 moves)
    Exposes: WCA.scramble333(), WCA.scramble222() */
 (function () {
+  // Difficulty filters (all states are still valid random states; we only keep the hard ones)
+  const HARD = { lb3: 8, len3: 21, d2: 11, dsk: 10 };
   const FN = 'URFDLB', PW = ['', '2', "'"];
   // Cubie model. Corners: URF UFL ULB UBR DFR DLF DBL DRB. Edges: UR UF UL UB DR DF DL DB FR FL BL BR
   const MV = [
@@ -115,7 +117,12 @@
   }
   function scramble333() {
     build3();
-    for (;;) { const sol = solve3(randState333()); if (sol.length >= 2) return fmt(invert(sol)); }
+    for (;;) {
+      const c = randState333(), sl = getSl(c);
+      if (Math.max(T.p1a[getTw(c) * 495 + sl], T.p1b[getFl(c) * 495 + sl]) < HARD.lb3) continue;
+      const sol = solve3(c);
+      if (sol.length >= HARD.len3) return fmt(invert(sol));
+    }
   }
 
   /* ---------------- 2x2 (DBL corner fixed, moves R U F) ---------------- */
@@ -135,7 +142,7 @@
     build2();
     for (;;) {
       let p = rnd(5040), t = rnd(729), D = D2[p * 729 + t];
-      if (D < 4) continue;
+      if (D < HARD.d2) continue;
       const sol = [];
       while (D > 0) for (let m = 0; m < 9; m++) {
         const np = pM[p * 9 + m], nt = tM[t * 9 + m];
@@ -145,5 +152,98 @@
     }
   }
 
-  window.WCA = { scramble333, scramble222, _t: { mul, M18, ID, solve3, randState333, build3 } };
+  /* ---------------- 4x4 - 7x7 (WCA-style random-move, layer-aware) ---------------- */
+  function nxn(n, len) {
+    const FA = { U:0, D:0, R:1, L:1, F:2, B:2 }, opts = [];
+    'UDRLFB'.split('').forEach(f => {
+      opts.push([f, 1]);
+      if (n === 4) { if ('URF'.includes(f)) opts.push([f + 'w', 2]); }      // 4x4: Rw Uw Fw only
+      else { opts.push([f + 'w', 2]); if (n >= 6) opts.push(['3' + f + 'w', 3]); }
+    });
+    const out = []; let lastAx = -1, used = new Set();
+    while (out.length < len) {
+      const [m, k] = opts[rnd(opts.length)], f = m.replace(/[3w]/g, ''), ax = FA[f];
+      const layers = 'URF'.includes(f) ? [...Array(k).keys()] : [...Array(k).keys()].map(i => n - 1 - i);
+      if (ax !== lastAx) used = new Set();
+      else if (layers.some(l => used.has(l))) continue;     // never turn a layer twice in one axis run
+      layers.forEach(l => used.add(l)); lastAx = ax;
+      out.push(m + PW[rnd(3)]);
+    }
+    return out.join(' ');
+  }
+
+
+  /* ---------------- Skewb (random-state, IDA* with pruning tables) ---------------- */
+  const SK = {};
+  function buildSkewb() {
+    if (SK.ok) return;
+    const V = [[1,1,-1],[1,-1,1],[-1,1,1],[-1,-1,-1]];          // turning corners (U R L B)
+    const rot = (v, w) => [w[0]*w[1]*v[1], w[1]*w[2]*v[2], w[2]*w[0]*v[0]];   // 120 deg clockwise about corner w
+    const cpos = [...Array(8).keys()].map(s => [s & 4 ? 1 : -1, s & 2 ? 1 : -1, s & 1 ? 1 : -1]);
+    const cslot = v => (v[0] > 0 ? 4 : 0) | (v[1] > 0 ? 2 : 0) | (v[2] > 0 ? 1 : 0);
+    const tpos = [...Array(6).keys()].map(k => { const v = [0, 0, 0]; v[k >> 1] = k & 1 ? -1 : 1; return v; });
+    const tslot = v => { const i = v.findIndex(x => x !== 0); return i * 2 + (v[i] < 0 ? 1 : 0); };
+    const dot = (a, b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+    const cM = [], oM = [], tM = [];
+    for (let m = 0; m < 8; m++) {
+      const w = V[m >> 1], R = v => { for (let t = 0; t < (m & 1 ? 2 : 1); t++) v = rot(v, w); return v; };
+      cM[m] = []; oM[m] = []; tM[m] = [];
+      for (let s = 0; s < 8; s++) {
+        const p = cpos[s], aff = dot(p, w) > 0;
+        cM[m][s] = aff ? cslot(R(p)) : s; oM[m][s] = [];
+        for (let a = 0; a < 3; a++) { const d = [0, 0, 0]; d[a] = p[a]; oM[m][s][a] = aff ? R(d).findIndex(x => x !== 0) : a; }
+      }
+      for (let k = 0; k < 6; k++) tM[m][k] = dot(tpos[k], w) > 0 ? tslot(R(tpos[k])) : k;
+    }
+    const app = (st, m) => {
+      const cp = [], co = [], ce = [];
+      for (let s = 0; s < 8; s++) { const t = cM[m][s]; cp[t] = st.cp[s]; co[t] = oM[m][s][st.co[s]]; }
+      for (let k = 0; k < 6; k++) ce[tM[m][k]] = st.ce[k];
+      return { cp, co, ce };
+    };
+    const aSl = V.map(cslot), bSl = [0,1,2,3,4,5,6,7].filter(s => !aSl.includes(s));
+    const base = () => ({ cp: [0,1,2,3,4,5,6,7], co: Array(8).fill(0), ce: [0,1,2,3,4,5] });
+    const gA = st => aSl.reduce((t, s) => t * 3 + st.co[s], 0);
+    const gB = st => permIdx(bSl.map(s => bSl.indexOf(st.cp[s]))) * 81 + bSl.reduce((t, s) => t * 3 + st.co[s], 0);
+    const gC = st => permIdx(st.ce);
+    const sA = x => { const st = base(); for (let i = 3; i >= 0; i--) { st.co[aSl[i]] = x % 3; x = (x / 3) | 0; } return st; };
+    const sB = x => { const st = base(), o0 = x % 81, pm = idxPerm((x - o0) / 81, 4); let o = o0;
+      for (let i = 3; i >= 0; i--) { st.co[bSl[i]] = o % 3; o = (o / 3) | 0; }
+      for (let i = 0; i < 4; i++) st.cp[bSl[i]] = bSl[pm[i]]; return st; };
+    const sC = x => { const st = base(); st.ce = idxPerm(x, 6); return st; };
+    const tbl = (n, set, get) => { const t = new Uint16Array(n * 8); for (let x = 0; x < n; x++) { const st = set(x); for (let m = 0; m < 8; m++) t[x * 8 + m] = get(app(st, m)); } return t; };
+    SK.cT = tbl(720, sC, gC); SK.aT = tbl(81, sA, gA); SK.bT = tbl(1944, sB, gB);
+    SK.P1 = bfs(720 * 81, 0, 8, (s, m) => SK.cT[((s / 81) | 0) * 8 + m] * 81 + SK.aT[(s % 81) * 8 + m]);
+    SK.P2 = bfs(1944 * 81, 0, 8, (s, m) => SK.bT[((s / 81) | 0) * 8 + m] * 81 + SK.aT[(s % 81) * 8 + m]);
+    SK.base = base; SK.app = app; SK.gA = gA; SK.gB = gB; SK.gC = gC; SK.ok = true;
+  }
+  function skSolve(c, a, b) {
+    let path;
+    const { cT, aT, bT, P1, P2 } = SK;
+    function dfs(c, a, b, d, la) {
+      if (d === 0) return c === 0 && a === 0 && b === 0;
+      for (let m = 0; m < 8; m++) {
+        if ((m >> 1) === la) continue;
+        const nc = cT[c * 8 + m], na = aT[a * 8 + m], nb = bT[b * 8 + m];
+        if (P1[nc * 81 + na] > d - 1 || P2[nb * 81 + na] > d - 1) continue;
+        path.push(m); if (dfs(nc, na, nb, d - 1, m >> 1)) return true; path.pop();
+      }
+      return false;
+    }
+    for (let d = Math.max(P1[c * 81 + a], P2[b * 81 + a]); d <= 14; d++) { path = []; if (dfs(c, a, b, d, -1)) return path; }
+    return null;
+  }
+  function scrambleSkewb() {
+    buildSkewb();
+    for (;;) {
+      let st = SK.base(), last = -1;
+      for (let i = 0; i < 80; i++) { let m; do { m = rnd(8); } while ((m >> 1) === last); last = m >> 1; st = SK.app(st, m); }
+      const c = SK.gC(st), a = SK.gA(st), b = SK.gB(st);
+      if (Math.max(SK.P1[c * 81 + a], SK.P2[b * 81 + a]) < HARD.dsk - 3) continue;   // cheap pre-filter
+      const sol = skSolve(c, a, b);
+      if (sol && sol.length >= HARD.dsk) return sol.slice().reverse().map(m => m ^ 1).map(m => 'URLB'[m >> 1] + (m & 1 ? "'" : '')).join(' ');
+    }
+  }
+
+  window.WCA = { scrambleSkewb, _SK: SK, _bs: buildSkewb, scramble444: () => nxn(4, 40), scramble555: () => nxn(5, 60), scramble666: () => nxn(6, 80), scramble777: () => nxn(7, 100), scramble333, scramble222, _T: () => T, _gt: (c) => [getTw(c), getFl(c), getSl(c)], _t: { mul, M18, ID, solve3, randState333, build3 } };
 })();
