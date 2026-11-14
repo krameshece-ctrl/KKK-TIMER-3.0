@@ -662,24 +662,23 @@
     }
     return result.join(' ');
   }
-
-  function makeScramble() {
+function makeScramble() {
+  try {
     switch (state.currentCube) {
-      function makeScramble() {
-  switch (state.currentCube) {
-    case '3*3': return WCA.scramble333();
-    case '2*2': return WCA.scramble222();
-    case '4*4': return WCA.scramble444();
-    case '5*5': return WCA.scramble555();
-    case '6*6': return WCA.scramble666();
-    case '7*7': return WCA.scramble777();
-    case 'Skewb': return WCA.scrambleSkewb();
-    default: return WCA.scramble333();
+      case '3*3': return WCA.scramble333();
+      case '2*2': return WCA.scramble222();
+      case '4*4': return WCA.scramble444();
+      case '5*5': return WCA.scramble555();
+      case '6*6': return WCA.scramble666();
+      case '7*7': return WCA.scramble777();
+      case 'Skewb': return WCA.scrambleSkewb();
+      default: return WCA.scramble333();
+    }
+  } catch (err) {
+    console.error('WCA scrambler failed:', err);
+    return wcaScramble(['R','L','U','D','F','B'], 20);
   }
 }
-    }
-  }
-
   function skewbScramble() {
     const moves = ['R','L','U','B'];
     const modifiers = ['', "'"];
