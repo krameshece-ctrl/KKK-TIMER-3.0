@@ -60,6 +60,16 @@ h4{font-family:Fraunces,serif;font-size:1.5rem;margin:30px 0 14px}
 .stores a:hover{border-color:var(--g);transform:translateY(-2px)}
 footer{color:var(--mu);font-size:.82rem;margin-top:24px;text-align:center}
 @media(prefers-reduced-motion:reduce){.cube i{animation:none}*{transition:none!important}}
+.yearbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;margin-top:18px}
+.yearbar>span{color:var(--mu);font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:#12152e;color:var(--tx);border-radius:99px;padding:7px 16px;font:500 .92rem Outfit,sans-serif;cursor:pointer;transition:.15s}
+.chip:hover{border-color:#5560b8;transform:translateY(-1px)}
+.chip.sel{background:linear-gradient(135deg,var(--b),#7a5cff);border-color:transparent;color:#fff}
+.chip:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+.brand{margin-top:26px;padding-top:20px;border-top:1px dashed var(--line)}
+.brand h3{font-family:Fraunces,serif;font-size:1.25rem}.brand small{color:var(--mu);font:400 .9rem Outfit,sans-serif}
+.brand p{color:var(--mu);font-size:.9rem;margin:4px 0 12px}
 </style>
 </head>
 <body>
@@ -69,6 +79,8 @@ footer{color:var(--mu);font-size:.82rem;margin-top:24px;text-align:center}
   <h1>Find your perfect cube</h1>
   <p class="sub">Answer three quick questions and get one top pick plus nine strong alternatives.</p>
 </header>
+
+<div class="yearbar"><span>Release year</span><div class="chips" id="yb" role="group" aria-label="Release year"></div></div>
 
 <main class="panel" id="quiz">
   <div class="bar"><div id="pb"></div></div>
@@ -89,6 +101,11 @@ footer{color:var(--mu);font-size:.82rem;margin-top:24px;text-align:center}
     <h2>What do you want from it?</h2>
     <p class="hint">Choose the feel that suits how you solve.</p>
     <div class="opts" id="o3"></div>
+    <div class="brand">
+      <h3>Brand <small>(optional)</small></h3>
+      <p>Skip this to see cubes from all brands, or tap one brand to see only its cubes.</p>
+      <div class="chips" id="bb" role="group" aria-label="Brand"></div>
+    </div>
   </section>
   <div class="nav">
     <button class="btn ghost" id="back" disabled>Back</button>
@@ -105,7 +122,7 @@ footer{color:var(--mu);font-size:.82rem;margin-top:24px;text-align:center}
 
 <h4 style="margin-top:44px">Shop at 10 speedcubing stores</h4>
 <div class="stores" id="stores"></div>
-<footer>Picks are based on community recommendations, best-seller lists and reviews from SpeedCubeShop, TheCubicle, SpeedSolving and Cubelelo. The fast or control tag is a judgement from that feedback. Prices and stock change, so try another store if a search comes up empty. Few good clock and skewb models exist, so those lists are shorter.</footer>
+<footer>Picks are based on community recommendations, best-seller lists and reviews from SpeedCubeShop, TheCubicle, SpeedSolving and Cubelelo. The fast or control tag is a judgement from that feedback. Release years are approximate and the brand filter groups special editions under their maker. Prices and stock change, so try another store if a search comes up empty. Few good clock and skewb models exist, so those lists are shorter.</footer>
 </div>
 
 <script>
@@ -120,91 +137,91 @@ const STY=[
 // name|tier (0 low, 1 mid, 2 high)|leans (f fast, c control)|community note. Ordered best first.
 const DB={
 '2x2':[
-'YJ MGC 2x2 M|1|c|Named the top all-round 2x2 in 2026 guides and a long-time community favourite',
-'MoYu RS2 M Evolution V2|0|c|Picked as the best budget 2x2 for smooth, forgiving turning',
-'GAN 251 M Pro|2|f|The premium 2x2 used to win the 2025 World Championship',
-'QiYi Warrior 2x2 M|0|c|The cheapest magnetic 2x2 and a big step up from non-magnetic cubes',
-'DaYan TengYun 2x2 M|1|f|Smooth, hollow and quiet with strong value',
-'Vin 2x2|1|f|Blends the feel of WeiPo and MGC Elite, with an excellent UV ball-core version',
-'YJ MGC2 Elite|1|f|Crispy fast with excellent corner cutting',
-'QiYi Valk 2 M|1|c|Used by a world record average holder',
-'QiYi M Pro 2x2 Ball-Core|1|f|Good value for about $12, though reviews on feel are mixed',
-'MFJS MeiLong 2x2 M|0|f|Very cheap magnetic starter 2x2'],
+'YJ MGC 2x2 M|1|c|2020|Named the top all-round 2x2 in 2026 guides and a long-time community favourite',
+'MoYu RS2 M Evolution V2|0|c|2024|Picked as the best budget 2x2 for smooth, forgiving turning',
+'GAN 251 M Pro|2|f|2022|The premium 2x2 used to win the 2025 World Championship',
+'QiYi Warrior 2x2 M|0|c|2023|The cheapest magnetic 2x2 and a big step up from non-magnetic cubes',
+'DaYan TengYun 2x2 M|1|f|2024|Smooth, hollow and quiet with strong value',
+'Vin 2x2|1|f|2025|Blends the feel of WeiPo and MGC Elite, with an excellent UV ball-core version',
+'YJ MGC2 Elite|1|f|2021|Crispy fast with excellent corner cutting',
+'QiYi Valk 2 M|1|c|2020|Used by a world record average holder',
+'QiYi M Pro 2x2 Ball-Core|1|f|2024|Good value for about $12, though reviews on feel are mixed',
+'MFJS MeiLong 2x2 M|0|f|2021|Very cheap magnetic starter 2x2'],
 '3x3':[
-'MoYu RS3 M V5 Ball-Core|1|c|Widely picked as the best-value 3x3 for improving cubers',
-'GAN 356 M|1|f|Gold standard for competitors, light and refined, around $28 to $30',
-'MoYu RS3 M 2020|0|c|SpeedCubeShop\u2019s best-selling speed cube and the budget benchmark',
-'QiYi Valk 3 Power M|1|c|A balanced mid-range cube from the Valk line the community rates highly',
-'MoYu WeiLong V11|1|f|Smooth, fast and reliable, a staple of recent "best cubes" lists',
-'GAN 15 Maglev|2|f|Lightest flagship GAN to date, built for top-level speed',
-'X-Man Tornado V4 M|2|f|Flagship from the line that set a 3x3 world record',
-'MoYu WeiLong Ferrocore UV (WRM V10 SE)|2|c|A premium WeiLong version with a strong reputation',
-'QiYi MS 3x3|0|c|A solid entry-level magnetic cube',
-'MoYu MeiLong 3M|0|f|Around $5, the cheapest magnetic 3x3 and fine as a first cube'],
+'MoYu RS3 M V5 Ball-Core|1|c|2024|Widely picked as the best-value 3x3 for improving cubers',
+'GAN 356 M|1|f|2020|Gold standard for competitors, light and refined, around $28 to $30',
+'MoYu RS3 M 2020|0|c|2020|SpeedCubeShop\u2019s best-selling speed cube and the budget benchmark',
+'QiYi Valk 3 Power M|1|c|2021|A balanced mid-range cube from the Valk line the community rates highly',
+'MoYu WeiLong V11|1|f|2025|Smooth, fast and reliable, a staple of recent "best cubes" lists',
+'GAN 15 Maglev|2|f|2025|Lightest flagship GAN to date, built for top-level speed',
+'X-Man Tornado V4 M|2|f|2024|Flagship from the line that set a 3x3 world record',
+'MoYu WeiLong Ferrocore UV (WRM V10 SE)|2|c|2024|A premium WeiLong version with a strong reputation',
+'QiYi MS 3x3|0|c|2020|A solid entry-level magnetic cube',
+'MoYu MeiLong 3M|0|f|2020|Around $5, the cheapest magnetic 3x3 and fine as a first cube'],
 '4x4':[
-'YJ MGC 4x4|1|c|Long-time community standard for 4x4 price-to-performance',
-'MoYu AoSu V7 (Single-Track)|1|f|A top-selling modern 4x4 recommended by major stores',
-'MFJS MeiLong 4x4 M|0|c|Recommended as a best budget 4x4',
-'Mystic MGC 4x4|2|c|Reviewers call it fast with great edge pairing',
-'YJ MGC 4x4 (Speed Micro-Bearing)|2|f|The MGC feel with a faster, lighter turn',
-'MoYu AoSu V7 (Double-Track + UV SE)|2|f|Premium AoSu with stronger magnets and UV grip',
-'YJ ZhiLong Mini 4x4|0|c|Compact entry-level option',
-'QiYi Warrior M 4x4|0|c|Magnetic budget 4x4 with UV coating',
-'QiYi QiYuan S3 4x4|0|c|Smooth entry-level 4x4 for under $10',
-'ShengShou Legend 4x4 Metallic|0|c|Low-cost 4x4 from a big-cube specialist brand'],
+'YJ MGC 4x4|1|c|2020|Long-time community standard for 4x4 price-to-performance',
+'MoYu AoSu V7 (Single-Track)|1|f|2025|A top-selling modern 4x4 recommended by major stores',
+'MFJS MeiLong 4x4 M|0|c|2021|Recommended as a best budget 4x4',
+'Mystic MGC 4x4|2|c|2022|Reviewers call it fast with great edge pairing',
+'YJ MGC 4x4 (Speed Micro-Bearing)|2|f|2024|The MGC feel with a faster, lighter turn',
+'MoYu AoSu V7 (Double-Track + UV SE)|2|f|2025|Premium AoSu with stronger magnets and UV grip',
+'YJ ZhiLong Mini 4x4|0|c|2022|Compact entry-level option',
+'QiYi Warrior M 4x4|0|c|2023|Magnetic budget 4x4 with UV coating',
+'QiYi QiYuan S3 4x4|0|c|2021|Smooth entry-level 4x4 for under $10',
+'ShengShou Legend 4x4 Metallic|0|c|2023|Low-cost 4x4 from a big-cube specialist brand'],
 '5x5':[
-'YJ MGC 5x5|1|c|The standard choice for most intermediate and advanced solvers',
-'MoYu AoChuang V6 (Single-Track)|1|f|Value-packed modern 5x5 with a compact size',
-'MoYu AoChuang V6 (Double-Track + UV)|2|f|Stronger magnets and UV grip for serious practice',
-'GAN 562 M|2|f|Premium 5x5 with world-record pedigree',
-'MFJS MeiLong 5x5 M|0|c|Best budget pick, and MeiLong has been popular since 2020',
-'YJ ZhiLong Mini 5x5 M|0|f|Small and light, good for smaller hands',
-'MoYu AoChuang V6 (Single-Track + UV)|1|f|The same value pick with a UV coating',
-'MoYu AoChuang V6 (Triple-Track + UV)|2|c|Top AoChuang setup for stability',
-'Angstrom MGC 5x5|2|c|Upgraded MGC with premium tuning',
-'DianSheng Mirror 5x5|2|c|Newer magnetic ball-core 5x5'],
+'YJ MGC 5x5|1|c|2020|The standard choice for most intermediate and advanced solvers',
+'MoYu AoChuang V6 (Single-Track)|1|f|2024|Value-packed modern 5x5 with a compact size',
+'MoYu AoChuang V6 (Double-Track + UV)|2|f|2024|Stronger magnets and UV grip for serious practice',
+'GAN 562 M|2|f|2023|Premium 5x5 with world-record pedigree',
+'MFJS MeiLong 5x5 M|0|c|2021|Best budget pick, and MeiLong has been popular since 2020',
+'YJ ZhiLong Mini 5x5 M|0|f|2022|Small and light, good for smaller hands',
+'MoYu AoChuang V6 (Single-Track + UV)|1|f|2024|The same value pick with a UV coating',
+'MoYu AoChuang V6 (Triple-Track + UV)|2|c|2024|Top AoChuang setup for stability',
+'Angstrom MGC 5x5|2|c|2024|Upgraded MGC with premium tuning',
+'DianSheng Mirror 5x5|2|c|2026|Newer magnetic ball-core 5x5'],
 '6x6':[
-'YJ MGC 6x6|1|c|The community favourite for price-to-performance and rarely pops',
-'MoYu AoShi V4 (Single-Track)|2|f|Current-generation 6x6 from the main big-cube brand',
-'MoYu AoShi 6x6 WR M|1|f|Proven WR M version, often discounted',
-'YJ YuShi 6x6 V2 M|0|c|Playable out of the box and the cheapest decent magnetic 6x6',
-'MoYu AoShi V4 (Double-Track)|2|f|More magnets for a more stable turn',
-'MoYu AoShi V4 (Triple-Track)|2|c|Top-tier AoShi setup',
-'Mystic AoShi 6x6 WR M|2|f|Premium WR M version',
-'MoYu AoShi 6x6 WR M (Magnetic Core SE)|2|c|WR M with core magnets for stability',
-'Nahm\u2019s AoShi V4 (Triple-Track)|2|c|Premium signature edition',
-'MoYu AoShi 6x6 WR M (UV Coated SE)|2|f|WR M with UV grip'],
+'YJ MGC 6x6|1|c|2021|The community favourite for price-to-performance and rarely pops',
+'MoYu AoShi V4 (Single-Track)|2|f|2025|Current-generation 6x6 from the main big-cube brand',
+'MoYu AoShi 6x6 WR M|1|f|2023|Proven WR M version, often discounted',
+'YJ YuShi 6x6 V2 M|0|c|2021|Playable out of the box and the cheapest decent magnetic 6x6',
+'MoYu AoShi V4 (Double-Track)|2|f|2025|More magnets for a more stable turn',
+'MoYu AoShi V4 (Triple-Track)|2|c|2025|Top-tier AoShi setup',
+'Mystic AoShi 6x6 WR M|2|f|2024|Premium WR M version',
+'MoYu AoShi 6x6 WR M (Magnetic Core SE)|2|c|2024|WR M with core magnets for stability',
+'Nahm\u2019s AoShi V4 (Triple-Track)|2|c|2026|Premium signature edition',
+'MoYu AoShi 6x6 WR M (UV Coated SE)|2|f|2024|WR M with UV grip'],
 '7x7':[
-'YJ MGC 7x7|1|c|Big, stable and reliable, and a top seller',
-'QiYi Warrior 7x7 M (UV)|0|c|A budget steal with near-flagship performance',
-'MoYu AoFu V5 (Single-Track)|2|f|Smaller, modern 7x7 from MoYu',
-'PiCube QiYi Warrior 7x7 SE|1|c|Warrior with core magnets and UV',
-'MFJS MeiLong 7x7 V2 M|0|f|Low-cost magnetic 7x7',
-'YJ YuFu 7x7 V2 M|0|c|Entry-level magnetic 7x7',
-'MoYu AoFu 7x7 WR M|2|f|The established WR M 7x7',
-'MoYu AoFu V5 (Double-Track)|2|f|More magnets for stability',
-'MoYu AoFu V5 (Triple-Track)|2|c|Most stable AoFu setup',
-'Angstrom AoFu 7x7 WR M|2|f|Premium AoFu with upgraded tuning'],
+'YJ MGC 7x7|1|c|2021|Big, stable and reliable, and a top seller',
+'QiYi Warrior 7x7 M (UV)|0|c|2024|A budget steal with near-flagship performance',
+'MoYu AoFu V5 (Single-Track)|2|f|2025|Smaller, modern 7x7 from MoYu',
+'PiCube QiYi Warrior 7x7 SE|1|c|2026|Warrior with core magnets and UV',
+'MFJS MeiLong 7x7 V2 M|0|f|2022|Low-cost magnetic 7x7',
+'YJ YuFu 7x7 V2 M|0|c|2021|Entry-level magnetic 7x7',
+'MoYu AoFu 7x7 WR M|2|f|2023|The established WR M 7x7',
+'MoYu AoFu V5 (Double-Track)|2|f|2025|More magnets for stability',
+'MoYu AoFu V5 (Triple-Track)|2|c|2025|Most stable AoFu setup',
+'Angstrom AoFu 7x7 WR M|2|f|2024|Premium AoFu with upgraded tuning'],
 'Clock':[
-'QiYi Magnetic Clock|1|c|The standard clock for top solvers since 2020',
-'Estar Clock (Magnetic + Bearings)|2|c|Newest clock with a bearing design and very strong early reviews',
-'ShengShou Magnetic Clock V2|1|f|A big improvement over the original ShengShou clock',
-'QiYi Magnetic Clock (Aaron Mod)|2|f|Mod of the QiYi clock tuned for competition',
-'Estar Clock Magnetic Bearings LE|2|c|Limited edition of the Estar clock',
-'Lingao Magnetic Clock|0|f|Budget magnetic clock, but ranked below QiYi by reviewers',
-'ShengShou Clock|0|f|Budget non-magnetic clock that can feel locky',
-'Lingao Clock|0|c|Ultra-budget clock, fine only for trying the event',
-'Rubik\u2019s Official Clock|0|c|Official brand clock, better for casual play'],
+'QiYi Magnetic Clock|1|c|2020|The standard clock for top solvers since 2020',
+'Estar Clock (Magnetic + Bearings)|2|c|2026|Newest clock with a bearing design and very strong early reviews',
+'ShengShou Magnetic Clock V2|1|f|2025|A big improvement over the original ShengShou clock',
+'QiYi Magnetic Clock (Aaron Mod)|2|f|2024|Mod of the QiYi clock tuned for competition',
+'Estar Clock Magnetic Bearings LE|2|c|2026|Limited edition of the Estar clock',
+'Lingao Magnetic Clock|0|f|2021|Budget magnetic clock, but ranked below QiYi by reviewers',
+'ShengShou Clock|0|f|2020|Budget non-magnetic clock that can feel locky',
+'Lingao Clock|0|c|2020|Ultra-budget clock, fine only for trying the event',
+'Rubik\u2019s Official Clock|0|c|2020|Official brand clock, better for casual play'],
 'Skewb':[
-'GAN Skewb Enhanced (UV)|2|f|Used by nearly all top skewb solvers',
-'DaYan Skewb V2|1|c|Named the best-value skewb in 2026 guides',
-'GAN Skewb Standard|1|c|The budget GAN with corner-core magnets',
-'MoYu RS Skewb M|0|c|Often called the best skewb under about \u00a310',
-'MoYu WeiLong Skewb|1|f|The premium version the RS Skewb is based on',
-'GAN Skewb M Enhanced|2|c|First skewb with adjustable tension and spring compression',
-'MoYu WeiLong Skewb (MagLev + PiCube)|2|f|Newest WeiLong with core magnets',
-'MoYu RS Skewb Maglev|0|f|Faster, smoother RS version',
-'MoYu MeiLong Skewb|0|f|The cheapest decent skewb at about \u00a35']};
+'GAN Skewb Enhanced (UV)|2|f|2023|Used by nearly all top skewb solvers',
+'DaYan Skewb V2|1|c|2024|Named the best-value skewb in 2026 guides',
+'GAN Skewb Standard|1|c|2022|The budget GAN with corner-core magnets',
+'MoYu RS Skewb M|0|c|2023|Often called the best skewb under about \u00a310',
+'MoYu WeiLong Skewb|1|f|2021|The premium version the RS Skewb is based on',
+'GAN Skewb M Enhanced|2|c|2021|First skewb with adjustable tension and spring compression',
+'MoYu WeiLong Skewb (MagLev + PiCube)|2|f|2026|Newest WeiLong with core magnets',
+'MoYu RS Skewb Maglev|0|f|2024|Faster, smoother RS version',
+'MoYu MeiLong Skewb|0|f|2021|The cheapest decent skewb at about \u00a35']};
 const STORES=[
  ['Cubelelo','https://www.cubelelo.com/search?q='],
  ['Amazon','https://www.amazon.in/s?k='],
@@ -217,8 +234,16 @@ const STORES=[
  ['Flipkart','https://www.flipkart.com/search?q='],
  ['Cubes For India','https://cubesforindia.com/search?q=']];
 const HOME=['https://www.cubelelo.com','https://www.amazon.in','https://speedcubeshop.com','https://www.thecubicle.com','https://cubezz.com','https://cubewerkz.com','https://www.gancube.com','https://moyucubestore.com','https://www.flipkart.com','https://cubesforindia.com'];
+const YEARS=['all',2021,2022,2023,2024,2025,2026];
+const BRANDS=['MoYu','GAN','YJ','QiYi','X-Man','DaYan','ShengShou','MFJS','DianSheng','Vin','Estar','Lingao','Rubik\u2019s','Cubelelo','Cyclone Boys'];
+function brandOf(n){
+ if(/X-Man/.test(n))return'X-Man';if(/MFJS/.test(n))return'MFJS';if(/MGC|YJ/.test(n))return'YJ';
+ if(/AoSu|AoChuang|AoShi|AoFu|MoYu|WeiLong|RS/.test(n))return'MoYu';if(/GAN/.test(n))return'GAN';
+ if(/QiYi|Valk/.test(n))return'QiYi';if(/DaYan/.test(n))return'DaYan';if(/ShengShou/.test(n))return'ShengShou';
+ if(/DianSheng/.test(n))return'DianSheng';if(/Vin/.test(n))return'Vin';if(/Estar/.test(n))return'Estar';
+ if(/Lingao/.test(n))return'Lingao';if(/Rubik/.test(n))return'Rubik\u2019s';return'Other'}
 const $=id=>document.getElementById(id);
-const ans={t:null,p:null,s:null};let step=1;
+const ans={t:null,p:null,s:null,y:'all',b:null};let step=1;
 
 // decorative spinning cube
 (function(){const cols=['#ff4d5e','#ff9a3c','#ffd23f','#3ddc84','#4d8dff','#fff'];let h='';
@@ -235,16 +260,25 @@ build('o2',TYPES,'p',p=>p);
 build('o3',STY,'s',s=>'<strong><span class="dot"></span>'+s.n+'</strong><small>'+s.d+'</small>');
 STORES.forEach((s,i)=>{const a=document.createElement('a');a.href=HOME[i];a.target='_blank';a.rel='noopener noreferrer';a.textContent=s[0];$('stores').appendChild(a)});
 
+function chips(el,items,cur,pick){
+ el.innerHTML='';
+ items.forEach(it=>{const b=document.createElement('button');b.type='button';b.className='chip'+(cur(it)?' sel':'');
+  b.textContent=it.label;b.onclick=()=>{pick(it.v);chips(el,items,cur,pick)};el.appendChild(b)})}
+function yearChips(){chips($('yb'),YEARS.map(y=>({v:y,label:y==='all'?'All years':y})),it=>ans.y===it.v,v=>{ans.y=v;if(!$('res').classList.contains('hide'))results(true)})}
+function brandItems(){return [{v:null,label:'All brands'}].concat(BRANDS.map(b=>({v:b,label:b})))}
+function brandChips(el,after){chips(el,brandItems(),it=>ans.b===it.v,v=>{ans.b=v;if(after)after()})}
+yearChips();brandChips($('bb'));
+
 function show(){
  for(let i=1;i<=3;i++)$('s'+i).classList.toggle('hide',i!==step);
  $('pb').style.width=(step-1)/3*100+'%';
  $('back').disabled=step===1;
  const key=['t','p','s'][step-1];$('next').disabled=ans[key]===null;
- $('next').textContent=step===3?'Show my cubes':'Continue';
+ $('next').textContent='Continue';
 }
 $('back').onclick=()=>{if(step>1){step--;show()}};
 $('next').onclick=()=>{if(step<3){step++;show()}else results()};
-$('again').onclick=()=>{ans.t=ans.p=ans.s=null;step=1;document.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));$('res').classList.add('hide');$('quiz').classList.remove('hide');show();scrollTo({top:0,behavior:'smooth'})};
+$('again').onclick=()=>{ans.t=ans.p=ans.s=null;ans.b=null;ans.y='all';yearChips();brandChips($('bb'));step=1;document.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));$('res').classList.add('hide');$('quiz').classList.remove('hide');show();scrollTo({top:0,behavior:'smooth'})};
 
 function links(n){const q=encodeURIComponent(n);return STORES.slice(0,4).map(s=>'<a href="'+s[1]+q+'" target="_blank" rel="noopener noreferrer">Buy on '+s[0]+'</a>').join('')}
 function tierName(k){return TIERS[k].n.toLowerCase()}
@@ -258,18 +292,26 @@ function why(c,main){
  a=(c.note?c.note+'. ':'')+a;
  return main?a+' Out of all '+p+' options we checked, it matched your budget and your '+st+' goal best.':a}
 
-function results(){
- const list=DB[ans.p].map(x=>{const[a,b,c,d]=x.split('|');return{name:a,tier:+b,sty:c,note:d}});
+function results(keep){
+ const all=DB[ans.p].map(x=>{const[a,b,c,y,d]=x.split('|');return{name:a,tier:+b,sty:c,year:+y,note:d}});
+ const list=all.filter(c=>(ans.y==='all'||c.year===ans.y)&&(!ans.b||brandOf(c.name)===ans.b));
+ $('quiz').classList.add('hide');$('res').classList.remove('hide');$('pb').style.width='100%';
+ if(!list.length){
+  const yr=ans.y==='all'?'':' released in '+ans.y;
+  $('top').innerHTML='<span class="badge">No matches</span><h3>Nothing found</h3><p class="why">We could not find a '+ans.p+(ans.b?' cube from '+ans.b:' cube')+yr+'. Try another brand'+(ans.y==='all'?'':' or a different year')+'.</p><p class="why" style="margin-top:16px"><strong>Try with other brands:</strong></p><div class="chips" id="nb" style="margin-top:10px"></div>';
+  brandChips($('nb'),()=>results(true));
+  $('ah').classList.add('hide');$('alts').innerHTML='';
+  if(!keep)scrollTo({top:0,behavior:'smooth'});return}
  list.forEach((c,i)=>{c.score=100-Math.abs(c.tier-ans.t)*45+(c.sty===ans.s?25:0)-i*.1});
  list.sort((a,b)=>b.score-a.score);
  const m=list[0],t=TIERS[m.tier];
  $('top').innerHTML='<span class="badge">Best match for you</span><h3>'+m.name+'</h3>'
-  +'<div class="tags"><span class="tag">'+ans.p+'</span><span class="tag">'+t.n+'</span><span class="tag">'+(m.sty==='f'?'Fast':'Control')+'</span></div>'
+  +'<div class="tags"><span class="tag">'+ans.p+'</span><span class="tag">'+t.n+'</span><span class="tag">'+(m.sty==='f'?'Fast':'Control')+'</span><span class="tag">'+brandOf(m.name)+'</span><span class="tag">Released '+m.year+'</span></div>'
   +'<p class="why">'+why(m,true)+'</p><div class="buy">'+links(m.name)+'</div>';
- $('ah').textContent=(list.length-1)+' alternatives';
- $('alts').innerHTML=list.slice(1).map(c=>'<div class="alt" style="--c:'+TIERS[c.tier].c+'"><h5>'+c.name+'</h5><p>'+TIERS[c.tier].n+' \u2022 '+(c.sty==='f'?'Fast':'Control')+'</p><p>'+why(c,false)+'</p><div class="buy">'+links(c.name)+'</div></div>').join('');
- $('pb').style.width='100%';
- $('quiz').classList.add('hide');$('res').classList.remove('hide');scrollTo({top:0,behavior:'smooth'});
+ $('ah').classList.remove('hide');
+ $('ah').textContent=list.length>1?(list.length-1)+(list.length===2?' alternative':' alternatives'):'No other cubes match these filters';
+ $('alts').innerHTML=list.slice(1).map(c=>'<div class="alt" style="--c:'+TIERS[c.tier].c+'"><h5>'+c.name+'</h5><p>'+TIERS[c.tier].n+' \u2022 '+(c.sty==='f'?'Fast':'Control')+' \u2022 '+brandOf(c.name)+' \u2022 '+c.year+'</p><p>'+why(c,false)+'</p><div class="buy">'+links(c.name)+'</div></div>').join('');
+ if(!keep)scrollTo({top:0,behavior:'smooth'});
 }
 show();
 </script>
