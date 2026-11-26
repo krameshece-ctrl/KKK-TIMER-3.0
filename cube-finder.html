@@ -70,6 +70,18 @@ footer{color:var(--mu);font-size:.82rem;margin-top:24px;text-align:center}
 .brand{margin-top:26px;padding-top:20px;border-top:1px dashed var(--line)}
 .brand h3{font-family:Fraunces,serif;font-size:1.25rem}.brand small{color:var(--mu);font:400 .9rem Outfit,sans-serif}
 .brand p{color:var(--mu);font-size:.9rem;margin:4px 0 12px}
+.timer{text-align:center;margin-top:40px}
+.timer h4{margin:0 0 12px}
+.timer a{display:inline-block;text-decoration:none;color:#fff;font-weight:600;border-radius:14px;padding:13px 30px;background:linear-gradient(135deg,var(--g),#1fa5c9);box-shadow:0 10px 30px -12px var(--g);transition:transform .15s}
+.timer a:hover{transform:translateY(-2px)}
+.rankbtn{margin-top:16px;background:linear-gradient(135deg,var(--y),var(--o));color:#2a1a00}
+.rk{display:flex;gap:14px;align-items:flex-start}
+.rn{flex:none;min-width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font:800 1.25rem Fraunces,serif;background:#23284d;color:var(--tx)}
+.rk.r1 .rn{background:linear-gradient(135deg,#ffe27a,#ff9a3c);color:#2a1a00}
+.rk.r2 .rn{background:linear-gradient(135deg,#f1f1ff,#a9aed6);color:#14162b}
+.rk.r3 .rn{background:linear-gradient(135deg,#ffb27a,#b9602a);color:#2a1100}
+.rk>div:last-child{flex:1;min-width:0}
+.rlist{display:grid;gap:12px;margin-top:18px}
 </style>
 </head>
 <body>
@@ -78,6 +90,7 @@ footer{color:var(--mu);font-size:.82rem;margin-top:24px;text-align:center}
   <div class="cube"><i id="cb"></i></div>
   <h1>Find your perfect cube</h1>
   <p class="sub">Answer three quick questions and get one top pick plus nine strong alternatives.</p>
+  <button class="btn rankbtn" id="rbtn" type="button">🏆 Rank board</button>
 </header>
 
 <div class="yearbar"><span>Release year</span><div class="chips" id="yb" role="group" aria-label="Release year"></div></div>
@@ -113,6 +126,21 @@ footer{color:var(--mu);font-size:.82rem;margin-top:24px;text-align:center}
   </div>
 </main>
 
+<section class="panel hide" id="rank">
+  <div id="rsel">
+    <h2>Rank board</h2>
+    <p class="hint">Choose the cube type to see its top cubes.</p>
+    <div class="opts puz" id="ro"></div>
+    <div class="nav"><button class="btn ghost" id="rexit" type="button">Back to cube finder</button><button class="btn" id="rgo" type="button" disabled>Continue</button></div>
+  </div>
+  <div id="rres" class="hide">
+    <h2 id="rt"></h2>
+    <p class="hint" id="rnote"></p>
+    <div class="rlist" id="rl"></div>
+    <div class="nav"><button class="btn ghost" id="rother" type="button">Choose another type</button><button class="btn" id="rexit2" type="button">Back to cube finder</button></div>
+  </div>
+</section>
+
 <section id="res" class="hide">
   <div class="main" id="top"></div>
   <h4 id="ah">9 alternatives</h4>
@@ -122,7 +150,8 @@ footer{color:var(--mu);font-size:.82rem;margin-top:24px;text-align:center}
 
 <h4 style="margin-top:44px">Shop at 10 speedcubing stores</h4>
 <div class="stores" id="stores"></div>
-<footer>Picks are based on community recommendations, best-seller lists and reviews from SpeedCubeShop, TheCubicle, SpeedSolving and Cubelelo. The fast or control tag is a judgement from that feedback. Release years are approximate and the brand filter groups special editions under their maker. Prices and stock change, so try another store if a search comes up empty. Few good clock and skewb models exist, so those lists are shorter.</footer>
+<div class="timer"><h4>Continue to timer ?</h4><a href="https://krameshece-ctrl.github.io/KKK-TIMER-3.0/">KKK TIMER 3.0</a></div>
+<footer>The rank board follows the community-recommendation order of our list. Only cubes inside your exact budget are shown, so a year or brand filter can leave fewer than 10. Picks are based on community recommendations, best-seller lists and reviews from SpeedCubeShop, TheCubicle, SpeedSolving and Cubelelo. The fast or control tag is a judgement from that feedback. Release years are approximate and the brand filter groups special editions under their maker. Prices and stock change, so try another store if a search comes up empty. Few good clock and skewb models exist, so those lists are shorter.</footer>
 </div>
 
 <script>
@@ -286,7 +315,7 @@ function why(c,main){
  const tm=c.tier===ans.t, sm=c.sty===ans.s, p=ans.p;
  const st=ans.s==='f'?'speed':'control';
  let a=c.name+' is a '+tierName(c.tier)+' '+p+' pick. ';
- a+=tm?'It sits right inside your '+tierName(ans.t)+' budget. ':(c.tier<ans.t?'It costs less than your budget, so you can spend the savings on lube or a second cube. ':'It costs a little above your range, but it is a strong upgrade if you can stretch. ');
+ a+='It sits inside your '+tierName(ans.t)+' budget. ';
  a+=sm?(ans.s==='f'?'It is tuned to turn fast and cut corners well, which suits a speed-focused solver.':'It feels stable and smooth with fewer lockups, which suits a control-focused solver.')
    :('Its character leans more toward '+(c.sty==='f'?'speed':'control')+', so it is a good way to balance your '+st+' preference.');
  a=(c.note?c.note+'. ':'')+a;
@@ -294,15 +323,15 @@ function why(c,main){
 
 function results(keep){
  const all=DB[ans.p].map(x=>{const[a,b,c,y,d]=x.split('|');return{name:a,tier:+b,sty:c,year:+y,note:d}});
- const list=all.filter(c=>(ans.y==='all'||c.year===ans.y)&&(!ans.b||brandOf(c.name)===ans.b));
+ const list=all.filter(c=>c.tier===ans.t&&(ans.y==='all'||c.year===ans.y)&&(!ans.b||brandOf(c.name)===ans.b));
  $('quiz').classList.add('hide');$('res').classList.remove('hide');$('pb').style.width='100%';
  if(!list.length){
   const yr=ans.y==='all'?'':' released in '+ans.y;
-  $('top').innerHTML='<span class="badge">No matches</span><h3>Nothing found</h3><p class="why">We could not find a '+ans.p+(ans.b?' cube from '+ans.b:' cube')+yr+'. Try another brand'+(ans.y==='all'?'':' or a different year')+'.</p><p class="why" style="margin-top:16px"><strong>Try with other brands:</strong></p><div class="chips" id="nb" style="margin-top:10px"></div>';
+  $('top').innerHTML='<span class="badge">No matches</span><h3>Nothing found</h3><p class="why">We could not find a '+tierName(ans.t)+' '+ans.p+(ans.b?' cube from '+ans.b:' cube')+yr+' in our community-rated list. Try another brand'+(ans.y==='all'?'':' or a different year')+'.</p><p class="why" style="margin-top:16px"><strong>Try with other brands:</strong></p><div class="chips" id="nb" style="margin-top:10px"></div>';
   brandChips($('nb'),()=>results(true));
   $('ah').classList.add('hide');$('alts').innerHTML='';
   if(!keep)scrollTo({top:0,behavior:'smooth'});return}
- list.forEach((c,i)=>{c.score=100-Math.abs(c.tier-ans.t)*45+(c.sty===ans.s?25:0)-i*.1});
+ list.forEach((c,i)=>{c.score=100+(c.sty===ans.s?25:0)-i*.1});
  list.sort((a,b)=>b.score-a.score);
  const m=list[0],t=TIERS[m.tier];
  $('top').innerHTML='<span class="badge">Best match for you</span><h3>'+m.name+'</h3>'
@@ -313,6 +342,22 @@ function results(keep){
  $('alts').innerHTML=list.slice(1).map(c=>'<div class="alt" style="--c:'+TIERS[c.tier].c+'"><h5>'+c.name+'</h5><p>'+TIERS[c.tier].n+' \u2022 '+(c.sty==='f'?'Fast':'Control')+' \u2022 '+brandOf(c.name)+' \u2022 '+c.year+'</p><p>'+why(c,false)+'</p><div class="buy">'+links(c.name)+'</div></div>').join('');
  if(!keep)scrollTo({top:0,behavior:'smooth'});
 }
+
+// ---- Rank board ----
+let rp=null,wasRes=false;
+TYPES.forEach(p=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=p;
+ b.onclick=()=>{rp=p;[...$('ro').children].forEach(x=>x.classList.remove('sel'));b.classList.add('sel');$('rgo').disabled=false};$('ro').appendChild(b)});
+function rankSelect(){rp=null;[...$('ro').children].forEach(x=>x.classList.remove('sel'));$('rgo').disabled=true;$('rsel').classList.remove('hide');$('rres').classList.add('hide');scrollTo({top:0,behavior:'smooth'})}
+$('rbtn').onclick=()=>{wasRes=!$('res').classList.contains('hide');$('quiz').classList.add('hide');$('res').classList.add('hide');document.querySelector('.yearbar').classList.add('hide');$('rank').classList.remove('hide');rankSelect()};
+function rankExit(){$('rank').classList.add('hide');document.querySelector('.yearbar').classList.remove('hide');(wasRes?$('res'):$('quiz')).classList.remove('hide');scrollTo({top:0,behavior:'smooth'})}
+$('rexit').onclick=rankExit;$('rexit2').onclick=rankExit;$('rother').onclick=rankSelect;
+$('rgo').onclick=()=>{
+ const list=DB[rp].slice(0,15).map(x=>{const[a,b,c,y,d]=x.split('|');return{name:a,tier:+b,sty:c,year:+y,note:d}});
+ $('rt').textContent='Top '+list.length+' '+rp+' cubes';
+ $('rnote').textContent=list.length<15?'Only '+list.length+' '+rp+' cubes with community recommendations are in our list, so the board is not padded with unverified cubes.':'Ranked from best to lower, based on community recommendations.';
+ $('rl').innerHTML=list.map((c,i)=>'<div class="alt rk'+(i<3?' r'+(i+1):'')+'" style="--c:'+TIERS[c.tier].c+'"><div class="rn">#'+(i+1)+'</div><div><h5>'+c.name+'</h5><p>'+TIERS[c.tier].n+' \u2022 '+(c.sty==='f'?'Fast':'Control')+' \u2022 '+brandOf(c.name)+' \u2022 '+c.year+'</p><p>'+c.note+'.</p><div class="buy">'+links(c.name)+'</div></div></div>').join('');
+ $('rsel').classList.add('hide');$('rres').classList.remove('hide');scrollTo({top:0,behavior:'smooth'});
+};
 show();
 </script>
 </body>
