@@ -203,31 +203,58 @@
 <body class="flex flex-col justify-between overflow-hidden">
 
 <!-- header -->
-<header class="w-full px-3 sm:px-5 py-2 flex items-center justify-between shrink-0 z-30 relative border-b" style="background:var(--panel); border-color:var(--border);">
-  <div class="flex items-center space-x-1.5 sm:space-x-2">
-    <span class="font-extrabold text-sm sm:text-base tracking-wide whitespace-nowrap logo-glow" style="color:var(--accent);">K.Krithik</span>
+<!-- header -->
+<header class="w-full px-3 sm:px-5 py-2 flex flex-col shrink-0 z-30 relative border-b" style="background:var(--panel); border-color:var(--border);">
+
+  <!-- Row 1: Brand (left) + Title (center) + Session name (right) -->
+  <div class="w-full flex items-center justify-between gap-2 py-1">
+
+    <!-- Left: brand -->
+    <span class="font-extrabold text-sm sm:text-base tracking-wide whitespace-nowrap logo-glow shrink-0" style="color:var(--accent);">K.Krithik</span>
+
+    <!-- Center: title -->
+    <h1 class="text-base sm:text-xl md:text-2xl font-black tracking-widest uppercase drop-shadow text-center leading-tight">
+      KKK TIMER<span class="hidden sm:inline"> – Professional Speedcubing Timer</span>
+    </h1>
+
+    <!-- Right: session name display -->
+    <select id="session-select" class="text-xs sm:text-sm text-zinc-200 border rounded-lg px-1.5 py-1 focus:outline-none max-w-[90px] sm:max-w-[160px] truncate shrink-0" style="background:var(--card); border-color:var(--border);"></select>
+
+  </div>
+
+  <!-- Row 2: all action buttons -->
+  <div class="w-full flex items-center justify-center flex-wrap gap-1.5 sm:gap-2 pt-1.5 border-t" style="border-color:var(--border);">
+
+    <!-- Settings -->
     <button id="settings-btn" title="Settings" class="p-1.5 sm:p-2 rounded-lg text-zinc-300 hover:text-white border" style="background:var(--card); border-color:var(--border);">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
     </button>
+
+    <!-- Assistant -->
     <button id="assistant-btn" title="Assistant" class="p-1.5 sm:p-2 rounded-lg text-emerald-100 hover:text-white border border-emerald-700/50" style="background:rgba(16,185,129,.15);">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
     </button>
+
+    <!-- Find a cube -->
     <button id="cube-finder-btn" title="Find a cube" class="p-1.5 sm:p-2 rounded-lg text-blue-100 hover:text-white border border-blue-700/50" style="background:rgba(59,130,246,.15);" onclick="window.location.href='/KKK-TIMER-3.0/cube-finder.html'">
-  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
     </button>
-  </div>
-  <div class="text-center px-1"><h1 class="text-xl sm:text-2xl font-black tracking-widest uppercase drop-shadow">KKK</h1></div>
-  <div class="flex items-center space-x-1 sm:space-x-1.5">
-    <select id="session-select" class="text-xs sm:text-sm text-zinc-200 border rounded-lg px-1.5 py-1 focus:outline-none max-w-[90px] sm:max-w-[160px] truncate" style="background:var(--card); border-color:var(--border);"></select>
+
+    <!-- Share session -->
     <button id="share-session-btn" title="Share Session" class="p-1 sm:p-1.5 rounded-lg bg-blue-700 hover:bg-blue-600 text-white">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
     </button>
+
+    <!-- New session -->
     <button id="add-session-btn" title="New Session" class="p-1 sm:p-1.5 rounded-lg text-white" style="background:var(--accent);">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
     </button>
+
+    <!-- Delete session -->
     <button id="delete-session-btn" title="Delete Session" class="p-1 sm:p-1.5 rounded-lg bg-red-900/60 hover:bg-red-600 text-red-200 hover:text-white">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
     </button>
+
   </div>
 </header>
   <!-- Ratings box (shows user's own ratings if submitted) -->
